@@ -57,11 +57,20 @@ class TravauxPratiquesController extends AppController
     public function add()
     {
 		$rotations = TableRegistry::get('Rotations');
+
 		$listRotations = $rotations->find('list')
 			->contain(['Periodes.Classes'])
 			->order([
 				'Periodes.Numero' => 'ASC',
 				'Rotations.Numero' => 'ASC'
+			]);
+
+    $taches = TableRegistry::get('TachesPros');
+    $listTachesPro = $taches->find('list')
+			->contain(['Activites'])
+			->order([
+				'Activites.Numero' => 'ASC',
+				'TachesPros.Numero' => 'ASC'
 			]);
 
 
@@ -76,7 +85,7 @@ class TravauxPratiquesController extends AppController
             }
         }
 
-        $this->set(compact('tp','listRotations'));
+        $this->set(compact('tp','listRotations','listTachesPro'));
     }
 
 
@@ -85,28 +94,37 @@ class TravauxPratiquesController extends AppController
      */
     public function edit($id = null)
     {
-        $rotations = TableRegistry::get('Rotations');
-		$listRotations = $rotations->find('list')
+      $rotations = TableRegistry::get('Rotations');
+		  $listRotations = $rotations->find('list')
 			->contain(['Periodes.Classes'])
 			->order([
 				'Periodes.Numero' => 'ASC',
 				'Rotations.Numero' => 'ASC'
 			]);
-        $tp = $this->TravauxPratiques->get($id, [
-            'contain' => []
-        ]);
 
-        if ($this->request->is(['patch', 'post', 'put'])) {                        // Vérifie le type de requête
-            $tp = $this->TravauxPratiques->patchEntity($tp, $this->request->getData());
-            if ($this->TravauxPratiques->save($tp)) {                  //Sauvegarde les données dans la BDD
-                $this->Flash->success(__('Le matériel a été sauvegardé.'));      //Affiche une infobulle
-                return $this->redirect(['action' => 'index']);                      //Déclenche la fonction 'index' du controlleur
-            } else {
-                $this->Flash->error(__('Le matériel n\'a pas pu être sauvegardé ! Réessayer.')); //Sinon affiche une erreur
-            }
-        }
+      $taches = TableRegistry::get('TachesPros');
+      $listTachesPro = $taches->find('list')
+  			->contain(['Activites'])
+  			->order([
+  				'Activites.Numero' => 'ASC',
+  				'TachesPros.Numero' => 'ASC'
+  			]);
 
-        $this->set(compact('listRotations','tp'));
+      $tp = $this->TravauxPratiques->get($id, [
+          'contain' => []
+      ]);
+
+      if ($this->request->is(['patch', 'post', 'put'])) {                        // Vérifie le type de requête
+          $tp = $this->TravauxPratiques->patchEntity($tp, $this->request->getData());
+          if ($this->TravauxPratiques->save($tp)) {                  //Sauvegarde les données dans la BDD
+              $this->Flash->success(__('Le matériel a été sauvegardé.'));      //Affiche une infobulle
+              return $this->redirect(['action' => 'index']);                      //Déclenche la fonction 'index' du controlleur
+          } else {
+              $this->Flash->error(__('Le matériel n\'a pas pu être sauvegardé ! Réessayer.')); //Sinon affiche une erreur
+          }
+      }
+
+        $this->set(compact('listRotations','tp','listTachesPro'));
     }
 
     /************* Affiche toutes les données d'un T.P************************

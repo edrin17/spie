@@ -1,11 +1,11 @@
-<?= $this->Form->create($tp); ?>    
+<?= $this->Form->create($tp); ?>
 
 <div class="form-group">
 <label for="nom">Nom du TP</label>
 <?= $this->Form->text('nom',[
 		'id' => 'nom',
 		'class' => 'form-control',
-	]); ?> 			               
+	]); ?>
 </div>
 
 <div class="form-group">
@@ -13,7 +13,16 @@
 <?= $this->Form->select('rotation_id',
 	$listRotations,[
 	'id' => 'rotation-id',
-	'class' => 'form-control']    
+	'class' => 'form-control']
+); ?>
+</div>
+
+<div class="form-group">
+<label for="tachesPros-id">Choix de la tâche professionnelle</label>
+<?= $this->Form->select('taches_principale_id',
+	$listTachesPro,[
+	'id' => 'tachesPro-id',
+	'class' => 'form-control']
 ); ?>
 </div>
 
@@ -22,7 +31,7 @@
 <?= $this->Form->textarea('comments',[
 	'id' => 'rotation-id',
 	'class' => 'form-control']
-); ?>	
+); ?>
 </div>
 
 <div class="form-group">
