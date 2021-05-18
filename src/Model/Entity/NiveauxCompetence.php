@@ -1,0 +1,15 @@
+<?php
+namespace App\Model\Entity;
+
+use Cake\ORM\Entity;
+/**
+ * User Entity.
+ */
+class NiveauxCompetence extends Entity
+{
+	protected function _getfullName()
+	{
+		return $this->_properties['numero'].' - '.
+			$this->_properties['nom'];
+	}
+}

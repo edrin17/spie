@@ -1,0 +1,58 @@
+<div class="users form large-9 medium-8 columns content">
+    <?= $this->Form->create($rotation); ?>
+    <fieldset>
+        <legend><?= __('Editer une rotation') ?></legend>
+            
+             <?= $this->Form->input('classe_id', [
+			'label' => 'Filtrer par classes',
+			'onchange' => 'select_periodes()',
+            'options' => $listClasses,
+			'default' => $rotation->classe_id
+			]); ?>
+            
+            <?= $this->Form->input('periode_id', [
+                'label' => 'Période correspondante dans le référentiel',
+                'options' => $selectPeriodes,
+				'default' => $rotation->periode_id    
+            ]); ?>
+            
+            <?= $this->Form->input('numero',[
+                'label' => 'Numéro de rotation',
+                'option' => 'number',
+                'min' => '1',
+                'max' => '10'
+            ]); ?>
+            
+            <?= $this->Form->input('nom',[
+                'label' => 'Nom',
+                'option' => 'text'
+            ]); ?>
+            
+            <?= $this->Form->input('theme_id',[
+                'label' => 'Nom du thème',
+                'options' => $listThemes
+            ]); ?>
+            
+            <?= $this->Form->input('user_id', [
+                'label' => 'Responsable des TP',
+                'options' => $listUsers,
+				//'default' => $periode_id    
+            ]); ?>
+            
+    </fieldset>
+    <?= $this->Form->button(__('Editer')); ?>
+    <?= $this->Form->end(); ?>
+</div>
+
+<script>
+function select_periodes()
+{
+    var id = document.getElementById("classe-id").value; 
+	$.get("<?= $this->Url->build([
+        'controller'=>'FiltresAjaxes',
+        'action'=>'chainedPeriodes']) ?>"
+        + "/?parent_id=" +id, function(resp) {
+            $('#periode-id').html(resp);
+        });
+}
+</script>
