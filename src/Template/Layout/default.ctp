@@ -1,5 +1,3 @@
-<?= $this->Html->docType('html5') ?>
-
 <html lang="fr">
 <head>
 	<title>SPIE: Suivi et Progression Individuelle des Elèves:<?= $this->fetch('title') ?></title>
