@@ -5,101 +5,91 @@
         </div>
     </div>
 </div>
-<?= $this->Form->create($materiel,['class' => 'form-horizontal']); ?>
-
+<?= $this->Form->create($materiel); ?>
     <div class="form-group">
-
-        <label for="nom" class="col-lg-1 control-label">
-            Nom:
-        </label>
-        <div class="col-lg-2">
-            <?= $this->Form->input('nom',[
-                'label' => false,
-                'class' => 'form-control',
-                'required' => true
-            ]); ?>
-        </div>
+      <?= $this->Form->input('nom',[
+          'label' => 'Nom:',
+          'class' => 'form-control',
+          'required' => true
+      ]); ?>
     </div>
     <div class="form-group">
-        <label for="marque_id" class="col-lg-1 control-label">
-            Marque:
-        </label>
-        <div class="col-lg-2">
-            <?= $this->Form->input('marque_id', [
-                'label' => false,
-                'class' => 'selectpicker',
-                'data-live-search' => "true",
-                'options' => $marques
-            ]); ?>
-        </div>
-
-        <label for="types_machine_id" class="col-lg-2 control-label">
-            Type de machine:
-        </label>
-        <div class="col-lg-2">
-            <?= $this->Form->input('types_machine_id', [
-                'label' => false ,
-                'class' => 'selectpicker',
-                'data-live-search' => "true",
-                'options' => $typesMachines
-            ]); ?>
-        </div>
+      <?= $this->Form->input('marque_id', [
+          'label' => 'Marque:',
+          'class' => 'selectpicker',
+          'data-live-search' => "true",
+          'options' => $marques
+      ]); ?>
     </div>
 
     <div class="form-group">
-
-      <label for="owner_id" class="col-lg-1 control-label">
-          Propriétaire:
-      </label>
-      <div class="col-lg-2">
-          <?= $this->Form->input('owner_id',[
-              'label' => false,
-              'class' => 'selectpicker',
-              'data-live-search' => "true",
-              'options' => $owners
-          ]); ?>
-      </div>
-
-        <label for="numero" class="col-lg-2 control-label">
-            Numéro:
-        </label>
-        <div class="col-lg-1">
-            <?= $this->Form->input('numero',[
-                'class' => 'form-control',
-                'label' => false
-            ]); ?>
-        </div>
+        <?= $this->Form->input('types_machine_id', [
+            'label' => 'Type machine:' ,
+            'class' => 'selectpicker',
+            'data-live-search' => "true",
+            'options' => $typesMachines
+        ]); ?>
     </div>
 
     <div class="form-group">
-        <div class="col-lg-4">
-            <?= $this->Form->input('infos_chassis',[
-                'label' => 'Infos Châssis',
-                'type' => 'textarea',
-                'class' => 'form-control',
-            ]); ?>
-        </div>
-        <div class="col-lg-4">
-            <?= $this->Form->input('infos_moteur',[
-                'label' => 'Infos Moteurs',
-                'type' => 'textarea',
-                'class' => 'form-control',
-            ]); ?>
-        </div>
+      <?= $this->Form->input('owner_id',[
+          'label' => 'Propriétaire:',
+          'class' => 'selectpicker',
+          'data-live-search' => "true",
+          'options' => $owners
+      ]); ?>
     </div>
 
     <div class="form-group">
-        <div class="col-lg-8">
+        <?= $this->Form->input('numero',[
+            'class' => 'form-control',
+            'label' => 'Numéro:'
+        ]); ?>
+    </div>
+
+    <div class="form-group">
+      <?= $this->Form->input('infos_chassis',[
+          'label' => 'Infos Châssis:',
+          'type' => 'textarea',
+          'class' => 'form-control',
+      ]); ?>
+    </div>
+
+    <div class="form-group">
+      <?= $this->Form->input('date_entree',[
+        'label' => "Date d'entrée",
+        'class' => 'form-control',
+      ]); ?>
+    </div>
+
+    <p class="bg-danger"> Si le matériel est dans l'atelier mettre une date de sortie inférieur à la date d'entrée</p>
+    <div class="form-group bg-danger">
+      <?= $this->Form->input('date_sortie',[
+          'label' => "Date de sortie",
+          'class' => 'form-control',
+      ]); ?>
+    </div>
+
+    <div class="form-group">
+        <?= $this->Form->input('infos_moteur',[
+            'label' => 'Infos Moteurs:',
+            'type' => 'textarea',
+            'class' => 'form-control',
+        ]); ?>
+    </div>
+
+    <div class="form-group">
             <?= $this->Form->input('infos',[
                 'label' => 'Infos Maintenance',
                 'type' => 'textarea',
                 'class' => 'form-control',
             ]); ?>
-        </div>
     </div>
 
-
-    <?= $this->Form->button(__('Envoyer'),['class' => 'btn btn-success']); ?>
-
+    <div class="form-group">
+      <?= $this->Form->button(__('Envoyer'),[
+        'class' => 'btn btn-success'
+      ]); ?>
+    </div>
 
 <?= $this->Form->end(); ?>

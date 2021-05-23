@@ -1,6 +1,8 @@
-<?php $this->assign('title', 'Propriétaires'); ?>  <!-- Customise le titre de la page -->
+<?php $this->assign('title', 'Liste des Matériels'); ?>  <!-- Customise le titre de la page -->
 
 <h1>Propriétaires</h1>
+<!-- Affiche le bouton ajouter un activite -->
+<?= $this->Html->link(__('Ajouter un matériel'), ['action' => 'add']); ?>
 <table id ="tableau" class="display">
         <thead>
             <tr>
@@ -31,8 +33,6 @@
             <?php endforeach; ?>
         </tbody>
 </table>
-<!-- Affiche le bouton ajouter un activite -->
-<?= $this->Html->link(__('Ajouter une Propriétaire'), ['action' => 'add']); ?>
 
 <script>
 $(document).ready(function() {

@@ -62,6 +62,7 @@ class MaterielsController extends AppController
 
         if ($this->request->is(['patch', 'post', 'put'])) {                        // Vérifie le type de requête
             $materiel = $this->Materiels->patchEntity($materiel, $this->request->getData());
+            //debug($materiel);die;
             if ($this->Materiels->save($materiel)) {                  //Sauvegarde les données dans la BDD
                 $this->Flash->success(__('Le matériel a été sauvegardé.'));      //Affiche une infobulle
                 return $this->redirect(['action' => 'index']);                      //Déclenche la fonction 'index' du controlleur
