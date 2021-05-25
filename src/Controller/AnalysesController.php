@@ -90,55 +90,62 @@ class AnalysesController extends AppController
         $tableRotations = TableRegistry::get('Rotations');
 
         $listPeriodes = $tablePeriodes->find()
-            ->contain(['Classes'])
             ->order([
-                'Classes.nom' => 'ASC',
                 'Periodes.numero' => 'ASC'
             ]);
 
         $listRotations = $tableRotations->find()
-            ->contain(['Periodes.Classes'])
+            ->contain(['Periodes'])
             ->order([
-                'Classes.nom' => 'ASC',
                 'Periodes.numero' => 'ASC',
-                'Rotations.numero'
+                'Rotations.numero' =>'ASC',
             ]);
         //si on a sélectionné une période
         if ($selectedPeriode != null){
             //si on a sélectionné une période on récupère la liste des rotations correspondante'
             $listRotations = $tableRotations->find()
-                ->contain(['Periodes.Classes'])
+                ->contain(['Periodes'])
                 ->where(['periode_id' => $selectedPeriode])
-                ->order(['Rotations.numero' => 'ASC']);
+                ->order([
+                  'Periodes.numero' => 'ASC',
+                  'Rotations.numero' =>'ASC',
+                ]);
 
             if ($rotation_id == null) { //si pas de rotation selectionnée on prend la première de la liste
                 $selectedRotation = $tableRotations->find()
-                    ->contain(['Periodes.Classes'])
+                    ->contain(['Periodes'])
                     ->where(['periode_id' => $selectedPeriode])
-                    ->order(['Rotations.numero' => 'ASC'])
+                    ->order([
+                      'Periodes.numero' => 'ASC',
+                      'Rotations.numero' =>'ASC',
+                    ])
                     ->first();
             } else {
                 $selectedRotation = $tableRotations->get($rotation_id,['contain' => [] ]);
             }
         } else {
             $periode = $tablePeriodes->find()
-                ->contain(['Classes'])
                 ->order([
-                    'Classes.nom' => 'ASC',
                     'Periodes.numero' => 'ASC'
                 ])
                 ->first();
             $selectedPeriode = $periode->id;
 
             $listRotations = $tableRotations->find()
-                ->contain(['Periodes.Classes'])
+                ->contain(['Periodes'])
                 ->where(['periode_id' => $selectedPeriode])
-                ->order(['Rotations.numero' => 'ASC']);
+                ->order([
+                  'Periodes.numero' => 'ASC',
+                  'Rotations.numero' =>'ASC',
+                ]);
 
             $selectedRotation = $tableRotations->find()
-                ->contain(['Periodes.Classes'])
+                ->contain(['Periodes'])
                 ->where(['periode_id' => $selectedPeriode])
-                ->order(['Rotations.numero' => 'ASC'])
+                ->order([
+                  'Periodes.numero' => 'ASC',
+                  'Rotations.numero' =>'ASC',
+                ])
                 ->first();
         }
 
@@ -206,7 +213,7 @@ class AnalysesController extends AppController
         $tpTable = TableRegistry::get('TravauxPratiques');
         $listTPs = $tpTable->find()
             ->contain([
-                'Rotations.Periodes.Classes',
+                'Rotations.Periodes',
             ])
             ->where(['Rotations.id' => $rotationId])
             ->order([
