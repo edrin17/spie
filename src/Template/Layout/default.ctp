@@ -8,20 +8,20 @@
 		'width=device-width, initial-scale=1'
 	); ?>
 	<?= $this->Html->css([
-		'https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css',
-    'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css',
-    'https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css',
-    'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.0/css/bootstrap-select.css',
+		'jquery.dataTables.min.css',
+    'bootstrap.min.css',
+    'all.css', //fontawesome
+    'bootstrap-select.css',
     'custom',
-    '../easyui/themes/default/easyui.css',
-    '../easyui/themes/icon.css'
+    //'../easyui/themes/default/easyui.css',
+    //'../easyui/themes/icon.css'
   ]) ?>
 	<?= $this->Html->script([
-		'https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js',
-		'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.0/js/bootstrap-select.min.js',
-		'https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js',
-    '../easyui/jquery.easyui.min.js',
+		'jquery.min.js',
+		'bootstrap.min.js',
+    'bootstrap-select.min.js',
+		'jquery.dataTables.min.js',
+    //'easyui/jquery.easyui.min.js',
 	]) ?>
 </head>
 <body>
