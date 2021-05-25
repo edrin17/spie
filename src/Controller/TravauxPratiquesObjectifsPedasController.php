@@ -190,46 +190,53 @@ class TravauxPratiquesObjectifsPedasController extends AppController
                         $listTps = $intermediateTable;
                         unset($intermediateTable);
                     }
-                    
-                    
+
+
                     //on compte le nombre de TP par micro-competence
                     $nbTps = count($listTps);
                     //en fonction du nombre de TP on change la couleur du badge
+                    /*
+                    success = "vert"
+                    default = "noir"
+                    warning = "orange"
+                    info = "bleu"
+                    danger = "rouge"
+                    */
                     if ($nbTps === 4) {
                         $lblColor = "success";
                     }
                     elseif ($nbTps === 0) {
-                        $lblColor = "default";
+                        $lblColor = "danger";
                     }
                     elseif ($nbTps > 4) {
-                        $lblColor = "warning";
-                    }
-                    else {
                         $lblColor = "info";
                     }
-                    
-                    
-                    
-                    
+                    else {
+                        $lblColor = "warning";
+                    }
+
+
+
+
                     $contenu = '';
-                    
+
                     // on concatene les nom de tp au fromat html
                     foreach ($listTps as $tp) {
-                        $contenu .= $tp->fullName ."</br>"; 
+                        $contenu .= $tp->fullName ."</br>";
                     }
-                    
-                    
+
+
                     if ($numero === $col) {
                         $tableau[$row][$col] = [
                             'nom' => $nomMicroComp,
                             'contenu' => $contenu,
-                            'nbTPs' => '<span class="label label-' 
+                            'nbTPs' => '<span class="label label-'
                                 .$lblColor .' label-as-badge">'
                                 .$nbTps .'TP</span>',
                         ];
                         $written = true;
                     }
-                    
+
                 }
                 if (!$written) {
                     $tableau[$row][$col] = [
