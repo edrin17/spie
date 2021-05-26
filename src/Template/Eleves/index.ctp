@@ -22,8 +22,8 @@
         </thead>
         <tbody>
             <?php foreach ($eleves as $eleve): ?> <!--Affiche le contenu de 'activitess'  -->
-            <tr> 
-				<td><?php echo h($eleve->class->nom); ?></td>
+            <tr>
+                <td><?php echo h($eleve->classe->nom); ?></td>
 				<td><?php echo strtoupper(h($eleve->nom)) .'<br>' .h($eleve->prenom) ; ?></td>
 				<td class="actions">
                 <!-- Affiche des urls/boutons et de leurs actions -->

@@ -38,7 +38,7 @@ class ClassesTable extends Table
             'joinType' => 'INNER'
         ]);
 
-        //$this->setDisplayField('nom');
+        $this->setDisplayField('nom');
     }
 
     /**

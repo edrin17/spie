@@ -15,8 +15,9 @@ class ElevesController extends AppController
     public function index($classe_id = null)
     {
         //on liste les classes pour le select qui sert de filtre de la vue avec numeNom
-		$listeClasses = $this->Eleves->Classes->find('list')
-												->order(['nom' => 'ASC']);
+        $tbl_classes = TableRegistry::get('Classes');
+        $listeClasses = $tbl_classes->find('list')
+			->order(['nom' => 'ASC']);
         /* On regarde si un filtre par classe est appliqué sur la page index en POST
 		 * (appuie sur le bouton 'filtrer du formulaire') ou si on a passé un paramètre */
 		
