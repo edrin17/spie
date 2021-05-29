@@ -20,11 +20,27 @@ class MaterielsController extends AppController
 
     public function index()
     {
-			$materiels = $this->Materiels->find()
-				->contain(['Marques','Owners','TypesMachines'])
-				->order(['Materiels.nom' => 'ASC']);
+        $show_clients = null;
+        $wkshp_only =null;
+        
+        $query = $this->Materiels->find()
+			->contain(['Marques','Owners','TypesMachines'])
+			->order(['Materiels.nom' => 'ASC']);
 
-			$this->set('materiels', $materiels); //'activites' est l'alias de la variable globale pour la vue'index.ctp'
+        if ($this->request->is('POST')) {
+            $show_clients = $this->request->getData()['show_client'];
+            $wkshp_only = $this->request->getData()['wkshp_only'];
+        }
+
+		if ($show_clients == 1) {
+			$query = $query->where(['Owners.nom <>' => 'LP Galliéni']);
+		}
+        if ($wkshp_only == 1) {
+			$query = $query->where(['date_sortie > date_entree']);
+		}
+
+
+		$this->set('query', $query); //'activites' est l'alias de la variable globale pour la vue'index.ctp'
     }
 	/***************** Ajoute une tâche principale
      **********************************************************/

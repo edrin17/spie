@@ -1,8 +1,17 @@
-<?php $this->assign('title', 'Liste des Matériels'); ?>  <!-- Customise le titre de la page -->
-
-<h1>Propriétaires</h1>
-<!-- Affiche le bouton ajouter un activite -->
-<?= $this->Html->link(__('Ajouter un matériel'), ['action' => 'add']); ?>
+<?php $this->assign('title', 'Liste des Matériels');
+    echo $this->Form->create($query);
+    echo '<h1>Propriétaires</h1>';
+    echo $this->Form->control('show_client',[
+      'type' => 'checkbox',
+      'label' => 'Matériel client uniquement',
+    ]);
+    echo $this->Form->control('wkshp_only',[
+      'type' => 'checkbox',
+      'label' => "Machine dans l'atelier uniquement",
+    ]);
+?>
+<?= $this->Form->button(__('Filtrer')); ?>
+<?= $this->Html->link(('Ajouter un matériel'), ['action' => 'add']); ?>
 <table id ="tableau" class="display">
         <thead>
             <tr>
@@ -14,7 +23,7 @@
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($materiels as $materiel): ?> <!--Affiche le contenu de 'activites'  -->
+            <?php foreach ($query as $materiel): ?> <!--Affiche le contenu de 'activites'  -->
             <tr>
                 <td><?= "<b>" .h($materiel->nom) ."</b>" ?></td>
 								<td><?= h($materiel->types_machine->nom) ?></td>
@@ -23,7 +32,6 @@
                 <td class="actions">
                 <!-- Affiche des urls/boutons et de leurs actions -->
                 <p>
-                    <?= $this->Html->link(__('Voir'), ['action' => 'view', $materiel->id]); ?>
                     <?= $this->Html->link(__('Editer'), ['action' => 'edit', $materiel->id]); ?>
                     <?= $this->Form->postLink(__('Supprimer'),
                         ['action' => 'delete', $materiel->id],['confirm' => __('Etes vous sûr de vouloir supprimer # {0}?', $materiel->id)]); ?>
@@ -33,6 +41,7 @@
             <?php endforeach; ?>
         </tbody>
 </table>
+<?= $this->Form->end(); ?>
 
 <script>
 $(document).ready(function() {
