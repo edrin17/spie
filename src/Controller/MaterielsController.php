@@ -36,7 +36,7 @@ class MaterielsController extends AppController
 			$query = $query->where(['Owners.nom <>' => 'LP Galliéni']);
 		}
         if ($wkshp_only == 1) {
-			$query = $query->where(['date_sortie > date_entree']);
+			$query = $query->where(['date_sortie <= date_entree']);
 		}
 
 
