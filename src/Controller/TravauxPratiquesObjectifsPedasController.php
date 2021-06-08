@@ -150,7 +150,6 @@ class TravauxPratiquesObjectifsPedasController extends AppController
 				'CompetencesIntermediaires.numero' => 'ASC',
             ]);
             
-        //debug($listCompsInters->toArray());die;
         /*
          * Création du tableau:
          * Pour chaque compétences Inter ET pour chaque colonne (nbColonnes)

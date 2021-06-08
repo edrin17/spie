@@ -1,17 +1,30 @@
-<?php $this->assign('title', 'Liste des Matériels');
-    echo $this->Form->create($query);
-    echo '<h1>Propriétaires</h1>';
-    echo $this->Form->control('show_client',[
-      'type' => 'checkbox',
-      'label' => 'Matériel client uniquement',
-    ]);
-    echo $this->Form->control('wkshp_only',[
-      'type' => 'checkbox',
-      'label' => "Machine dans l'atelier uniquement",
-    ]);
-?>
-<?= $this->Form->button(__('Filtrer')); ?>
-<?= $this->Html->link(('Ajouter un matériel'), ['action' => 'add']); ?>
+<?php
+$this->assign('title', 'Liste des Matériels');
+echo $this->Form->create($query); ?>
+<h1>Propriétaires</h1>
+<div class="container-fuild">
+    <div class="row">
+        <div class="col-lg-2">
+        <?= $this->Form->control('show_client',[
+            'type' => 'checkbox',
+            'label' => 'Matériel client uniquement',
+        ]); ?> </div>
+
+        <div class="col-lg-2">
+        <?= $this->Form->control('wkshp_only',[
+          'type' => 'checkbox',
+          'label' => "Machine dans l'atelier uniquement",
+        ]);?>
+        </div>
+
+        <div class="col-lg-2">
+            <?= $this->Form->button('Filtrer'); ?>
+        </div>
+    </div>
+    <div class="row">
+        <?= $this->Html->link(('Ajouter un matériel'), ['action' => 'add']); ?>
+    </div>
+</div>
 <table id ="tableau" class="display">
         <thead>
             <tr>
@@ -34,7 +47,8 @@
                 <p>
                     <?= $this->Html->link(__('Editer'), ['action' => 'edit', $materiel->id]); ?>
                     <?= $this->Form->postLink(__('Supprimer'),
-                        ['action' => 'delete', $materiel->id],['confirm' => __('Etes vous sûr de vouloir supprimer # {0}?', $materiel->id)]); ?>
+                        ['action' => 'delete', $materiel->id],
+                        ['confirm' => __('Etes vous sûr de vouloir supprimer  {0}?', $materiel->nom)]); ?>
                 </p>
                 </td>
             </tr>

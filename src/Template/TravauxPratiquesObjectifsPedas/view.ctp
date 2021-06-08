@@ -12,7 +12,7 @@
         <tr>
             <?php for ($i = 0; $i <= $nbColonnes; $i++): ?>
             <td rel="popover" data-toggle="popover" data-placement="left" data-container= "td" data-html="true" title= "<?= $ligne[$i]['contenu'] ?>">
-                <?= $ligne[$i]['nom'] ?> </br>
+                <?= $ligne[$i]['nom'] ?>
                 <?= $ligne[$i]['nbTPs'] ?>
             </td>
             <?php endfor ?>
