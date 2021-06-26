@@ -12,14 +12,16 @@
             <thead>
                 <tr>
                     <th>Matériel</th>
-                    <th>Nb d'utilisations</th>
+                    <th>Nb d'utilisations </th>
                     <th>Taux en %</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach($listMateriels as $materiel): ?>
+                    <?php //debug($materiel) ?>
                     <tr>
-                        <td><?= $materiel->fullName ?></td>
+                        <td rel="popover" data-toggle="popover" data-placement="left" data-container= "td" data-html="true" title= "<?= $materiel->TPlist ?>">
+                            <?= $materiel->fullName ?></td>
                         <td>
                             <span class="label label-default label-as-badge">
                                 <?= $materiel->nbTPs ?>
@@ -32,11 +34,12 @@
                         </td>
                     </tr>
                 <?php endforeach ?>
-            </tbody>       
+            </tbody>
         </table>
     </div>
 </div>
 <script>
+$("[rel=popover").popover({html:true});
 $(document).ready(function() {
     $('#tableau').DataTable({
         "language": {
