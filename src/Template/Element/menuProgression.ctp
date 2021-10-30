@@ -4,16 +4,22 @@
     <span class="caret"></span></a>
     <ul class="dropdown-menu">
         <li>
-            <?= $this->Html->link(__('Progression'), [
+            <?= $this->Html->link(__('Progression TP'), [
                 'controller' => 'Progressions',
-                'action' => 'index'
+                'action' => 'tp'
+            ]); ?>
+        </li>
+        <li>
+            <?= $this->Html->link(__('Progression Compétences'), [
+                'controller' => 'Progressions',
+                'action' => 'competences'
             ]); ?>
         </li>
         <li role="separator" class="divider"></li>
         <li>
             <?= $this->Html->link(__('T.P'), [
                 'controller' => 'TravauxPratiques',
-                'action' => 'index'
+                'action' => 'tp'
             ]); ?>
         </li>
         <li role="separator" class="divider"></li>
