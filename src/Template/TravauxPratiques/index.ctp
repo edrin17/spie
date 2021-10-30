@@ -17,7 +17,7 @@
             <td><?= $this->Html->link($tp->nom,
                 ['action' => 'edit', $tp->id]); ?></td>
 			<td class="actions">
-                <div class="btn-group" role="group" aria-label="...">
+                <div class="btn-group" role="group" >
                     <div class="btn-group" role="group">
                         <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fa fa-link" aria-hidden="true"></i>
@@ -25,27 +25,25 @@
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
                             <li>
-                                <?= $this->Html->link(__('Associer avec un objectif pédagogique'), [
+                                <?= $this->Html->link(__('Objectifs pédagogiques'), [
             						'controller' => 'TravauxPratiquesObjectifsPedas',
-            						'action' => 'add',
+            						'action' => 'index',
         						    $tp->id
                                 ]).PHP_EOL; ?>
                             </li>
                             <li>
-                                <?= $this->Html->link(__('Associer avec un matériel'), [
-            						'controller' => 'MaterielsTravauxPratiques',
-            						'action' => 'add',
-            					    $tp->id
-                                ]).PHP_EOL; ?>
-                            </li>
-                            <li>
-                                <?= $this->Html->link(__('Voir les associations avec un matériel'), [
+                                <?= $this->Html->link(__('Matériels pour ce TP'), [
             						'controller' => 'MaterielsTravauxPratiques',
             						'action' => 'index',
             					$tp->id]).PHP_EOL; ?>
                             </li>
                         </ul>
                     </div>
+                    <?php echo $this->Form->postButton(
+                        '<i class="fa fa-trash" aria-hidden="true"></i>',
+                        ['controller' => 'TravauxPratiques', 'action' => 'delete', $tp->id],
+                        ['confirm' => 'Etes-vous sûr de voulour supprimer le TP: '.$tp->nom.'?' ,'escape'=> false]
+                    );?>
                 </div>
             </td>
         </tr>
