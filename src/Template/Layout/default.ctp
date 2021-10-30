@@ -7,18 +7,18 @@
 		'width=device-width, initial-scale=1'
 	); ?>
 	<?= $this->Html->css([
-		'jquery.dataTables.min.css',
-    'bootstrap.min.css',
-    'all.css', //fontawesome
-    'bootstrap-select.css',
-    'custom',
+    	'jquery.dataTables.min.css',
+        'bootstrap.min.css',
+        'all.css', //fontawesome
+        'bootstrap-select.css',
+        'custom',
     //'../easyui/themes/default/easyui.css',
     //'../easyui/themes/icon.css'
   ]) ?>
 	<?= $this->Html->script([
 		'jquery.min.js',
 		'bootstrap.min.js',
-    'bootstrap-select.min.js',
+        'bootstrap-select.min.js',
 		'jquery.dataTables.min.js',
     //'easyui/jquery.easyui.min.js',
 	]) ?>

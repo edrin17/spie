@@ -19,7 +19,7 @@
         <li>
             <?= $this->Html->link(__('T.P'), [
                 'controller' => 'TravauxPratiques',
-                'action' => 'tp'
+                'action' => 'index'
             ]); ?>
         </li>
         <li role="separator" class="divider"></li>
