@@ -1,7 +1,7 @@
 <?php
 $this->assign('title', 'Liste des Matériels');
 echo $this->Form->create($query); ?>
-<h1>Propriétaires</h1>
+<h1>Liste des Matériels</h1>
 <div class="container-fuild">
     <div class="row">
         <div class="col-lg-2">

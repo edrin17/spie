@@ -1,10 +1,10 @@
 
-<?php $this->assign('title', 'owners'); ?>  <!-- Customise le titre de la page -->
+<?php $this->assign('title', 'Liste des propriétaires'); ?>  <!-- Customise le titre de la page -->
 
 <div class="row">
     <div class="col-lg-12">
           <table class="table">
-    <h1>owners</h1>
+    <h1>Liste des propriétaire</h1>
     <!-- Affiche le bouton ajouter un owner -->
     <?= $this->Html->link(__('Ajouter un propriétaire'), ['action' => 'add']); ?>
         <thead>
