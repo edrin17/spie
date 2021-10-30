@@ -1,12 +1,13 @@
+<?php echo $this->Html->docType('html5'); ?>
 <head>
-	<title>SPIE: Suivi et Progression Individuelle des Elèves:<?= $this->fetch('title') ?></title>
-	<?= $this->Html->charset() ?>
-	<?= $this->Html->meta('icon') ?>
-	<?= $this->Html->meta(
+	<title>SPIE: Suivi et Progression Individuelle des Elèves:<?php echo $this->fetch('title') ?></title>
+	<?php echo $this->Html->charset() ?>
+	<?php echo $this->Html->meta('icon') ?>
+	<?php echo $this->Html->meta(
 		'viewport',
 		'width=device-width, initial-scale=1'
 	); ?>
-	<?= $this->Html->css([
+	<?php echo $this->Html->css([
     	'jquery.dataTables.min.css',
         'bootstrap.min.css',
         'all.css', //fontawesome
@@ -15,7 +16,7 @@
     //'../easyui/themes/default/easyui.css',
     //'../easyui/themes/icon.css'
   ]) ?>
-	<?= $this->Html->script([
+	<?php echo $this->Html->script([
 		'jquery.min.js',
 		'bootstrap.min.js',
         'bootstrap-select.min.js',
@@ -30,23 +31,23 @@
 	      <a class="navbar-brand">SPIE</a>
 	  </div>
 		<ul class="nav navbar-nav">
-			<?= $this->element('menuSavoirsFaire') ?>
-	    <?= $this->element('menuCompetences') ?>
-	    <?= $this->element('menuSavoirs') ?>
-			<?= $this->element('menuProgression') ?>
-	    <?= $this->element('menuMateriels') ?>
-			<?= $this->element('menuSuivis') ?>
-	    <?= $this->element('menuEvaluations') ?>
-	    <?= $this->element('menuAnalyse') ?>
+			<?php echo $this->element('menuSavoirsFaire') ?>
+	    <?php echo $this->element('menuCompetences') ?>
+	    <?php echo $this->element('menuSavoirs') ?>
+			<?php echo $this->element('menuProgression') ?>
+	    <?php echo $this->element('menuMateriels') ?>
+			<?php echo $this->element('menuSuivis') ?>
+	    <?php echo $this->element('menuEvaluations') ?>
+	    <?php echo $this->element('menuAnalyse') ?>
 		</ul>
 		<ul class ="nav navbar-nav navbar-right">
-			<?= $this->element('menuAdministration') ?>
+			<?php echo $this->element('menuAdministration') ?>
 		</ul>
 	</div>
 </nav>
 	<div class = "container container-fluid">
-    <?= $this->Flash->render() ?>
-    <?= $this->fetch('content') ?>
+    <?php echo $this->Flash->render() ?>
+    <?php echo $this->fetch('content') ?>
   </div>
 <footer>
 </footer>
