@@ -122,8 +122,9 @@ class MaterielsTravauxPratiquesController extends AppController
         $listMateriels = $tableMateriels->find()
             ->contain([
                 'TravauxPratiques.Rotations.Periodes',
-                'TypesMachines','Marques'
-            ]);
+                'TypesMachines','Marques','Owners'
+            ])
+            ->where(['Owners.nom' => 'LP Galliéni']);
         $listMateriels = $listMateriels->toArray();
 
         $this->listTps($listMateriels);
