@@ -83,26 +83,26 @@ class ElevesController extends AppController
                 $this->Flash->error(__("L'élève n'a pas pu être sauvegardé ! Réessayer.")); //Sinon affiche une erreur
             }
         }
-        
+
         // Récupère les données de la table Eleves et les classe par ASC
-        $classes = $this->Eleves->Classes->find('list')->order(['nom' => 'ASC'])->toArray(); 
-        $this->set(compact('eleve','classes','typesMachines')); 
+        $classes = $this->Eleves->Classes->find('list')->order(['nom' => 'ASC'])->toArray();
+        $this->set(compact('eleve','classes'));
         $this->set('_serialize', ['eleve']);
     }
-    
+
     /************* Affiche toutes les données d'un utilisateur************************
      ********************************************************************************/
     public function view($id = null)                                //Met le paramètre id à null pour éviter un paramètre restant ou hack
     {
         $eleve = $this->Eleves->get($id, ['contain' => [] ]);
-        
+
         $classe = $this->Eleves->Classes->find()
 							->select(['nom'])
 							->matching('Eleves')
-							->where(['Eleves.classe_id' => $eleve->classe_id])		
-							->first();									
-						     
-							
+							->where(['Eleves.classe_id' => $eleve->classe_id])
+							->first();
+
+
         $this->set(compact('eleve','classe'));                                  // Passe le paramètre 'eleve' à la vue.
         $this->set('_serialize', ['eleve']);
     }
