@@ -39,7 +39,6 @@
         <?= $this->element('menuMateriels') ?>
 		<?= $this->element('menuSuivis') ?>
         <?= $this->element('menuEvaluations') ?>
-        <?= $this->element('menuAnalyse') ?>
 	</ul>
 	<ul class ="nav navbar-nav navbar-right">
 		<?= $this->element('menuAdministration') ?>

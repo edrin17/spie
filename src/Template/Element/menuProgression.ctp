@@ -10,9 +10,15 @@
             ]); ?>
         </li>
         <li>
-            <?= $this->Html->link(__('Progression Compétences'), [
+            <?= $this->Html->link(__("Analyse sur l'année"), [
                 'controller' => 'Progressions',
                 'action' => 'competences'
+            ]); ?>
+        </li>
+        <li >
+            <?= $this->Html->link(__('Analyse par rotation'), [
+                'controller' => 'Analyses',
+                'action' => 'index'
             ]); ?>
         </li>
         <li role="separator" class="divider"></li>
