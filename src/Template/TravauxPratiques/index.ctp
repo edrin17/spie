@@ -3,7 +3,8 @@
 ?>
 <?php $this->assign('title', 'Travaux Pratiques'); ?>  <!-- Customise le titre de la page -->
 <br>
-<a class="btn btn-default" role="button" href="../../travaux-pratiques/add/">Ajouter un TP</a>
+<td><?php echo $this->Html->link('Ajouter un TP',
+    ['action' => 'add'],['class' => "btn btn-default",'role' => 'button' ]); ?></td>
 <table class="table table-hover">
     <thead>
         <tr>
@@ -14,7 +15,7 @@
     <tbody>
         <?php foreach ($listTPs as $tp): ?> <!--Affiche le contenu de 'activitess'  -->
         <tr>
-            <td><?= $this->Html->link($tp->nom,
+            <td><?php echo $this->Html->link($tp->nom,
                 ['action' => 'edit', $tp->id]); ?></td>
 			<td class="actions">
                 <div class="btn-group" role="group" >
@@ -25,14 +26,14 @@
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
                             <li>
-                                <?= $this->Html->link(__('Objectifs pédagogiques'), [
+                                <?php echo $this->Html->link(__('Objectifs pédagogiques'), [
             						'controller' => 'TravauxPratiquesObjectifsPedas',
             						'action' => 'index',
         						    $tp->id
                                 ]).PHP_EOL; ?>
                             </li>
                             <li>
-                                <?= $this->Html->link(__('Matériels pour ce TP'), [
+                                <?php echo $this->Html->link(__('Matériels pour ce TP'), [
             						'controller' => 'MaterielsTravauxPratiques',
             						'action' => 'index',
             					$tp->id]).PHP_EOL; ?>
