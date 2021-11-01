@@ -31,7 +31,6 @@
 	'class' => 'form-control']
 ); ?>
 </div>
-
 <div class="form-group">
 <label for="ressources">Ressources documentaires et matérielles</label>
 <?= $this->Form->textarea('ressources',[
