@@ -23,8 +23,8 @@
         <tbody>
             <?php foreach ($periodes as $periode): ?> <!--Affiche le contenu de 'periodes'  -->
             <?php //debug($periode);die; ?>
-            <tr> 
-                <td><?= h($periode->class->nom) ?></td>
+            <tr>
+                <td><?= h($periode->classe->nom) ?></td>
                 <td><?= "P.".h($periode->numero) ?></td>
                 <td class="actions">
                 <!-- Affiche des urls/boutons et de leurs actions -->
@@ -37,7 +37,6 @@
                 </td>
             </tr>
             <?php endforeach; ?>
-        </tbody>       
+        </tbody>
     </table>
 </div>
-

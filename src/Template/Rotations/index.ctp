@@ -1,7 +1,7 @@
 <?php $this->assign('title', 'Liste des rotations'); ?>  <!-- Customise le titre de la page -->
 
 <div class="row">
-    <div class="col-lg-12">       
+    <div class="col-lg-12">
     <h1><?= "Liste des Rotations"?></h1>
     <!-- Affiche le bouton ajouter un utilisateur -->
     <?= $this->Html->link(__('Ajouter une rotation'), ['action' => 'add', $periode_id]); ?>
@@ -16,15 +16,15 @@
         'options' => $selectPeriodes,
         'default' => $periode_id
     ]); ?>
-  
+
     <?= $this->Form->button(__('Filtrer')); ?>
-    <?= $this->Form->end(); ?>    
-    
+    <?= $this->Form->end(); ?>
+
     <table class="table">
         <thead>
             <tr>
                 <th>Classe</th>
-                <th>Nom</th>   
+                <th>Nom</th>
                 <th>Thèmes</th>
                 <th>Responsable</th>
                 <th class="actions"><h3><?= __('Actions'); ?></h3></th>
@@ -32,9 +32,9 @@
         </thead>
         <tbody>
             <?php foreach ($rotations as $rotation): ?> <!--Affiche le contenu de 'periodess'  -->
-            <tr style = "background-color:#<?= $rotation->theme->color ?>;" > 
-                <td><?= $rotation->periode->class->nom ?></td> 
-                <td><?= $rotation->fullName ." - " .$rotation->nom ?></td>
+            <tr style = "background-color:#<?= $rotation->theme->color ?>;" >
+                <td><?= $rotation->periode->classe->nom ?></td>
+                <td><?= $rotation->fullName?></td>
                 <td><?= $rotation->theme->nom ?></td>
                 <td><?= $rotation->user->nom ?></td>
 				<td class="actions">
@@ -48,14 +48,14 @@
                 </td>
             </tr>
             <?php endforeach; ?>
-        </tbody>       
+        </tbody>
     </table>
 </div>
 
 <script>
 function select_periodes()
 {
-    var id = document.getElementById("classe-id").value; 
+    var id = document.getElementById("classe-id").value;
 	$.get("<?= $this->Url->build([
         'controller'=>'FiltresAjaxes',
         'action'=>'chainedPeriodes']) ?>"
@@ -63,6 +63,4 @@ function select_periodes()
             $('#periode-id').html(resp);
         });
 }
-</script>  
-
-
+</script>
