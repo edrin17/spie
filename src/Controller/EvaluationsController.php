@@ -164,6 +164,7 @@ class EvaluationsController extends AppController
             }
         } else {
             $classe = $tableClasses->find()
+                ->where(['Classes.archived' => 0])
                 ->order(['Classes.nom'])
                 ->first();
             $selectedClasse = $classe->id;
