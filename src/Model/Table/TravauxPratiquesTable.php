@@ -17,10 +17,10 @@ class TravauxPratiquesTable extends Table
     public function initialize(array $config)
     {
         parent::initialize($config);
-        
-        $this->addAssociations([			
+
+        $this->addAssociations([
 			'belongsTo' => ['TachesPros','Rotations'],
-			'hasMany' => ['MaterielsTravauxPratiques','TravauxPratiquesObjectifsPedas','Evaluations'],
+			'hasMany' => ['MaterielsTravauxPratiques','TravauxPratiquesObjectifsPedas','Evaluations','TpEleves'],
 			'belongsToMany' => [
 				'ObjectifsPedas' => ['joinTable' => 'travaux_pratiques_objectifs_pedas'],
 				'Materiels' => ['trough' => 'MaterielTravauxPratiques']
@@ -28,5 +28,5 @@ class TravauxPratiquesTable extends Table
         ]);
     }
 
- 
+
 }

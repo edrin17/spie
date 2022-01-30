@@ -1,5 +1,9 @@
 <?php
-$this->extend('/Common/tableauClasseur');
+$this->start('tableauClasseur');
+echo $this->element('TableauxClasseurs/classes_eleves');
+//echo $this->element('TableauxClasseurs/periodes_rotations');
+$this->end();
+echo $this->fetch('tableauClasseur');
 ?>
 <br>
 <table class = 'table table-bordered table-hover'>
@@ -23,3 +27,6 @@ $this->extend('/Common/tableauClasseur');
     </tbody>
 </table>
 
+<div class="sidebar">
+    test
+</div>

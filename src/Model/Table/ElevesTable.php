@@ -23,6 +23,7 @@ class ElevesTable extends Table
         $this->hasMany('Evaluations', [
             'foreignKey' => 'eleve_id'
         ]);
+        $this->hasMany('TpEleves');
     }
 
 

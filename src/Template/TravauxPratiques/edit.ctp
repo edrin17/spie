@@ -40,6 +40,14 @@
 </div>
 
 <div class="form-group">
+<label for="specifique">TP spécifique (hors progression)</label>
+<?= $this->Form->checkbox('specifique',[
+	'id' => 'rotation-id',
+	'class' => 'form-control']
+); ?>
+</div>
+
+<div class="form-group">
 <?= $this->Form->button('Enregistrer',['type' => 'submit', 'class' => 'btn btn-primary']); ?>
 </div>
 

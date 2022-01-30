@@ -183,6 +183,7 @@ class AnalysesController extends AppController
                 'ObjectifsPedas.NiveauxCompetences',
             ])
             ->where(['Rotations.id' => $rotationId])
+            ->where(['TravauxPratiques.specifique' => 0])
             ->order([
                 'Capacites.numero',
                 'CompetencesTerminales.numero',
@@ -216,6 +217,7 @@ class AnalysesController extends AppController
                 'Rotations.Periodes',
             ])
             ->where(['Rotations.id' => $rotationId])
+            ->where(['TravauxPratiques.specifique' => 0])
             ->order([
                 'Periodes.numero',
                 'Rotations.numero',

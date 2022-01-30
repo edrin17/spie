@@ -19,9 +19,12 @@
                     <?= $tp->evaluated['value'] ?>
                 </span></td>
 			</tr>
-        <?php endforeach; ?>    			
+        <?php endforeach; ?>
 	</tbody>
 </table>
+<a class="btn btn-default " role="button" href="">
+    <i class="fa fa-plus" aria-hidden="true"></i>
+</a>
 
 <?php foreach ($listTps as $tp): ?>
 <?= $this->Form->create() ?>
@@ -54,12 +57,12 @@
             </thead>
             <tbody>
                 <?php foreach($tp->objectifs_pedas as $objPeda): ?>
-                <?php 
-                    $selectionId = null; 
+                <?php
+                    $selectionId = null;
                     //on crée une chaîne identifiant les valeurs
                     $idEval = 'tpId_'.$tp->id.'_objPeda_'.$objPeda->id;
                 ?>
-                <tr>  
+                <tr>
                     <td><?= h($objPeda->fullName) ?></td>
                     <td>
                         <div class="form-group">
@@ -71,7 +74,7 @@
                                                 $objPeda->_joinData->objectifs_peda_id]
                                             ->valeurs_eval_id;
                                     }
-                                    
+
                                     if ($key === $selectionId) {
                                         $selected = 'selected';
                                     }else{
@@ -80,7 +83,7 @@
                                     echo '<option value="'. h($key).'" '.h($selected) .'>'.
                                             h($value).
                                         '</option>';
-                                    
+
                                 }else{
                                     echo '<option value="'. h($key).'"' .'>'.
                                             h($value).
@@ -106,8 +109,8 @@
                                     }
                                     echo '<option value="'. h($key).'" '.h($selected) .'>'.
                                         h($value).
-                                    '</option>';    
-                                    
+                                    '</option>';
+
                                 }else{
                                     echo '<option value="'. h($key).'"' .'>'.
                                             h($value).
@@ -134,5 +137,3 @@
 <?= $this->Form->end() ?>
 
 <?php endforeach; ?>
-
-

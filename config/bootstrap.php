@@ -205,3 +205,4 @@ Type::build('timestamp')
 //Inflector::rules('transliteration', ['/å/' => 'aa']);
 Inflector::rules('irregular', ['eleve' => 'eleves']);
 Inflector::rules('irregular', ['classe' => 'classes']);
+Inflector::rules('irregular', ['TpEleve' => 'TpEleves']);

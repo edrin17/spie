@@ -39,81 +39,20 @@ class SuivisController extends AppController
 
 	public function suivi()
 	{
-        //@returns $selectedClasse
-        function getClasse() {
-            if (isset($_GET['LVL1'])) {
-                $selectedClasse = $_GET['LVL1'];
-            }else{
-                $selectedClasse = null;
-            }
-            return $selectedClasse;
-        }
-
-        //@returns $eleve_id
-        function getEleve() {
-            if (isset($_GET['LVL2'])) {
-                $eleve_id = $_GET['LVL2'];
-            }else{
-                $eleve_id = null;
-            }
-            return $eleve_id;
-        }
-
-        $selectedClasse = getClasse();
-        $eleve_id = getEleve();
-
-        $tableEleves = TableRegistry::get('Eleves');
-        $tableClasses = TableRegistry::get('Classes');
-
-        $listClasses = $tableClasses->find()
-						->where(['Classes.archived' => 0])
-						->order(['Classes.nom' => 'ASC']);
-
-        $listEleves = $tableEleves->find()
-            ->order(['Eleves.nom' => 'ASC']);
-        //debug($listClasses->toArray());die;
-
-        //si on a sélectionné une classe
-        if ($selectedClasse != null) {
-            //si on a sélectionné un élève récupère l'entity eleve'
-            if ($eleve_id != null) {
-                $selectedEleve = $tableEleves->get($eleve_id,['contain' => [] ]);
-                $listEleves = $tableEleves->find()
-                    ->where(['classe_id' => $selectedClasse])
-                    ->order(['Eleves.nom' => 'ASC']);
-
-            } else {//sinon on récupere la première entity élève de classe coresspondante
-                $listEleves = $tableEleves->find()
-                    ->where(['classe_id' => $selectedClasse])
-                    ->order(['Eleves.nom' => 'ASC']);
-
-                $selectedEleve = $tableEleves->find()
-                    ->where(['classe_id' => $selectedClasse])
-                    ->order(['Eleves.nom' => 'ASC'])
-                    ->first();
-            }
-        } else {
-            $classe = $tableClasses->find()
-								->where(['Classes.archived' => 0])
-								->order(['Classes.nom'])
-                ->first();
-            $selectedClasse = $classe->id;
-            $listEleves = $tableEleves->find()
-                ->where(['classe_id' => $selectedClasse])
-                ->order(['Eleves.nom' => 'ASC']);
-
-            $selectedEleve = $tableEleves->find()
-                ->where(['classe_id' => $classe->id])
-                ->order(['Eleves.nom' => 'ASC'])
-                ->first();
-        }
-		//debug($selectedEleve->toArray());die;
+        //changement de variable pour correspondre à la vue standard
+        $nameController = 'Suivis';
+        $nameAction = 'suivi';
+        $options = '';
+        $request = $this->request;
+		$this->tabClassesEleves($nameController, $nameAction, $options, $request);
+        //$this->tabPeriodesRotations($nameController, $nameAction, $options, $request);
+        $eleve = $this->request->getQuery('eleve');
 
         //on récupère les évaluations de l'élève
 
         $tableEvaluations = TableRegistry::get('Evaluations');
 		$evaluations = $tableEvaluations->find()
-			->where(['eleve_id' => $selectedEleve->id])
+			->where(['eleve_id' => $eleve])
             ->contain([
                  'TravauxPratiquesObjectifsPedas.ObjectifsPedas.CompetencesIntermediaires.CompetencesTerminales.Capacites',
                 'ValeursEvals','TypesEvals'
@@ -150,31 +89,21 @@ class SuivisController extends AppController
                     'CompetencesTerminales.numero' => 'ASC'
                 ]);
 
-        //changement de variable pour correspondre à la vue standard
-        $nameController = 'Suivis';
-        $nameAction = 'suivi';
-        $options = '';
 
-        $listLVL1 = $listClasses;
-        $listLVL2 = $listEleves;
+        /*
+        $classesList = $classesList;
+        $elevesList = $elevesList;
 
         $selectedLVL1 = $selectedClasse;
         $selectedLVL2 = $selectedEleve;
+        */
 
         //création du tableau
-        $table = $this->tableau($selectedEleve->id);
+        $table = $this->tableau($eleve);
         $tableau = $table['tableau'];
         $tableHeader = $table['tableHeader'];
         $nbColonnes = $table['nbColonnes'];
 
-        //passage des variables pour le layout
-        $this->set('titre', "Suivi de l'élève ".$selectedEleve->nom." ".$selectedEleve->prenom);
-
-        //passage des variables standardisées pour la vue tableauClasseur
-        $this->set(compact(
-            'selectedLVL2','selectedLVL1','listLVL1','listLVL2','nameController',
-            'nameAction','options'
-        ));
 
         //passage des variables à la vue pour le "content""
         $this->set(compact('tableau','tableHeader','nbColonnes'));
@@ -379,4 +308,203 @@ class SuivisController extends AppController
 
     }
 
+    private function tabClassesEleves($nameController, $nameAction, $options, $request)
+    {
+
+        $selectedClasse = $this->request->getQuery('classe');
+        $eleve_id = $this->request->getQuery('eleve');
+        $tableEleves = TableRegistry::get('Eleves');
+        $tableClasses = TableRegistry::get('Classes');
+
+        $classesList = $tableClasses->find()
+						->where(['Classes.archived' => 0])
+						->order(['Classes.nom' => 'ASC']);
+
+        $elevesList = $tableEleves->find()
+            ->order(['Eleves.nom' => 'ASC']);
+        //debug($classesList->toArray());die;
+
+        //si on a sélectionné une classe
+        if ($selectedClasse != null) {
+            //si on a sélectionné un élève récupère l'entity eleve'
+            if ($eleve_id != null) {
+                $selectedEleve = $tableEleves->get($eleve_id,['contain' => [] ]);
+                $elevesList = $tableEleves->find()
+                    ->where(['classe_id' => $selectedClasse])
+                    ->order(['Eleves.nom' => 'ASC']);
+
+            } else {//sinon on récupere la première entity élève de classe coresspondante
+                $elevesList = $tableEleves->find()
+                    ->where(['classe_id' => $selectedClasse])
+                    ->order(['Eleves.nom' => 'ASC']);
+
+                $selectedEleve = $tableEleves->find()
+                    ->where(['classe_id' => $selectedClasse])
+                    ->order(['Eleves.nom' => 'ASC'])
+                    ->first();
+            }
+        } else {
+            $classe = $tableClasses->find()
+								->where(['Classes.archived' => 0])
+								->order(['Classes.nom'])
+                ->first();
+            $selectedClasse = $classe->id;
+            $elevesList = $tableEleves->find()
+                ->where(['classe_id' => $selectedClasse])
+                ->order(['Eleves.nom' => 'ASC']);
+
+            $selectedEleve = $tableEleves->find()
+                ->where(['classe_id' => $classe->id])
+                ->order(['Eleves.nom' => 'ASC'])
+                ->first();
+        }
+        //passage des variables pour le layout
+        $this->set('titre', "Suivi de l'élève ".$selectedEleve->nom." ".$selectedEleve->prenom);
+
+        //passage des variables standardisées pour la vue tableauClasseur
+        $this->set(compact(
+            'classesList','elevesList','selectedClasse','selectedEleve','nameController',
+            'nameAction','options'
+        ));
+    }
+
+    private function tabPeriodesRotations($nameController, $nameAction, $options, $request)
+    {
+
+        $selectedPeriode = $this->request->getQuery('periode');
+        $rotation_id = $this->request->getQuery('rotation');
+        $tablePeriodes = TableRegistry::get('Periodes');
+        $tableRotations = TableRegistry::get('Rotations');
+
+        $periodesList = $tablePeriodes->find()
+						->order(['Periodes.numero' => 'ASC']);
+
+        $rotationsList = $tableRotations->find()
+            ->contain(['Periodes'])
+            ->order(['Rotations.nom' => 'ASC']);
+        //debug($classesList->toArray());die;
+
+        //si on a sélectionné une classe
+        if ($selectedPeriode != null) {
+            //si on a sélectionné un élève récupère l'entity eleve'
+            if ($rotation_id != null) {
+                $selectedRotation = $tableRotations->get($rotation_id,['contain' => [] ]);
+                $rotationsList = $tableRotations->find()
+                    ->contain(['Periodes'])
+                    ->where(['periode_id' => $selectedPeriode])
+                    ->order(['Rotations.nom' => 'ASC']);
+
+            } else {//sinon on récupere la première entity élève de classe coresspondante
+                $rotationsList = $tableRotations->find()
+                    ->contain(['Periodes'])
+                    ->where(['periode_id' => $selectedPeriode])
+                    ->order(['Rotations.nom' => 'ASC']);
+
+                $selectedRotation = $tableRotations->find()
+                    ->contain(['Periodes'])
+                    ->where(['periode_id' => $selectedPeriode])
+                    ->order(['Rotations.nom' => 'ASC'])
+                    ->first();
+            }
+        } else {
+            $periode = $tablePeriodes->find()
+				->order(['Periodes.numero'])
+                ->first();
+            $selectedPeriode = $periode->id;
+            $rotationsList = $tableRotations->find()
+				->contain(['Periodes'])
+                ->where(['periode_id' => $selectedPeriode])
+                ->order(['Rotations.nom' => 'ASC']);
+
+            $selectedRotation = $tableRotations->find()
+				->contain(['Periodes'])
+                ->where(['periode_id' => $selectedPeriode])
+                ->order(['Rotations.nom' => 'ASC'])
+                ->first();
+        }
+
+        //modification d'un contenu des variables'
+        foreach ($periodesList as $periode) {
+            $periode->nom = 'P'.$periode->numero;
+        }
+
+        //modification d'un contenu des variables'
+        foreach ($rotationsList as $rotation) {
+            $rotation->nom = $rotation->fullName;
+        }
+
+        //passage des variables standardisées pour la vue tableauClasseur
+        $this->set(compact(
+            'rotationsList','periodesList','selectedPeriode','selectedRotation','nameController',
+            'nameAction','options'
+        ));
+    }
+
+	public function tp()
+	{
+		//tableauClasseur double
+        $nameController = 'Suivis';
+        $nameAction = 'tp';
+        $options = '';
+        $request = $this->request;
+		$this->tabClassesEleves($nameController, $nameAction, $options, $request);
+        $this->tabPeriodesRotations($nameController, $nameAction, $options, $request);
+        // ***************************************************************************
+
+        //on récupère les info du tableauClasseur id de l'élève et id de la rotation
+        $selectedClasseId = $request->getQuery('classe');
+        $selectedRotationId = $request->getQuery('rotation');
+
+        $tableEleves = TableRegistry::get('Eleves');
+        $listEleves = $tableEleves->find()
+            ->where(['classe_id' => $selectedClasseId])
+            ->order(['Eleves.nom' => 'ASC']);
+
+        $tableTpEleves = TableRegistry::get('TpEleves');
+
+
+        $tableau = array();
+        foreach ($listEleves as $eleve) {
+            $listTpEleves = $tableTpEleves->find()
+                ->contain(['TravauxPratiques'])
+                ->where(['eleve_id' => $eleve->id])
+                ->where(['TravauxPratiques.rotation_id'=> $selectedRotationId]);
+            foreach ($listTpEleves as $tp) {
+                $tableau[$eleve->id][$tp->id]['nom'] = $tp->travaux_pratique->nom;
+                $tableau[$eleve->id][$tp->id]['debut'] = 'debut';
+                $tableau[$eleve->id][$tp->id]['fin'] = 'fin';
+                $tableau[$eleve->id][$tp->id]['etat'] = 'etat';
+
+            }
+        }
+        debug($tableau);
+
+        $this->set(compact('listEleves'));
+
+	}
+
+    public function add()
+    {
+		$tpTable = TableRegistry::get('TravauxPratiques');
+		$tpList = $tpTable->find();
+
+        $elevesTable = TableRegistry::get('Eleves');
+		$elevesList = $elevesTable->find();
+
+        $tpElevesTable = TableRegistry::get('TpEleves');
+
+        foreach ($elevesList as $eleve) {
+            foreach ($tpList as $tp) {
+                $tpEleve = $tpElevesTable->newEntity([
+                    'eleve_id' => $eleve->id,
+                    'travaux_pratique_id' => $tp->id
+                ]);
+                $tpElevesTable->save($tpEleve);
+            }
+        }
+        return $this->redirect(['action' => 'suivi']);
+
+
+
+    }
 }

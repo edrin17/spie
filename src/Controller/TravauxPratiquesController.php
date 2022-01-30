@@ -47,7 +47,8 @@ class TravauxPratiquesController extends AppController
         $tableTPs = $this->TravauxPratiques;
         $listTPs = $tableTPs->find()
             ->contain(['Rotations.Periodes.Classes', 'Rotations.Themes'])
-            ->where(['rotation_id' => $selectedLVL2->id]);
+            ->where(['rotation_id' => $selectedLVL2->id])
+            ->where(['specifique' => 0]);
 
         $this->set(compact('listTPs'));
 
@@ -148,6 +149,35 @@ class TravauxPratiquesController extends AppController
             $this->Flash->error(__("Le TP n'a pas pu être supprimé ! Réessayer."));
         }
         return $this->redirect(['action' => 'index']);
+    }
+    /**
+     * suivi des TP
+     */
+    public function suivi($id = null)
+    {
+        //chargement des onglets du tableau classeur
+        $onglets = $this->_tabs();
+        $listLVL1 = $onglets["listLVL1"];
+        $listLVL2 = $onglets["listLVL2"];
+        $selectedLVL1 = $onglets["selectedLVL1"];
+        $selectedLVL2 = $onglets["selectedLVL2"];
+        $nameController = $onglets["nameController"];
+        $nameAction = $onglets["nameAction"];
+        $options = $onglets["options"];
+        //debug($onglets);die;
+
+        //passage des variables pour le layout
+        $this->set('titre', 'Progression des TP');
+
+
+        //passage des variables standardisées pour la vue tableauClasseur
+        $this->set(compact(
+            'selectedLVL2','selectedLVL1','listLVL1','listLVL2','nameController',
+            'nameAction','options'
+        ));
+
+        //FIN tableau classeur
+
     }
     /*
      *Gestion du tableau classeur
