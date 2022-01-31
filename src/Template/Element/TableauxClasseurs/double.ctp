@@ -88,3 +88,4 @@ function isSelected ($itemToTest, $selectedItem) {
         </li>
     <?php endforeach; ?>
 </ul>
+</div>

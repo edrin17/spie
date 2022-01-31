@@ -55,7 +55,7 @@ class ChapitresController extends AppController
      */
     public function edit($id = null)                                        //Met le paramètre id à null pour éviter un paramètre restant ou hack
     {
-        $chapitre = $this->Chapitres->get($id, ['contain' => [] ]);                  //récupère l'id de l'utilisateur
+        $chapitre = $this->Chapitres->get($id, ['contain' => [] ]);
         if ($this->request->is(['patch', 'post', 'put'])) {                         // Vérifie le type de requête
             $chapitre = $this->Chapitres->patchEntity($chapitre, $this->request->getData());
             if ($this->Chapitres->save($chapitre)) {                                 //Sauvegarde les données dans la BDD

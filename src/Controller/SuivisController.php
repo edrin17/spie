@@ -366,6 +366,7 @@ class SuivisController extends AppController
             'classesList','elevesList','selectedClasse','selectedEleve','nameController',
             'nameAction','options'
         ));
+        return $selectedClasse;
     }
 
     private function tabPeriodesRotations($nameController, $nameAction, $options, $request)
@@ -438,6 +439,7 @@ class SuivisController extends AppController
             'rotationsList','periodesList','selectedPeriode','selectedRotation','nameController',
             'nameAction','options'
         ));
+        return $selectedRotation;
     }
 
 	public function tp()
@@ -447,13 +449,19 @@ class SuivisController extends AppController
         $nameAction = 'tp';
         $options = '';
         $request = $this->request;
-		$this->tabClassesEleves($nameController, $nameAction, $options, $request);
-        $this->tabPeriodesRotations($nameController, $nameAction, $options, $request);
+		$selectedClasse = $this->tabClassesEleves($nameController, $nameAction, $options, $request);
+        $selectedRotation = $this->tabPeriodesRotations($nameController, $nameAction, $options, $request);
         // ***************************************************************************
-
         //on récupère les info du tableauClasseur id de l'élève et id de la rotation
         $selectedClasseId = $request->getQuery('classe');
         $selectedRotationId = $request->getQuery('rotation');
+        if ($selectedClasseId == '') {
+            $selectedClasseId = $selectedClasse;
+        }
+        if ($selectedRotationId == '') {
+            $selectedRotationId = $selectedRotation->id;
+        }
+
 
         $tableEleves = TableRegistry::get('Eleves');
         $listEleves = $tableEleves->find()
@@ -462,24 +470,37 @@ class SuivisController extends AppController
 
         $tableTpEleves = TableRegistry::get('TpEleves');
 
+        $listTpHead = $tableTpEleves->find()
+            ->select(['TravauxPratiques.nom'])
+            ->distinct()
+            ->contain(['Eleves','TravauxPratiques'])
+            ->where(['classe_id' => $selectedClasseId])
+            ->where(['TravauxPratiques.rotation_id'=> $selectedRotationId])
+            ->order(['TravauxPratiques.nom' => 'ASC']);
 
         $tableau = array();
+
         foreach ($listEleves as $eleve) {
             $listTpEleves = $tableTpEleves->find()
                 ->contain(['TravauxPratiques'])
                 ->where(['eleve_id' => $eleve->id])
-                ->where(['TravauxPratiques.rotation_id'=> $selectedRotationId]);
+                ->where(['TravauxPratiques.rotation_id'=> $selectedRotationId])
+				->order(['TravauxPratiques.nom' => 'ASC']);
             foreach ($listTpEleves as $tp) {
-                $tableau[$eleve->id][$tp->id]['nom'] = $tp->travaux_pratique->nom;
-                $tableau[$eleve->id][$tp->id]['debut'] = 'debut';
-                $tableau[$eleve->id][$tp->id]['fin'] = 'fin';
-                $tableau[$eleve->id][$tp->id]['etat'] = 'etat';
+                $tableau[$eleve->nom][$tp->id]['eleve_id'] = $eleve->id;
+                $tableau[$eleve->nom][$tp->id]['tp_id'] = $tp->id;
+                $tableau[$eleve->nom][$tp->id]['debut'] = $tp->debut;
+                $tableau[$eleve->nom][$tp->id]['fin'] = $tp->fin;
+                $tableau[$eleve->nom][$tp->id]['pronote'] = $tp->pronote;
+                $tableau[$eleve->nom][$tp->id]['base'] = $tp->base;
+                $tableau[$eleve->nom][$tp->id]['note'] = $tp->note;
 
             }
         }
-        debug($tableau);
+        //debug($tableau);die;
 
-        $this->set(compact('listEleves'));
+
+        $this->set(compact('tableau','listTpHead'));
 
 	}
 
@@ -503,8 +524,50 @@ class SuivisController extends AppController
             }
         }
         return $this->redirect(['action' => 'suivi']);
+    }
 
+    public function start()
+    {
+        $eleve_id = $this->request->getQuery('eleve');
+        $tp_id = $this->request->getQuery('tp');
+        $tpElevesTable = TableRegistry::get('TpEleves');
+        $tp = $tpElevesTable->get($tp_id);
+        $tp->debut = date('Y-m-d');
+        $tpElevesTable->save($tp);
+        return $this->redirect(['action' => 'tp']);
+    }
+    public function end()
+    {
+        $eleve_id = $this->request->getQuery('eleve');
+        $tp_id = $this->request->getQuery('tp');
+        $tpElevesTable = TableRegistry::get('TpEleves');
+        $tp = $tpElevesTable->get($tp_id);
+        $tp->fin = date('Y-m-d');
+        $tpElevesTable->save($tp);
+        return $this->redirect(['action' => 'tp']);
+    }
+    public function validate()
+    {
+        $eleve_id = $this->request->getQuery('eleve');
+        $tp_id = $this->request->getQuery('tp');
+        $option = $this->request->getQuery('option');
+        $tpElevesTable = TableRegistry::get('TpEleves');
+        $tp = $tpElevesTable->get($tp_id);
+        switch ($option) {
+            case 'pronote':
+                $tp->pronote = true;
+                break;
 
+            case 'note':
+                $tp->note = true;
+                break;
 
+            case 'base':
+                $tp->base = true;
+                break;
+        }
+
+        $tpElevesTable->save($tp);
+        return $this->redirect(['action' => 'tp']);
     }
 }
