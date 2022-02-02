@@ -550,10 +550,10 @@ class SuivisController extends AppController
     {
         $eleve_id = $this->request->getQuery('eleve');
         $tp_id = $this->request->getQuery('tp');
-        $option = $this->request->getQuery('option');
+        $options = $this->request->getQuery('options');
         $tpElevesTable = TableRegistry::get('TpEleves');
         $tp = $tpElevesTable->get($tp_id);
-        switch ($option) {
+        switch ($options) {
             case 'pronote':
                 $tp->pronote = true;
                 break;
