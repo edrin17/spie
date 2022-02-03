@@ -1,6 +1,6 @@
 <?php
 $vue = $this;
-function pronote($tp,$vue){
+function pronote($tp,$vue, $selectedRotation,  $selectedClasse, $selectedPeriode){
     if ($tp['pronote']) {
         $tp['contenu'] = 'Pronote: <span class="label label-success label-as-badge">ok</span>';
     } else {
@@ -10,6 +10,9 @@ function pronote($tp,$vue){
                 '?' => [
                     'eleve' => $tp['eleve_id'],
                     'tp' => $tp['tp_id'],
+                    'classe' => $selectedClasse,
+                    'rotation' => $selectedRotation,
+                    'periode' => $selectedPeriode,
                     'options' => 'pronote'
                     ]
             ],
@@ -21,7 +24,7 @@ function pronote($tp,$vue){
     }
     return $tp['contenu'];
 }
-function base($tp,$vue){
+function base($tp,$vue, $selectedRotation,  $selectedClasse, $selectedPeriode){
     if ($tp['base']) {
         $tp['contenu'] = 'Base: <span class="label label-success label-as-badge">ok</span><br>';
     } else {
@@ -32,6 +35,9 @@ function base($tp,$vue){
                 '?' => [
                     'eleve' => $tp['eleve_id'],
                     'tp' => $tp['tp_id'],
+                    'classe' => $selectedClasse,
+                    'rotation' => $selectedRotation,
+                    'periode' => $selectedPeriode,
                     'options' => 'base'
                     ]
             ],
@@ -41,7 +47,7 @@ function base($tp,$vue){
     }
     return $tp['contenu'];
 }
-function note($tp,$vue){
+function note($tp,$vue, $selectedRotation,  $selectedClasse, $selectedPeriode){
     if ($tp['note']) {
         $tp['contenu'] = 'Noté: <span class="label label-success label-as-badge">ok</span><br>';
     } else {
@@ -52,6 +58,9 @@ function note($tp,$vue){
                 '?' => [
                     'eleve' => $tp['eleve_id'],
                     'tp' => $tp['tp_id'],
+                    'classe' => $selectedClasse,
+                    'rotation' => $selectedRotation,
+                    'periode' => $selectedPeriode,
                     'options' => 'note'
                     ]
             ],
@@ -62,7 +71,7 @@ function note($tp,$vue){
     return $tp['contenu'];
 }
 
-function state($tp,$vue){
+function state($tp,$vue, $selectedRotation,  $selectedClasse, $selectedPeriode){
     if (is_null($tp['debut'])) {
         $tp['contenu'] = $vue->Html->link(('Debut'),
             [
@@ -70,6 +79,9 @@ function state($tp,$vue){
                 '?' => [
                     'eleve' => $tp['eleve_id'],
                     'tp' => $tp['tp_id'],
+                    'classe' => $selectedClasse,
+                    'rotation' => $selectedRotation->id,
+                    'periode' => $selectedPeriode,
                     ]
             ],
             ['class' => "btn btn-default",'role' => 'button'],
@@ -79,9 +91,9 @@ function state($tp,$vue){
     }elseif ($tp['fin'] != null){
         $tp['contenu'] = 'Début: <span class="label label-success label-as-badge">'.date_format($tp['debut'],'d-m-Y')."</span><br>";
         $tp['contenu'] = $tp['contenu'].'Fin: <span class="label label-success label-as-badge">'.date_format($tp['fin'],'d-m-Y')."</span><br>";
-        $tp['contenu'] = $tp['contenu'].note($tp, $vue);
-        $tp['contenu'] = $tp['contenu'].base($tp, $vue);
-        $tp['contenu'] = $tp['contenu'].pronote($tp, $vue);
+        $tp['contenu'] = $tp['contenu'].note($tp, $vue, $selectedRotation->id,  $selectedClasse, $selectedPeriode);
+        $tp['contenu'] = $tp['contenu'].base($tp, $vue, $selectedRotation->id,  $selectedClasse, $selectedPeriode);
+        $tp['contenu'] = $tp['contenu'].pronote($tp, $vue, $selectedRotation->id,  $selectedClasse, $selectedPeriode);
     }else{
         $tp['contenu'] = 'Début: <span class="label label-info label-as-badge">'.date_format($tp['debut'],'d-m-Y')."</span><br>";
         //$tp['contenu'] = $tp['contenu'].'<a href="/spie/suivis/end/1?eleve='.$tp['eleve_id'].'&amp;tp='.$tp['tp_id'].'" '.'class="btn btn-default" role="button">Fini</a>' ;
@@ -91,6 +103,9 @@ function state($tp,$vue){
                 '?' => [
                     'eleve' => $tp['eleve_id'],
                     'tp' => $tp['tp_id'],
+                    'classe' => $selectedClasse,
+                    'rotation' => $selectedRotation->id,
+                    'periode' => $selectedPeriode,
                     ]
             ],
             ['class' => "btn btn-default",'role' => 'button'],
@@ -102,16 +117,16 @@ function state($tp,$vue){
 }
 
 
-function tabProcess($tableau, $vue)
+function tabProcess($tableau, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode)
 {
     foreach ($tableau as $eleve => $tps) {
         foreach ($tps as $tp => $cell) {
-            $tab[$eleve][$tp] = state($cell,$vue);
+            $tab[$eleve][$tp] = state($cell,$vue, $selectedRotation,  $selectedClasse, $selectedPeriode);
         }
     }
     return $tab;
 }
-$tableau = tabProcess($tableau, $vue);
+$tableau = tabProcess($tableau, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode);
 //debug($tableau);die;
 ?>
 

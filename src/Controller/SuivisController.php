@@ -444,7 +444,7 @@ class SuivisController extends AppController
 
 	public function tp()
 	{
-		//tableauClasseur double
+        //tableauClasseur double
         $nameController = 'Suivis';
         $nameAction = 'tp';
         $options = '';
@@ -461,7 +461,6 @@ class SuivisController extends AppController
         if ($selectedRotationId == '') {
             $selectedRotationId = $selectedRotation->id;
         }
-
 
         $tableEleves = TableRegistry::get('Eleves');
         $listEleves = $tableEleves->find()
@@ -526,25 +525,62 @@ class SuivisController extends AppController
         return $this->redirect(['action' => 'suivi']);
     }
 
+    public function reset()
+    {
+		$tpElevesTable = TableRegistry::get('TpEleves');
+        $listTpEleves = $tpElevesTable->find();
+        foreach ($listTpEleves as $tp) {
+                $tp->pronote = 0;
+                $tp->base = 0;
+                $tp->note = 0;
+                $tp->debut = null;
+                $tp->fin = null;
+                $tpElevesTable->save($tp);
+        }
+        return $this->redirect(['action' => 'tp']);
+    }
+
+
     public function start()
     {
         $eleve_id = $this->request->getQuery('eleve');
         $tp_id = $this->request->getQuery('tp');
+        $selectedPeriode = $this->request->getQuery('periode');
+        $selectedClasse = $this->request->getQuery('classe');
+        $selectedRotation = $this->request->getQuery('rotation');
+
         $tpElevesTable = TableRegistry::get('TpEleves');
         $tp = $tpElevesTable->get($tp_id);
         $tp->debut = date('Y-m-d');
         $tpElevesTable->save($tp);
-        return $this->redirect(['action' => 'tp']);
+        return $this->redirect([
+            'action' => 'tp',1,
+            '?' => [
+                'classe' => $selectedClasse,
+                'rotation' => $selectedRotation,
+                'periode' => $selectedPeriode,
+                ]]
+        );
     }
     public function end()
     {
         $eleve_id = $this->request->getQuery('eleve');
         $tp_id = $this->request->getQuery('tp');
         $tpElevesTable = TableRegistry::get('TpEleves');
+        $selectedPeriode = $this->request->getQuery('periode');
+        $selectedClasse = $this->request->getQuery('classe');
+        $selectedRotation = $this->request->getQuery('rotation');
         $tp = $tpElevesTable->get($tp_id);
         $tp->fin = date('Y-m-d');
         $tpElevesTable->save($tp);
-        return $this->redirect(['action' => 'tp']);
+        return $this->redirect([
+            'action' => 'tp',1,
+            '?' => [
+                'classe' => $selectedClasse,
+                'rotation' => $selectedRotation,
+                'periode' => $selectedPeriode,
+                ]]
+        );
     }
     public function validate()
     {
@@ -552,6 +588,11 @@ class SuivisController extends AppController
         $tp_id = $this->request->getQuery('tp');
         $options = $this->request->getQuery('options');
         $tpElevesTable = TableRegistry::get('TpEleves');
+
+        $selectedPeriode = $this->request->getQuery('periode');
+        $selectedClasse = $this->request->getQuery('classe');
+        $selectedRotation = $this->request->getQuery('rotation');
+
         $tp = $tpElevesTable->get($tp_id);
         switch ($options) {
             case 'pronote':
@@ -568,6 +609,14 @@ class SuivisController extends AppController
         }
 
         $tpElevesTable->save($tp);
-        return $this->redirect(['action' => 'tp']);
+
+        return $this->redirect([
+            'action' => 'tp',1,
+            '?' => [
+                'classe' => $selectedClasse,
+                'rotation' => $selectedRotation,
+                'periode' => $selectedPeriode,
+                ]]
+        );
     }
 }
