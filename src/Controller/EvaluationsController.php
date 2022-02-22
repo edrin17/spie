@@ -308,7 +308,7 @@ class EvaluationsController extends AppController
 
         //debug($tp_id);debug($eleve_id);die;
 
-        //on compte combien il y a d'ObjectifsPedas'
+        //on compte combien il y a d'ObjectifsPedas dans le TP
         $objsPedasDuTp = $tp->travaux_pratiques_objectifs_pedas;
         $nbObjsPedas = count($objsPedasDuTp);
 

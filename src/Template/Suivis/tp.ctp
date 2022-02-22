@@ -1,5 +1,15 @@
 <?php
 $vue = $this;
+function editButton($tp){
+    if (!isset($tp['contenu'])) {
+        $tp['contenu'] = '';
+    }
+    $tp['contenu'] = $tp['contenu'].'<button type="button" class="btn btn-default" data-dismiss="modal" data-toggle="modal"';
+    $tp['contenu'] = $tp['contenu'].' data-target="#myModal';
+    $tp['contenu'] = $tp['contenu'].$tp['eleve_id'].'-'.$tp['tp_id'];
+    $tp['contenu'] = $tp['contenu'].'"><i class="fa fa-cog" aria-hidden="true"></i></button>';
+    return $tp;
+}
 function pronote($tp,$vue, $selectedRotation,  $selectedClasse, $selectedPeriode){
     if ($tp['pronote']) {
         $tp['contenu'] = 'Pronote: <span class="label label-success label-as-badge">ok</span>';
@@ -73,7 +83,7 @@ function note($tp,$vue, $selectedRotation,  $selectedClasse, $selectedPeriode){
 
 function state($tp,$vue, $selectedRotation,  $selectedClasse, $selectedPeriode){
     if (is_null($tp['debut'])) {
-        $tp['contenu'] = $vue->Html->link(('Debut'),
+        /*$tp['contenu'] = $vue->Html->link(('Debut'),
             [
                 'action' => 'start',1,
                 '?' => [
@@ -86,8 +96,10 @@ function state($tp,$vue, $selectedRotation,  $selectedClasse, $selectedPeriode){
             ],
             ['class' => "btn btn-default",'role' => 'button'],
 
-        );
-        //$tp['contenu'] = '<a href="/spie/suivis/start/1?eleve='.$tp['eleve_id'].'&amp;tp='.$tp['tp_id'].' " '.'class="btn btn-default" role="button">Commencer</a>' ;
+        );*/
+        $tp = editButton($tp);
+        //debug($tp);die;
+
     }elseif ($tp['fin'] != null){
         $tp['contenu'] = 'Début: <span class="label label-success label-as-badge">'.date_format($tp['debut'],'d-m-Y')."</span><br>";
         $tp['contenu'] = $tp['contenu'].'Fin: <span class="label label-success label-as-badge">'.date_format($tp['fin'],'d-m-Y')."</span><br>";
@@ -115,7 +127,6 @@ function state($tp,$vue, $selectedRotation,  $selectedClasse, $selectedPeriode){
     //debug($tp);die;
     return $tp;
 }
-
 
 function tabProcess($tableau, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode)
 {
@@ -157,5 +168,31 @@ echo $this->fetch('tableauClasseur');
             </tr>
         <?php endforeach; ?>
     </tbody>
-
 </table>
+
+<?php foreach ($tableau as $cell => $key ) :?>
+    <?php foreach ($key as $eleve => $tp) :?>
+        <!-- modal-for <?php echo $tp['eleve_nom'].'-'.$tp['tp_nom'] ?>-->
+        <div class="modal fade bs-example-modal-lg" id="myModal<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>"  tabindex="-1" role="dialog" aria-labelledby="test">
+          <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel"><?php echo $tp['eleve_nom'].'-'.$tp['tp_nom'] ?> </h4>
+                </div>
+                <div class="modal-body">
+
+              </div>
+              <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+                    <button type="submit" class="btn btn-primary" ?>
+                        Sauvegarder
+                    </button>
+              </div><!-- /modal-footer -->
+            </div>
+          </div>
+        </div>
+    <?php endforeach; ?>
+<?php endforeach; ?>

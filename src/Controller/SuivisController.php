@@ -488,6 +488,8 @@ class SuivisController extends AppController
             foreach ($listTpEleves as $tp) {
                 $tableau[$eleve->nom][$tp->id]['eleve_id'] = $eleve->id;
                 $tableau[$eleve->nom][$tp->id]['tp_id'] = $tp->id;
+                $tableau[$eleve->nom][$tp->id]['eleve_nom'] = $eleve->fullName;
+                $tableau[$eleve->nom][$tp->id]['tp_nom'] = $tp->fullName;
                 $tableau[$eleve->nom][$tp->id]['debut'] = $tp->debut;
                 $tableau[$eleve->nom][$tp->id]['fin'] = $tp->fin;
                 $tableau[$eleve->nom][$tp->id]['pronote'] = $tp->pronote;
