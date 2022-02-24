@@ -553,9 +553,9 @@ class SuivisController extends AppController
     {
         $eleve_id = $this->request->getData('eleve_id');
         $tp_id = $this->request->getData('tp_id');
-        $selectedPeriodeId = $this->request->getData('selectedRotationPeriodeId');
+        $selectedPeriodeId = $this->request->getData('selectedPeriodeId');
         $selectedClasseId = $this->request->getData('selectedClasseId');
-        $selectedRotationId = $this->request->getQuery('selectedRotationId');
+        $selectedRotationId = $this->request->getData('selectedRotationId');
 
         $tpElevesTable = TableRegistry::get('TpEleves');
         $tp = $tpElevesTable->get($tp_id);
@@ -585,6 +585,10 @@ class SuivisController extends AppController
 			$tp->base = false;
 		}
         $tpElevesTable->save($tp);
+        /*debug($selectedClasseId);
+        debug($selectedRotationId);
+        debug($selectedPeriodeId);
+        die; */
         return $this->redirect([
             'action' => 'tp',1,
             '?' => [

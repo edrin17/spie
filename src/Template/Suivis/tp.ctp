@@ -56,8 +56,7 @@ function state($tp,$vue, $selectedRotation,  $selectedClasse, $selectedPeriode){
     return $tp;
 }
 
-function tabProcess($tableau, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode)
-{
+function tabProcess($tableau, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode){
     foreach ($tableau as $eleve => $tps) {
         foreach ($tps as $tp => $cell) {
             $tab[$eleve][$tp] = state($cell,$vue, $selectedRotation,  $selectedClasse, $selectedPeriode);
@@ -68,23 +67,20 @@ function tabProcess($tableau, $vue, $selectedRotation,  $selectedClasse, $select
 $tableau = tabProcess($tableau, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode);
 //debug($tableau);die;
 
-function inputDebut($date)
-{
+function inputDebut($date){
     if ($date !== null) {
         $html = 'value="'.date_format($date,'Y-m-d').'"';
         return $html;
     }
 }
-function inputIsFini($date)
-{
+function inputIsFini($date){
     if ($date !== null) {
         $html = ' checked';
         return $html;
     }
 }
 
-function inputFin($date)
-{
+function inputFin($date){
     if ($date !== null) {
         $html = 'value="'.date_format($date,'Y-m-d').'"';
     }else {
@@ -92,32 +88,25 @@ function inputFin($date)
     }
     return $html;
 }
-function inputRadioOui($state)
-{
+function inputRadioOui($state){
     if ($state == true) {
         $html = ' checked';
         return $html;
     }
 }
-function inputRadioNon($state)
-{
+function inputRadioNon($state){
     if ($state == false) {
         $html = ' checked';
         return $html;
     }
 }
-function inputNote($note)
-{
+function inputNote($note){
     if ($note !== null) {
         $html = ' value="'.$note.'"';
         return $html;
     }
 }
-?>
 
-
-
-<?php
 $this->start('tableauClasseur');
 echo $this->element('TableauxClasseurs/suivi_tp');
 $this->end();
@@ -152,7 +141,7 @@ echo $this->fetch('tableauClasseur');
         <?php echo $this->Form->hidden('tp_id',['value' =>$tp['tp_id']]) ?>
         <?php echo $this->Form->hidden('selectedClasseId',['value' =>$selectedClasse]) ?>
         <?php echo $this->Form->hidden('selectedRotationId',['value' =>$selectedRotation->id]) ?>
-        <?php echo $this->Form->hidden('selectedRotationPeriodeId',['value' =>$selectedPeriode]) ?>
+        <?php echo $this->Form->hidden('selectedPeriodeId',['value' =>$selectedPeriode]) ?>
         <!-- modal-for <?php echo $tp['eleve_nom'].'-'.$tp['tp_nom'] ?>-->
         <div class="modal fade bs-example-modal-lg" id="myModal<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>"  tabindex="-1" role="dialog" aria-labelledby="test">
           <div class="modal-dialog modal-lg" role="document">
