@@ -14,21 +14,7 @@ function pronote($tp,$vue, $selectedRotation,  $selectedClasse, $selectedPeriode
     if ($tp['pronote']) {
         $tp['contenu'] = 'Pronote: <span class="label label-success label-as-badge">ok</span>';
     } else {
-        $tp['contenu'] = $vue->Html->link(('Pronote'),
-            [
-                'action' => 'validate',1,
-                '?' => [
-                    'eleve' => $tp['eleve_id'],
-                    'tp' => $tp['tp_id'],
-                    'classe' => $selectedClasse,
-                    'rotation' => $selectedRotation,
-                    'periode' => $selectedPeriode,
-                    'options' => 'pronote'
-                    ]
-            ],
-            ['class' => "btn btn-default",'role' => 'button'],
-
-        );
+        $tp['contenu'] = 'Pronote: <span class="label label-danger label-as-badge">Non</span>';
 
         //$tp['contenu'] = '<a href="/spie/suivis/validate/1?eleve='.$tp['eleve_id'].'&amp;tp='.$tp['tp_id'].'&amp;option=pronote" '.'class="btn btn-default" role="button">Pronote</a>';
     }
@@ -38,91 +24,33 @@ function base($tp,$vue, $selectedRotation,  $selectedClasse, $selectedPeriode){
     if ($tp['base']) {
         $tp['contenu'] = 'Base: <span class="label label-success label-as-badge">ok</span><br>';
     } else {
-        //$tp['contenu'] = '<a href="/spie/suivis/validate/1?eleve='.$tp['eleve_id'].'&amp;tp='.$tp['tp_id'].'&amp;option=base" '.'class="btn btn-default" role="button">Base</a>';
-        $tp['contenu'] = $vue->Html->link(('Base'),
-            [
-                'action' => 'validate',1,
-                '?' => [
-                    'eleve' => $tp['eleve_id'],
-                    'tp' => $tp['tp_id'],
-                    'classe' => $selectedClasse,
-                    'rotation' => $selectedRotation,
-                    'periode' => $selectedPeriode,
-                    'options' => 'base'
-                    ]
-            ],
-            ['class' => "btn btn-default",'role' => 'button'],
-
-        );
+        $tp['contenu'] = 'Base: <span class="label label-danger label-as-badge">Non</span><br>';
     }
     return $tp['contenu'];
 }
 function note($tp,$vue, $selectedRotation,  $selectedClasse, $selectedPeriode){
     if ($tp['note']) {
-        $tp['contenu'] = 'Noté: <span class="label label-success label-as-badge">ok</span><br>';
+        $tp['contenu'] = 'Note: <span class="label label-info label-as-badge">'.$tp['note'].'</span><br>';
     } else {
-        //$tp['contenu'] = '<a href="/spie/suivis/validate/1?eleve='.$tp['eleve_id'].'&amp;tp='.$tp['tp_id'].'&amp;option=note" '.'class="btn btn-default" role="button">Noter</a>';
-        $tp['contenu'] = $vue->Html->link(('Noter'),
-            [
-                'action' => 'validate',1,
-                '?' => [
-                    'eleve' => $tp['eleve_id'],
-                    'tp' => $tp['tp_id'],
-                    'classe' => $selectedClasse,
-                    'rotation' => $selectedRotation,
-                    'periode' => $selectedPeriode,
-                    'options' => 'note'
-                    ]
-            ],
-            ['class' => "btn btn-default",'role' => 'button'],
-
-        );
+        $tp['contenu'] = 'Note: <span class="label label-danger label-as-badge">Non</span><br>';
     }
     return $tp['contenu'];
 }
 
 function state($tp,$vue, $selectedRotation,  $selectedClasse, $selectedPeriode){
     if (is_null($tp['debut'])) {
-        /*$tp['contenu'] = $vue->Html->link(('Debut'),
-            [
-                'action' => 'start',1,
-                '?' => [
-                    'eleve' => $tp['eleve_id'],
-                    'tp' => $tp['tp_id'],
-                    'classe' => $selectedClasse,
-                    'rotation' => $selectedRotation->id,
-                    'periode' => $selectedPeriode,
-                    ]
-            ],
-            ['class' => "btn btn-default",'role' => 'button'],
-
-        );*/
         $tp = editButton($tp);
-        //debug($tp);die;
 
     }elseif ($tp['fin'] != null){
-        $tp['contenu'] = 'Début: <span class="label label-success label-as-badge">'.date_format($tp['debut'],'d-m-Y')."</span><br>";
+        $tp['contenu'] = 'Début: <span class="label label-info label-as-badge">'.date_format($tp['debut'],'d-m-Y')."</span><br>";
         $tp['contenu'] = $tp['contenu'].'Fin: <span class="label label-success label-as-badge">'.date_format($tp['fin'],'d-m-Y')."</span><br>";
         $tp['contenu'] = $tp['contenu'].note($tp, $vue, $selectedRotation->id,  $selectedClasse, $selectedPeriode);
         $tp['contenu'] = $tp['contenu'].base($tp, $vue, $selectedRotation->id,  $selectedClasse, $selectedPeriode);
         $tp['contenu'] = $tp['contenu'].pronote($tp, $vue, $selectedRotation->id,  $selectedClasse, $selectedPeriode);
+        $tp['contenu'] = editButton($tp)['contenu'];
     }else{
         $tp['contenu'] = 'Début: <span class="label label-info label-as-badge">'.date_format($tp['debut'],'d-m-Y')."</span><br>";
-        //$tp['contenu'] = $tp['contenu'].'<a href="/spie/suivis/end/1?eleve='.$tp['eleve_id'].'&amp;tp='.$tp['tp_id'].'" '.'class="btn btn-default" role="button">Fini</a>' ;
-        $tp['contenu'] = $tp['contenu'].$vue->Html->link(('Fini'),
-            [
-                'action' => 'end',1,
-                '?' => [
-                    'eleve' => $tp['eleve_id'],
-                    'tp' => $tp['tp_id'],
-                    'classe' => $selectedClasse,
-                    'rotation' => $selectedRotation->id,
-                    'periode' => $selectedPeriode,
-                    ]
-            ],
-            ['class' => "btn btn-default",'role' => 'button'],
-
-        );
+        $tp['contenu'] = editButton($tp)['contenu'];
     }
     //debug($tp);die;
     return $tp;
@@ -139,6 +67,52 @@ function tabProcess($tableau, $vue, $selectedRotation,  $selectedClasse, $select
 }
 $tableau = tabProcess($tableau, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode);
 //debug($tableau);die;
+
+function inputDebut($date)
+{
+    if ($date !== null) {
+        $html = 'value="'.date_format($date,'Y-m-d').'"';
+        return $html;
+    }
+}
+function inputIsFini($date)
+{
+    if ($date !== null) {
+        $html = ' checked';
+        return $html;
+    }
+}
+
+function inputFin($date)
+{
+    if ($date !== null) {
+        $html = 'value="'.date_format($date,'Y-m-d').'"';
+    }else {
+        $html = ' disabled';
+    }
+    return $html;
+}
+function inputRadioOui($state)
+{
+    if ($state == true) {
+        $html = ' checked';
+        return $html;
+    }
+}
+function inputRadioNon($state)
+{
+    if ($state == false) {
+        $html = ' checked';
+        return $html;
+    }
+}
+function inputNote($note)
+{
+    if ($note !== null) {
+        $html = ' value="'.$note.'"';
+        return $html;
+    }
+}
 ?>
 
 
@@ -170,8 +144,15 @@ echo $this->fetch('tableauClasseur');
     </tbody>
 </table>
 
+
 <?php foreach ($tableau as $cell => $key ) :?>
     <?php foreach ($key as $eleve => $tp) :?>
+        <?php echo $this->Form->create(); ?>
+        <?php echo $this->Form->hidden('eleve_id',['value' =>$tp['eleve_id']]) ?>
+        <?php echo $this->Form->hidden('tp_id',['value' =>$tp['tp_id']]) ?>
+        <?php echo $this->Form->hidden('selectedClasseId',['value' =>$selectedClasse]) ?>
+        <?php echo $this->Form->hidden('selectedRotationId',['value' =>$selectedRotation->id]) ?>
+        <?php echo $this->Form->hidden('selectedRotationPeriodeId',['value' =>$selectedPeriode]) ?>
         <!-- modal-for <?php echo $tp['eleve_nom'].'-'.$tp['tp_nom'] ?>-->
         <div class="modal fade bs-example-modal-lg" id="myModal<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>"  tabindex="-1" role="dialog" aria-labelledby="test">
           <div class="modal-dialog modal-lg" role="document">
@@ -183,16 +164,57 @@ echo $this->fetch('tableauClasseur');
                     <h4 class="modal-title" id="myModalLabel"><?php echo $tp['eleve_nom'].'-'.$tp['tp_nom'] ?> </h4>
                 </div>
                 <div class="modal-body">
-
-              </div>
-              <div class="modal-footer">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label>Début TP:</label>
+                            <input type="date" class="form-control" name="date_debut" id="date_debut_<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>" <?php echo inputDebut($tp['debut'])?> required>
+                        </div>
+                        <div class="col-md-2">
+                            <label>TP fini:</label>
+                            <input type="checkbox" id="blankCheckbox" value="false" onclick="document.getElementById('date_fin_<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>').disabled = changeDateFinState(document.getElementById('date_fin_<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>').disabled)" <?php echo inputIsFini($tp['fin'])?>>
+                        </div>
+                        <div class="col-md-3">
+                            <label>Fin du TP:</label>
+                            <input type="date" class="form-control" name="date_fin" id="date_fin_<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>" <?php echo inputFin($tp['fin'])?>>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="note" >Note:</label>
+                            <input type="number" class="form-control" max=10 name="note" id="note<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>" <?php echo inputNote($tp['note'])?>>
+                        </div>
+                        <div class="col-md-3">
+                            <label>Pronote: </label>
+                            <input type="radio" name="pronote" id="radio1<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>" value="true" <?php echo inputRadioOui($tp['pronote'])?>> Oui
+                            <input type="radio" name="pronote" id="radio2<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>" value="false"<?php echo inputRadioNon($tp['pronote'])?>> Non
+                        </div>
+                        <div class="col-md-3">
+                            <label>Base: </label>
+                            <input type="radio" name="base" id="radio3<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>" value="true" <?php echo inputRadioOui($tp['base'])?>> Oui
+                            <input type="radio" name="base" id="radio4<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>" value="false"<?php echo inputRadioNon($tp['base'])?>> Non
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
-                    <button type="submit" class="btn btn-primary" ?>
-                        Sauvegarder
-                    </button>
-              </div><!-- /modal-footer -->
+                    <button type="sumbit" class="btn btn-primary">Sauvegarder</button>
+                </div><!-- /modal-footer -->
             </div>
           </div>
         </div>
+        <?php echo $this->Form->end(); ?>
     <?php endforeach; ?>
 <?php endforeach; ?>
+
+
+<script>
+function changeDateFinState(state) {
+    if (state) {
+        return false;
+    } else {
+        return true;
+    }
+
+}
+</script>

@@ -444,17 +444,25 @@ class SuivisController extends AppController
 
 	public function tp()
 	{
-        //tableauClasseur double
+		//tableauClasseur double
         $nameController = 'Suivis';
         $nameAction = 'tp';
         $options = '';
         $request = $this->request;
 		$selectedClasse = $this->tabClassesEleves($nameController, $nameAction, $options, $request);
         $selectedRotation = $this->tabPeriodesRotations($nameController, $nameAction, $options, $request);
-        // ***************************************************************************
+
+		// ***************************************************************************
         //on récupère les info du tableauClasseur id de l'élève et id de la rotation
         $selectedClasseId = $request->getQuery('classe');
         $selectedRotationId = $request->getQuery('rotation');
+
+
+		if ($this->request->is('post')) {
+			$this->save($request);
+        }
+
+
         if ($selectedClasseId == '') {
             $selectedClasseId = $selectedClasse;
         }
@@ -489,7 +497,7 @@ class SuivisController extends AppController
                 $tableau[$eleve->nom][$tp->id]['eleve_id'] = $eleve->id;
                 $tableau[$eleve->nom][$tp->id]['tp_id'] = $tp->id;
                 $tableau[$eleve->nom][$tp->id]['eleve_nom'] = $eleve->fullName;
-                $tableau[$eleve->nom][$tp->id]['tp_nom'] = $tp->fullName;
+                $tableau[$eleve->nom][$tp->id]['tp_nom'] = $tp->travaux_pratique->nom;
                 $tableau[$eleve->nom][$tp->id]['debut'] = $tp->debut;
                 $tableau[$eleve->nom][$tp->id]['fin'] = $tp->fin;
                 $tableau[$eleve->nom][$tp->id]['pronote'] = $tp->pronote;
@@ -498,7 +506,6 @@ class SuivisController extends AppController
 
             }
         }
-        //debug($tableau);die;
 
 
         $this->set(compact('tableau','listTpHead'));
@@ -542,6 +549,51 @@ class SuivisController extends AppController
         return $this->redirect(['action' => 'tp']);
     }
 
+	public function save()
+    {
+        $eleve_id = $this->request->getData('eleve_id');
+        $tp_id = $this->request->getData('tp_id');
+        $selectedPeriodeId = $this->request->getData('selectedRotationPeriodeId');
+        $selectedClasseId = $this->request->getData('selectedClasseId');
+        $selectedRotationId = $this->request->getQuery('selectedRotationId');
+
+        $tpElevesTable = TableRegistry::get('TpEleves');
+        $tp = $tpElevesTable->get($tp_id);
+		if ($this->request->getData('date_debut') !== '') {
+			$tp->debut = $this->request->getData('date_debut');
+		}
+		if ($this->request->getData('note') !== '') {
+        	$tp->note = $this->request->getData('note');
+		}else {
+			$tp->note = null;
+		}
+		if ($this->request->getData('date_fin') !== null) {
+			if ($this->request->getData('date_fin') != '') {
+				$tp->fin = $this->request->getData('date_fin');
+			}else {
+				$tp->fin = null;
+			}
+		}
+        if ($this->request->getData('pronote') !== null) {
+        	$tp->pronote = filter_var($this->request->getData('pronote'), FILTER_VALIDATE_BOOLEAN);
+		}else {
+			$tp->pronote = false;
+		}
+        if ($this->request->getData('base') !== null) {
+        	$tp->base = filter_var($this->request->getData('base'), FILTER_VALIDATE_BOOLEAN);
+		}else {
+			$tp->base = false;
+		}
+        $tpElevesTable->save($tp);
+        return $this->redirect([
+            'action' => 'tp',1,
+            '?' => [
+                'classe' => $selectedClasseId,
+                'rotation' => $selectedRotationId,
+                'periode' => $selectedPeriodeId,
+                ]]
+        );
+    }
 
     public function start()
     {
