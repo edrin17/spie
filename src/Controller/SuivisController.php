@@ -503,6 +503,7 @@ class SuivisController extends AppController
                 $tableau[$eleve->nom][$tp->id]['pronote'] = $tp->pronote;
                 $tableau[$eleve->nom][$tp->id]['base'] = $tp->base;
                 $tableau[$eleve->nom][$tp->id]['note'] = $tp->note;
+				$tableau[$eleve->nom][$tp->id]['memo'] = $tp->memo;
 
             }
         }
@@ -583,6 +584,9 @@ class SuivisController extends AppController
         	$tp->base = filter_var($this->request->getData('base'), FILTER_VALIDATE_BOOLEAN);
 		}else {
 			$tp->base = false;
+		}
+		if ($this->request->getData('memo') !== null) {
+			$tp->memo = $this->request->getData('memo');
 		}
         $tpElevesTable->save($tp);
         /*debug($selectedClasseId);

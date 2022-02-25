@@ -106,6 +106,14 @@ function inputNote($note){
         return $html;
     }
 }
+function inputMemo($memo){
+    if ($memo !== null) {
+        $html = h($memo);
+    }else{
+        $html = '';
+    }
+    return $html;
+}
 
 $this->start('tableauClasseur');
 echo $this->element('TableauxClasseurs/suivi_tp');
@@ -183,6 +191,15 @@ echo $this->fetch('tableauClasseur');
                             <input type="radio" name="base" id="radio3<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>" value="true" <?php echo inputRadioOui($tp['base'])?>> Oui
                             <input type="radio" name="base" id="radio4<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>" value="false"<?php echo inputRadioNon($tp['base'])?>> Non
                         </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-default" data-dismiss="modal" data-toggle="modal" data-target="#modalEval">test Modal</bouton>
+                        </div>
+                    </div>
+                    </br>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <textarea  name="memo" class="form-control" rows="5" id="memo<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>" placeholder="Memo ici"><?php echo inputMemo($tp['memo'])?></textarea>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -195,8 +212,25 @@ echo $this->fetch('tableauClasseur');
         <?php echo $this->Form->end(); ?>
     <?php endforeach; ?>
 <?php endforeach; ?>
+<div class="modal fade bs-example-modal-lg" id="modalEval"  tabindex="-1" role="dialog" aria-labelledby="test">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title" id="myModalLabel">Modal test </h4>
+        </div>
+        <div class="modal-body">
 
-
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+            <button type="sumbit" class="btn btn-primary">Sauvegarder</button>
+        </div><!-- /modal-footer -->
+    </div>
+  </div>
+</div>
 <script>
 function changeDateFinState(state) {
     if (state) {
