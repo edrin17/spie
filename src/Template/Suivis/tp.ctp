@@ -4,23 +4,42 @@ function editButton($tp){
     if (!isset($tp['contenu'])) {
         $tp['contenu'] = '';
     }
-    $tp['contenu'] = $tp['contenu'].'<button type="button" class="btn btn-default" data-dismiss="modal" data-toggle="modal"';
-    $tp['contenu'] = $tp['contenu'].' data-target="#myModal';
-    $tp['contenu'] = $tp['contenu'].$tp['eleve_id'].'-'.$tp['tp_id'];
-    $tp['contenu'] = $tp['contenu'].'"><i class="fa fa-cog" aria-hidden="true"></i></button>';
+    $tp['contenu'] .= '<button type="button" class="btn btn-default" data-dismiss="modal" data-toggle="modal"';
+    $tp['contenu'] .= ' data-target="#myModal';
+    $tp['contenu'] .= $tp['eleve_id'].'-'.$tp['tp_id'];
+    $tp['contenu'] .= '"><i class="fa fa-cog" aria-hidden="true"></i></button>';
     return $tp;
 }
-function pronote($tp,$vue, $selectedRotation,  $selectedClasse, $selectedPeriode){
+function deleteButton($vue, $tp, $selectedRotation,  $selectedClasse, $selectedPeriode){
+    return $vue->Html->link(
+        '<i class="fa fa-trash" aria-hidden="true"></i>',
+        ['controller' => 'Suivis',
+            'action' => 'delete',
+            1,
+            '?' => [
+                'periode' => $selectedPeriode,
+                'rotation' => $selectedRotation,
+                'classe' => $selectedClasse,
+                'tp_id' => $tp['tp_id']
+                ]
+        ],[
+        'confirm' => 'Etes-vous sûr de voulour supprimer le TP: '.$tp['tp_nom']." pour l'élève:".$tp['eleve_nom'].'.?' ,
+            'escape'=> false,
+            'class' => "btn btn-default",'role' => 'button'
+        ]
+
+    );
+
+}
+function pronote($tp, $selectedRotation,  $selectedClasse, $selectedPeriode){
     if ($tp['pronote']) {
         $tp['contenu'] = 'Pronote: <span class="label label-success label-as-badge">ok</span>';
     } else {
         $tp['contenu'] = 'Pronote: <span class="label label-danger label-as-badge">Non</span>';
-
-        //$tp['contenu'] = '<a href="/spie/suivis/validate/1?eleve='.$tp['eleve_id'].'&amp;tp='.$tp['tp_id'].'&amp;option=pronote" '.'class="btn btn-default" role="button">Pronote</a>';
     }
     return $tp['contenu'];
 }
-function base($tp,$vue, $selectedRotation,  $selectedClasse, $selectedPeriode){
+function base($tp, $selectedRotation,  $selectedClasse, $selectedPeriode){
     if ($tp['base']) {
         $tp['contenu'] = 'Base: <span class="label label-success label-as-badge">ok</span><br>';
     } else {
@@ -28,7 +47,7 @@ function base($tp,$vue, $selectedRotation,  $selectedClasse, $selectedPeriode){
     }
     return $tp['contenu'];
 }
-function note($tp,$vue, $selectedRotation,  $selectedClasse, $selectedPeriode){
+function note($tp, $selectedRotation,  $selectedClasse, $selectedPeriode){
     if ($tp['note']) {
         $tp['contenu'] = 'Note: <span class="label label-info label-as-badge">'.$tp['note'].'</span><br>';
     } else {
@@ -37,20 +56,22 @@ function note($tp,$vue, $selectedRotation,  $selectedClasse, $selectedPeriode){
     return $tp['contenu'];
 }
 
-function state($tp,$vue, $selectedRotation,  $selectedClasse, $selectedPeriode){
+function state($tp, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode){
     if (is_null($tp['debut'])) {
         $tp = editButton($tp);
 
     }elseif ($tp['fin'] != null){
         $tp['contenu'] = 'Début: <span class="label label-info label-as-badge">'.date_format($tp['debut'],'d-m-Y')."</span><br>";
         $tp['contenu'] = $tp['contenu'].'Fin: <span class="label label-success label-as-badge">'.date_format($tp['fin'],'d-m-Y')."</span><br>";
-        $tp['contenu'] = $tp['contenu'].note($tp, $vue, $selectedRotation->id,  $selectedClasse, $selectedPeriode);
-        $tp['contenu'] = $tp['contenu'].base($tp, $vue, $selectedRotation->id,  $selectedClasse, $selectedPeriode);
-        $tp['contenu'] = $tp['contenu'].pronote($tp, $vue, $selectedRotation->id,  $selectedClasse, $selectedPeriode);
+        $tp['contenu'] = $tp['contenu'].note($tp, $selectedRotation->id,  $selectedClasse, $selectedPeriode);
+        $tp['contenu'] = $tp['contenu'].base($tp, $selectedRotation->id,  $selectedClasse, $selectedPeriode);
+        $tp['contenu'] = $tp['contenu'].pronote($tp, $selectedRotation->id,  $selectedClasse, $selectedPeriode);
         $tp['contenu'] = editButton($tp)['contenu'];
+        $tp['contenu'] .= deleteButton($vue, $tp, $selectedRotation,  $selectedClasse, $selectedPeriode);
     }else{
         $tp['contenu'] = 'Début: <span class="label label-info label-as-badge">'.date_format($tp['debut'],'d-m-Y')."</span><br>";
         $tp['contenu'] = editButton($tp)['contenu'];
+        $tp['contenu'] .= deleteButton($vue, $tp, $selectedRotation,  $selectedClasse, $selectedPeriode);
     }
     //debug($tp);die;
     return $tp;
@@ -191,18 +212,15 @@ echo $this->fetch('tableauClasseur');
                             <input type="radio" name="base" id="radio3<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>" value="true" <?php echo inputRadioOui($tp['base'])?>> Oui
                             <input type="radio" name="base" id="radio4<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>" value="false"<?php echo inputRadioNon($tp['base'])?>> Non
                         </div>
-                        <div class="col-md-2">
-                            <button type="button" class="btn btn-default" data-dismiss="modal" data-toggle="modal" data-target="#modalEval">test Modal</bouton>
-                        </div>
                     </div>
-                    </br>
+                    <br>
                     <div class="row">
                         <div class="col-md-12">
                             <textarea  name="memo" class="form-control" rows="5" id="memo<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>" placeholder="Memo ici"><?php echo inputMemo($tp['memo'])?></textarea>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer"><!-- modal-footer -->
                     <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
                     <button type="sumbit" class="btn btn-primary">Sauvegarder</button>
                 </div><!-- /modal-footer -->
@@ -212,25 +230,6 @@ echo $this->fetch('tableauClasseur');
         <?php echo $this->Form->end(); ?>
     <?php endforeach; ?>
 <?php endforeach; ?>
-<div class="modal fade bs-example-modal-lg" id="modalEval"  tabindex="-1" role="dialog" aria-labelledby="test">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-            <h4 class="modal-title" id="myModalLabel">Modal test </h4>
-        </div>
-        <div class="modal-body">
-
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
-            <button type="sumbit" class="btn btn-primary">Sauvegarder</button>
-        </div><!-- /modal-footer -->
-    </div>
-  </div>
-</div>
 <script>
 function changeDateFinState(state) {
     if (state) {

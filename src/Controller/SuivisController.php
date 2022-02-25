@@ -537,17 +537,19 @@ class SuivisController extends AppController
 
     public function reset()
     {
-		$tpElevesTable = TableRegistry::get('TpEleves');
+        /*
+        $tpElevesTable = TableRegistry::get('TpEleves');
         $listTpEleves = $tpElevesTable->find();
         foreach ($listTpEleves as $tp) {
-                $tp->pronote = 0;
-                $tp->base = 0;
-                $tp->note = 0;
+                $tp->pronote = false;
+                $tp->base = false;
+                $tp->note = null;
                 $tp->debut = null;
                 $tp->fin = null;
+                $tp->memo = '';
                 $tpElevesTable->save($tp);
         }
-        return $this->redirect(['action' => 'tp']);
+        return $this->redirect(['action' => 'tp']); */
     }
 
 	public function save()
@@ -593,6 +595,36 @@ class SuivisController extends AppController
         debug($selectedRotationId);
         debug($selectedPeriodeId);
         die; */
+        return $this->redirect([
+            'action' => 'tp',1,
+            '?' => [
+                'classe' => $selectedClasseId,
+                'rotation' => $selectedRotationId,
+                'periode' => $selectedPeriodeId,
+                ]]
+        );
+    }
+
+    public function delete()
+    {
+        //debug($this->request->getQuery());die;
+        $eleve_id = $this->request->getQuery('eleve_id');
+        $tp_id = $this->request->getQuery('tp_id');
+        $selectedPeriodeId = $this->request->getQuery('selectedPeriodeId');
+        $selectedClasseId = $this->request->getQuery('selectedClasseId');
+        $selectedRotationId = $this->request->getQuery('selectedRotationId');
+
+        $tpElevesTable = TableRegistry::get('TpEleves');
+        $tp = $tpElevesTable->get($tp_id);
+
+		$tp->debut = null;
+        $tp->fin = null;
+		$tp->note = null;
+        $tp->pronote = false;
+		$tp->base = false;
+		$tp->memo = '';
+        //debug($tp);die;
+        $tpElevesTable->save($tp);
         return $this->redirect([
             'action' => 'tp',1,
             '?' => [
