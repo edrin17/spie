@@ -18,7 +18,7 @@ function deleteButton($vue, $tp, $selectedRotation,  $selectedClasse, $selectedP
             1,
             '?' => [
                 'periode' => $selectedPeriode,
-                'rotation' => $selectedRotation,
+                'rotation' => $selectedRotation->id,
                 'classe' => $selectedClasse,
                 'tp_id' => $tp['tp_id']
                 ]

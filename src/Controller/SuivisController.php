@@ -607,12 +607,11 @@ class SuivisController extends AppController
 
     public function delete()
     {
-        //debug($this->request->getQuery());die;
         $eleve_id = $this->request->getQuery('eleve_id');
         $tp_id = $this->request->getQuery('tp_id');
-        $selectedPeriodeId = $this->request->getQuery('selectedPeriodeId');
-        $selectedClasseId = $this->request->getQuery('selectedClasseId');
-        $selectedRotationId = $this->request->getQuery('selectedRotationId');
+        $selectedPeriodeId = $this->request->getQuery('periode');
+        $selectedClasseId = $this->request->getQuery('classe');
+        $selectedRotationId = $this->request->getQuery('rotation');
 
         $tpElevesTable = TableRegistry::get('TpEleves');
         $tp = $tpElevesTable->get($tp_id);
