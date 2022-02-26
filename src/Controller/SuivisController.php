@@ -501,7 +501,7 @@ class SuivisController extends AppController
                 $tableau[$eleve->nom][$tp->id]['debut'] = $tp->debut;
                 $tableau[$eleve->nom][$tp->id]['fin'] = $tp->fin;
                 $tableau[$eleve->nom][$tp->id]['pronote'] = $tp->pronote;
-                $tableau[$eleve->nom][$tp->id]['base'] = $tp->base;
+                $tableau[$eleve->nom][$tp->id]['base'] = $this->_evaluated($tp->travaux_pratique->id, $eleve->id);
                 $tableau[$eleve->nom][$tp->id]['note'] = $tp->note;
 				$tableau[$eleve->nom][$tp->id]['memo'] = $tp->memo;
 
@@ -591,10 +591,7 @@ class SuivisController extends AppController
 			$tp->memo = $this->request->getData('memo');
 		}
         $tpElevesTable->save($tp);
-        /*debug($selectedClasseId);
-        debug($selectedRotationId);
-        debug($selectedPeriodeId);
-        die; */
+
         return $this->redirect([
             'action' => 'tp',1,
             '?' => [
@@ -620,7 +617,6 @@ class SuivisController extends AppController
         $tp->fin = null;
 		$tp->note = null;
         $tp->pronote = false;
-		$tp->base = false;
 		$tp->memo = '';
         //debug($tp);die;
         $tpElevesTable->save($tp);
@@ -634,7 +630,7 @@ class SuivisController extends AppController
         );
     }
 
-    public function start()
+    /*public function start()
     {
         $eleve_id = $this->request->getQuery('eleve');
         $tp_id = $this->request->getQuery('tp');
@@ -654,8 +650,8 @@ class SuivisController extends AppController
                 'periode' => $selectedPeriode,
                 ]]
         );
-    }
-    public function end()
+    }*
+    /*public function end()
     {
         $eleve_id = $this->request->getQuery('eleve');
         $tp_id = $this->request->getQuery('tp');
@@ -674,7 +670,7 @@ class SuivisController extends AppController
                 'periode' => $selectedPeriode,
                 ]]
         );
-    }
+    }*/
     public function validate()
     {
         $eleve_id = $this->request->getQuery('eleve');
@@ -711,5 +707,45 @@ class SuivisController extends AppController
                 'periode' => $selectedPeriode,
                 ]]
         );
+    }
+
+    protected function _evaluated($tp_id, $eleve_id)
+    {
+        //on récupère la liste des entities lien tp<->objspedas
+        $tableTps = TableRegistry::get('TravauxPratiques');
+        $tp = $tableTps->get($tp_id,['contain'=> 'TravauxPratiquesObjectifsPedas']);
+
+        //debug($tp_id);debug($eleve_id);die;
+
+        //on compte combien il y a d'ObjectifsPedas dans le TP
+        $objsPedasDuTp = $tp->travaux_pratiques_objectifs_pedas;
+        $nbObjsPedas = count($objsPedasDuTp);
+
+        //on compte le nombre d'évals qui matchent le TP et l'élève à travers TP_ObjPeda
+        $tableEvaluations = TableRegistry::get('Evaluations');
+        $compteur = 0;
+        foreach ($objsPedasDuTp as $objPeda) {
+            $nbEvals = $tableEvaluations->find()
+                ->where([
+                    'travaux_pratiques_objectifs_peda_id' => $objPeda->id,
+                    'eleve_id' => $eleve_id
+                ])
+                ->count();
+            $compteur = $compteur + $nbEvals;
+        }
+        //debug($compteur.'vs'.$nbObjsPedas);//debug($nbEvals);
+        //on renvoie l'état
+        if ($compteur === 0) {
+            $etat = ['value' => 'Non évalué', 'label_color' => 'label-default'];
+        }
+        elseif (($compteur > 0) and ($compteur < $nbObjsPedas)) {
+            $etat = ['value' => 'Incomplet', 'label_color' => 'label-warning'];
+        }
+        elseif ($compteur === $nbObjsPedas){
+            $etat = ['value' => 'Évalué', 'label_color' => 'label-success'];
+        }else {
+            $etat = ['value' => 'Erreur!', 'label_color' => 'label-danger'];
+        }
+        return $etat;
     }
 }

@@ -1,4 +1,5 @@
-<?php echo $this->Html->docType('html5'); ?>
+<?php echo $this->Html->docType('html5').PHP_EOL;?>
+<html>
 <head>
 	<title>SPIE: Suivi et Progression Individuelle des Elèves:<?php echo $this->fetch('title') ?></title>
 	<?php echo $this->Html->charset() ?>

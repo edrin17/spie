@@ -10,7 +10,7 @@ function editButton($tp){
     $tp['contenu'] .= '"><i class="fa fa-cog" aria-hidden="true"></i></button>';
     return $tp;
 }
-function deleteButton($vue, $tp, $selectedRotation,  $selectedClasse, $selectedPeriode){
+function deleteButton($tp, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode){
     return $vue->Html->link(
         '<i class="fa fa-trash" aria-hidden="true"></i>',
         ['controller' => 'Suivis',
@@ -31,19 +31,28 @@ function deleteButton($vue, $tp, $selectedRotation,  $selectedClasse, $selectedP
     );
 
 }
-function pronote($tp, $selectedRotation,  $selectedClasse, $selectedPeriode){
-    if ($tp['pronote']) {
-        $tp['contenu'] = 'Pronote: <span class="label label-success label-as-badge">ok</span>';
-    } else {
-        $tp['contenu'] = 'Pronote: <span class="label label-danger label-as-badge">Non</span>';
-    }
-    return $tp['contenu'];
+function evalButton($tp, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode){
+    return $vue->Html->link(
+        'Evaluer',
+        ['controller' => 'Evaluations',
+            'action' => 'evaluate',
+            1,
+            '?' => [
+                'periode' => $selectedPeriode,
+                'rotation' => $selectedRotation->id,
+                'classe' => $selectedClasse,
+                'tp_id' => $tp['tp_id'],
+                'eleve_id' => $tp['eleve_id'],
+            ]
+        ],['class' => "btn btn-default",'role' => 'button']
+    );
+
 }
-function base($tp, $selectedRotation,  $selectedClasse, $selectedPeriode){
-    if ($tp['base']) {
-        $tp['contenu'] = 'Base: <span class="label label-success label-as-badge">ok</span><br>';
+function pronote($tp, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode){
+    if ($tp['pronote']) {
+        $tp['contenu'] = 'Pronote: <span class="label label-success label-as-badge">Ok</span>';
     } else {
-        $tp['contenu'] = 'Base: <span class="label label-danger label-as-badge">Non</span><br>';
+        $tp['contenu'] = 'Pronote: <span class="label label-default label-as-badge">Non</span>';
     }
     return $tp['contenu'];
 }
@@ -51,7 +60,7 @@ function note($tp, $selectedRotation,  $selectedClasse, $selectedPeriode){
     if ($tp['note']) {
         $tp['contenu'] = 'Note: <span class="label label-info label-as-badge">'.$tp['note'].'</span><br>';
     } else {
-        $tp['contenu'] = 'Note: <span class="label label-danger label-as-badge">Non</span><br>';
+        $tp['contenu'] = 'Note: <span class="label label-default label-as-badge">Non</span><br>';
     }
     return $tp['contenu'];
 }
@@ -61,17 +70,17 @@ function state($tp, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode)
         $tp = editButton($tp);
 
     }elseif ($tp['fin'] != null){
-        $tp['contenu'] = 'Début: <span class="label label-info label-as-badge">'.date_format($tp['debut'],'d-m-Y')."</span><br>";
-        $tp['contenu'] = $tp['contenu'].'Fin: <span class="label label-success label-as-badge">'.date_format($tp['fin'],'d-m-Y')."</span><br>";
-        $tp['contenu'] = $tp['contenu'].note($tp, $selectedRotation->id,  $selectedClasse, $selectedPeriode);
-        $tp['contenu'] = $tp['contenu'].base($tp, $selectedRotation->id,  $selectedClasse, $selectedPeriode);
-        $tp['contenu'] = $tp['contenu'].pronote($tp, $selectedRotation->id,  $selectedClasse, $selectedPeriode);
+        $tp['contenu'] = 'Début: <span class="label label-success label-as-badge">'.date_format($tp['debut'],'d-m-Y')."</span><br>";
+        $tp['contenu'] .= 'Fin: <span class="label label-success label-as-badge">'.date_format($tp['fin'],'d-m-Y')."</span><br>";
+        $tp['contenu'] .= note($tp, $selectedRotation->id,  $selectedClasse, $selectedPeriode);
+        $tp['contenu'] .= 'Base: '.isBase($tp, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode);
+        $tp['contenu'] .=pronote($tp, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode);
         $tp['contenu'] = editButton($tp)['contenu'];
-        $tp['contenu'] .= deleteButton($vue, $tp, $selectedRotation,  $selectedClasse, $selectedPeriode);
+        $tp['contenu'] .= deleteButton($tp, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode);
     }else{
         $tp['contenu'] = 'Début: <span class="label label-info label-as-badge">'.date_format($tp['debut'],'d-m-Y')."</span><br>";
         $tp['contenu'] = editButton($tp)['contenu'];
-        $tp['contenu'] .= deleteButton($vue, $tp, $selectedRotation,  $selectedClasse, $selectedPeriode);
+        $tp['contenu'] .= deleteButton($tp, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode);
     }
     //debug($tp);die;
     return $tp;
@@ -107,6 +116,10 @@ function inputFin($date){
     }else {
         $html = ' disabled';
     }
+    return $html;
+}
+function isBase($tp, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode){
+    $html = '<span class="label '.$tp['base']['label_color'].' label-as-badge">'.$tp['base']['value'].'</span><br>';
     return $html;
 }
 function inputRadioOui($state){
@@ -209,8 +222,8 @@ echo $this->fetch('tableauClasseur');
                         </div>
                         <div class="col-md-3">
                             <label>Base: </label>
-                            <input type="radio" name="base" id="radio3<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>" value="true" <?php echo inputRadioOui($tp['base'])?>> Oui
-                            <input type="radio" name="base" id="radio4<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>" value="false"<?php echo inputRadioNon($tp['base'])?>> Non
+                            <?php echo isBase($tp, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode ) ?>
+                            <?php echo evalButton($tp, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode) ?>
                         </div>
                     </div>
                     <br>

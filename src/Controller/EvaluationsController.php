@@ -52,12 +52,31 @@ class EvaluationsController extends AppController
         $tableTypesEval = TableRegistry::get('TypesEvals');
         $tableClasses = TableRegistry::get('Classes');
         $tableEleves = TableRegistry::get('Eleves');
+        $tableTps = TableRegistry::get('TravauxPratiques');
+        $tableTpEleves = TableRegistry::get('Tp_Eleves');
 
-
+        //debug($this->request->getQuery());
+        $rotation_id = $this->request->getQuery('rotation');
+        $periode_id = $this->request->getQuery('periode');
+        $classe_id = $this->request->getQuery('classe');
+        $eleve_id = $this->request->getQuery('eleve_id');
+        $tpEleve_id = $this->request->getQuery('tp_id');
+        //debug($tpEleve_id);
         //si sauvegarde (POST)
         if ($this->request->is('POST')) {
-            $request = $this->request->getData();
-            //debug($request);die;
+            //debug($this->request->getData());die;
+            $tp_id = $this->request->getData('tp_id');
+            $tp = $tableTps->get($tp_id,[
+                'contain' => [
+                    'Rotations.Periodes.Classes',
+                    'ObjectifsPedas.CompetencesIntermediaires.CompetencesTerminales.Capacites',
+                    'ObjectifsPedas.NiveauxCompetences',
+                ]
+            ]);
+            //$selectedRotationId = $this->request->getData('selectedRotationId');
+            //$selectedPeriodeId = $this->request->getData('selectedPeriodeId');
+            //$selectedClasseId = $this->request->getData('selectedClasseId');
+            /*
             foreach ($request as $key => $value) {
                 //on extrait le debut de la clé pour voir si c'est uuid
                 $dataKey = substr($key,0,5);
@@ -103,10 +122,29 @@ class EvaluationsController extends AppController
                         $data[$objPedaId]['type'] = $value;
                     break;
                 }
+            }*/
+            $tp_id = $this->request->getData('tp_id');
+            $selectedEleve = $this->request->getData('eleve_id');
+            foreach ($tp->objectifs_pedas as $objPeda) {
+                $data[$objPeda->id]['value'] = $this->request->getData('valeurEval-'.$objPeda->id);
+                $data[$objPeda->id]['type'] = $this->request->getData('typeEval-'.$objPeda->id);
             }
+
             //debug($data);die;
-            $this->_saveData($selectedEleve, $data, $tp_id);
-        }elseif (isset($_GET['options'])) { //juste un choix normal de selection
+            if (isset($data)) { //si aucune compétence dans le TP
+                $this->_saveData($selectedEleve, $data, $tp_id);
+            }
+
+            return $this->redirect([
+                'controller' =>'Suivis', 'action' => 'tp',1,
+                '?' => [
+                    'classe' => $this->request->getData('selectedClasseId'),
+                    'rotation' => $this->request->getData('selectedRotationId'),
+                    'periode' => $this->request->getData('selectedPeriodeId'),
+                    ]]
+            );
+        }
+        /*elseif (isset($_GET['options'])) { //juste un choix normal de selection
             $rotation_id = $_GET['options'];
         }
 		//@returns $selectedClasse
@@ -196,8 +234,8 @@ class EvaluationsController extends AppController
         $this->set(compact(
             'selectedLVL2','selectedLVL1','listLVL1','listLVL2','nameController',
             'nameAction', 'options'
-        ));
-
+        )); */
+        $selectedEleve = $tableEleves->get($eleve_id);
         //on charge la rotation correspondante
         $rotation = $tableRotations->get($rotation_id,[
 			'contain' => [
@@ -208,7 +246,7 @@ class EvaluationsController extends AppController
 			]
 		]);
 
-        $listTps = $rotation->travaux_pratiques;
+        //$listTps = $rotation->travaux_pratiques;
         //debug($listTps);die;
 		$listValeursEvals = $tableValeurs->find('list')
 			->order(['numero' => 'ASC']);
@@ -218,10 +256,26 @@ class EvaluationsController extends AppController
 
 
         //on classe les objectifs pedas dans l'ordre pour chaque TP
-        foreach ($listTps as $tp) {
+        $tp_eleve = $tableTpEleves->get($tpEleve_id,[
+            'contain' => [
+                'TravauxPratiques',
+                ]
+            ]);
+
+        $tp = $tableTps->get($tp_eleve->travaux_pratique->id,[
+            'contain' => [
+                'Rotations.Periodes.Classes',
+                'ObjectifsPedas.CompetencesIntermediaires.CompetencesTerminales.Capacites',
+                'ObjectifsPedas.NiveauxCompetences',
+                ]
+            ]);
+        $tp_id = $tp->id;
+        //debug($tp_eleve);
+        //debug($tp);die;
+        //foreach ($listTps as $tp) {
 
 
-            if (!empty($tp->objectifs_pedas)) {
+            if (!empty($tp->objectifs_pedas)) {//si aucune compétence dans le TP
 
                 foreach ($tp->objectifs_pedas as $objPeda) {
                     $objPeda->set('join_tableized', str_replace("-","_",$objPeda->_joinData->id));
@@ -233,20 +287,20 @@ class EvaluationsController extends AppController
                 $tp->set('tableized', str_replace("-","_",$tp->id));
                 $numberedObjPeda = [];
             }
-		}
+		//}
+
         //on regarde si les TP on été évalués précédemment
-        foreach ($listTps as $tp){
-            $tp_id = $tp->id;
-            $eleve_id = $selectedEleve->id;
-            $evaluated = $this->_evaluated($tp_id, $eleve_id);
-            $tp->set('evaluated', $evaluated);
+        //foreach ($listTps as $tp){
+            //$tp_id = $tp->id;
+            //$evaluated = $this->_evaluated($tp_id, $eleve_id);
+            //$tp->set('evaluated', $evaluated);
             $existingData[$tp_id] = $this->_getExistingData($tp_id, $eleve_id);
-        }
+        //}
         //debug($listTps);die;
         //debug($existingData);die;
 		$this->set(compact(
-            'listTps','existingData','listValeursEvals',
-            'listTypesEvals','listEleves','selectedEleve'
+            'tp','existingData','listValeursEvals','selectedEleve','tpEleve_id',
+            'listTypesEvals','selectedEleve','periode_id','rotation_id', 'classe_id',
         ));
 
 	}
@@ -282,7 +336,7 @@ class EvaluationsController extends AppController
     {
         if ($this->Evaluations->delete($eval)) {
             $erreur = false;
-            $this->Flash->success(__("L'évaluation a été supprimée."));
+            $this->Flash->success(__("L'évaluation a été modifiée."));
         } else {
             $erreur = true;
             $this->Flash->error(__("L'évaluation n'a pas été supprimée."));
@@ -300,7 +354,7 @@ class EvaluationsController extends AppController
      *  $etat(array): ['value'(string), 'label_color'(string)];
      *
      */
-    protected function _evaluated($tp_id, $eleve_id)
+    protected function _evaluated($tp_id, $eleve_id, $tpEleve_id)
     {
         //on récupère la liste des entities lien tp<->objspedas
         $tableTps = TableRegistry::get('TravauxPratiques');
@@ -338,7 +392,6 @@ class EvaluationsController extends AppController
             $etat = ['value' => 'Erreur!', 'label_color' => 'label-danger'];
         }
         return $etat;
-
     }
 
     /*
