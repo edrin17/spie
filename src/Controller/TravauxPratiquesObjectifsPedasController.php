@@ -2,7 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
-use Cake\ORM\TableRegistry; 
+use Cake\ORM\TableRegistry;
 use Cake\Collection\Collection;
 /**
  * TravauxPratiquesObjectifsPedasController
@@ -16,52 +16,55 @@ class TravauxPratiquesObjectifsPedasController extends AppController
 	}
     /**
      * Liste les objectifs peda en relation avec le TP:
-     * 
-     * 
+     *
+     *
      *	@params $id
      *	@return $listObjsPedas
-     * 
+     *
      */
-    public function index($id = null)
+    public function index($tp_id = null)
     {
-        if ($id == null) //If null we go back to previous page.
+        if ($tp_id == null) //If null we go back to previous page.
 		{
 			return $this->redirect(['controller' => 'TravauxPratiques', 'action' => 'index']);
 		}
 
         $travauxPratiques = TableRegistry::get('TravauxPratiques');
         $objectifsPedas = TableRegistry::get('ObjectifsPedas');
-        
+        $selectedLVL1_id = $this->request->getQuery('selectedLVL1_id');
+		$selectedLVL2_id =$this->request->getQuery('selectedLVL2_id');
         //find list of objectifs pedas writtening $id
-        $tp = $travauxPratiques->get($id,[   
+        $tp = $travauxPratiques->get($tp_id,[
 			'contain' => ['Rotations.Periodes.Classes','Rotations.Themes']
 		]);
 
-		
+
 		$listObjsPedas = $objectifsPedas->find()
-			->matching('TravauxPratiques', function($q) use ($id) {
-				return $q->where(['TravauxPratiques.id' => $id]);
+			->matching('TravauxPratiques', function($q) use ($tp_id) {
+				return $q->where(['TravauxPratiques.id' => $tp_id]);
 			})
 			->contain([
 				'CompetencesIntermediaires.CompetencesTerminales.Capacites',
 				'NiveauxCompetences'
 			]);
 		//debug($listObjsPedas->toArray());//die;
-        $this->set(compact('tp','listObjsPedas','id'));
-		
+        $this->set(compact('tp','listObjsPedas','tp_id','selectedLVL1_id','selectedLVL2_id'));
+
     }
 	/**
 	 * Associe un objectif peda avec un TP
 	 * @params $id :c'est l'id du TP
-	 * 
-	 * 
+	 *
+	 *
      **********************************************************/
-    public function add($id = null)
+    public function add($tp_id = null)
     {
-		if ($id == null) {
+		if ($tp_id == null) {
 			return $this->redirect(['action' => 'index']);
 		}
-		
+        $selectedLVL1_id = $this->request->getQuery('selectedLVL1_id');
+		$selectedLVL2_id =$this->request->getQuery('selectedLVL2_id');
+
 		$objsPedas = TableRegistry::get('ObjectifsPedas');
 		$listObjsPedas = $objsPedas->find('list')
 			->contain([
@@ -74,31 +77,36 @@ class TravauxPratiquesObjectifsPedasController extends AppController
 				'CompetencesIntermediaires.numero' => 'ASC',
 				'NiveauxCompetences.numero' => 'ASC'
 			]);
-		
+
 		$travauxPratiques = TableRegistry::get('TravauxPratiques');
-		$tp = $travauxPratiques->get($id,[   
+		$tp = $travauxPratiques->get($tp_id,[
 			'contain' => ['Rotations.Periodes.Classes','Rotations.Themes']
 		]);
-		
+
         $tpObjPeda = $this->TravauxPratiquesObjectifsPedas->newEntity();
         if ($this->request->is('post')) {
-			//debug($this->request->getData());debug($tpObjPeda);die;
+            $selectedLVL1_id = $this->request->getData('selectedLVL1_id');
+    		$selectedLVL2_id =$this->request->getData('selectedLVL2_id');
+            $tp_id =$this->request->getData('tp_id');
+			//debug($this->request->getData());die;
             $tpObjPeda = $this->TravauxPratiquesObjectifsPedas
 				->patchEntity($tpObjPeda, $this->request->getData());
-            if ($this->TravauxPratiquesObjectifsPedas->save($tpObjPeda)) { 
+            if ($this->TravauxPratiquesObjectifsPedas->save($tpObjPeda)) {
                 $this->Flash->success(__(
 					"L'association TP - Objectif Péda a été sauvegardée."
 				));
-                return $this->redirect(['action' => 'index']); 
+                return $this->redirect(['action' => 'index',
+                    $tp->id,'?' => ['selectedLVL2_id' => $selectedLVL2_id, 'selectedLVL1_id' => $selectedLVL1_id]
+                ]);
             } else {
                 $this->Flash->error(__(
 					"L'association TP - Objectif Péda n'a pas pu être sauvegardée ! Réessayer."
 				));
             }
         }
-						
-        $this->set(compact('tpObjPeda','listObjsPedas','id','tp'));
-        
+
+        $this->set(compact('tpObjPeda','listObjsPedas','tp_id','tp','selectedLVL1_id','selectedLVL2_id'));
+
     }
 
     /**
@@ -115,7 +123,7 @@ class TravauxPratiquesObjectifsPedasController extends AppController
         }
         return $this->redirect(['action' => 'index']);
     }
-    
+
     /**
      * Crée un tableau qui sera passé à la vue où on recense chaque association de chaque TP
      * par micro-compétence
@@ -123,13 +131,13 @@ class TravauxPratiquesObjectifsPedasController extends AppController
     public function view()
     {
         //On crée l'en-tête du tableau dynamiquement en fonction des niveaux de compétence
-        //le nb de colonnes servira dimensionnement de référence pour la suite du tableau 
-        
+        //le nb de colonnes servira dimensionnement de référence pour la suite du tableau
+
         //création des colonnes
         $tableNiveauxCompetences = TableRegistry::get('NiveauxCompetences');
         $listNiveauxCompetences = $tableNiveauxCompetences -> find()
             ->order(['numero' => 'ASC']);
-        
+
         $nbColonnes = $listNiveauxCompetences->count();
         $n = 0 ;
         $tableHeader[$n] = '';
@@ -139,7 +147,7 @@ class TravauxPratiquesObjectifsPedasController extends AppController
         }
         //création des lignes
         $tableCompsInters = TableRegistry::get('CompetencesIntermediaires');
-        $listCompsInters = $tableCompsInters->find()							
+        $listCompsInters = $tableCompsInters->find()
 			->contain([
 				'CompetencesTerminales.Capacites',
                 'ObjectifsPedas.NiveauxCompetences',
@@ -149,7 +157,7 @@ class TravauxPratiquesObjectifsPedasController extends AppController
 				'CompetencesTerminales.numero' => 'ASC',
 				'CompetencesIntermediaires.numero' => 'ASC',
             ]);
-            
+
         /*
          * Création du tableau:
          * Pour chaque compétences Inter ET pour chaque colonne (nbColonnes)
@@ -163,7 +171,7 @@ class TravauxPratiquesObjectifsPedasController extends AppController
             $nomComp = $comp->fullName;
             $row = $comp->fullName;
             for ($col = 0; $col <= $nbColonnes ; $col++) {
-                
+
                 $written = false;
                 if ($col == 0) {
                     $tableau[$row][$col] = [
@@ -173,9 +181,9 @@ class TravauxPratiquesObjectifsPedasController extends AppController
                     ];
                     $written = true;
                 }
-                
-                
-                
+
+
+
                 foreach ($listMicroComps as $microComp) {
                     $numero = $microComp->niveaux_competence->numero;
                     $nomMicroComp = $microComp->nom;
@@ -244,17 +252,17 @@ class TravauxPratiquesObjectifsPedasController extends AppController
                             'nbTPs' => '',
                     ];
                 }
-                
-                
+
+
             }
-            
+
         }
-        
-        
+
+
         //debug($tableau);die;
-        
-        
+
+
         $this->set(compact('tableau','tableHeader','nbColonnes'));
-        
+
     }
 }

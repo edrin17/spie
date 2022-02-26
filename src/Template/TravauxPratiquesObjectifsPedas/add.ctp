@@ -1,25 +1,27 @@
 <div class="travauxPratiquesObjectifsPeda form large-9 medium-8 columns content">
-    <?= $this->Form->create($tpObjPeda) ?>
+    <?php echo $this->Form->create($tpObjPeda) ?>
+    <?php echo $this->Form->hidden('tp_id',['value' =>$tp_id]) ?>
+    <?php echo $this->Form->hidden('selectedLVL2_id',['value' =>$selectedLVL2_id]) ?>
+    <?php echo $this->Form->hidden('selectedLVL1_id',['value' =>$selectedLVL1_id]) ?>
     <fieldset>
         <legend>
-			<?= __('Associer le tp') ?>
+			<?php echo __('Associer le tp') ?>
 			<font color = "green">
-				<?= h($tp->nom) ?>
+				<?php echo h($tp->nom) ?>
 			</font>
-			<?= ('avec un objectif pedagogique') ?>
+			<?php echo ('avec un objectif pedagogique') ?>
 		</legend>
-            
-        <?= $this->Form->input('objectifs_peda_id', [
+
+        <?php echo $this->Form->input('objectifs_peda_id', [
             'label' => 'Liste des objectifs pédagogiques',
-            'options' => $listObjsPedas    
+            'options' => $listObjsPedas
 		]); ?>
-			
-		<?= $this->Form->input('travaux_pratique_id', [
-            'value' => $id,
-            'type' => 'hidden'    
+
+		<?php echo $this->Form->input('travaux_pratique_id', [
+            'value' => $tp_id,
+            'type' => 'hidden'
 		]); ?>
     </fieldset>
-    <?= $this->Form->button(__('Associer', $id)); ?>
-    <?= $this->Form->end(); ?>
+    <?php echo $this->Form->button(__('Associer', $tp_id)); ?>
+    <?php echo $this->Form->end(); ?>
 </div>
-

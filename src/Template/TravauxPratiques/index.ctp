@@ -26,10 +26,10 @@
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
                             <li>
-                                <?php echo $this->Html->link(__('Objectifs pédagogiques'), [
+                                <?php echo $this->Html->link('Objectifs pédagogiques', [
             						'controller' => 'TravauxPratiquesObjectifsPedas',
             						'action' => 'index',
-        						    $tp->id
+        						    $tp->id,'?' => ['selectedLVL2_id' => $selectedLVL2->id, 'selectedLVL1_id' => $selectedLVL1]
                                 ]).PHP_EOL; ?>
                             </li>
                             <li>

@@ -1,29 +1,32 @@
-<h1> Objectifs Pédas associés avec <font color = "#40CF40" ><?= h($tp->nom) ?> </font></h1>
+<h1> Objectifs Pédas associés avec <font color = "#40CF40" ><?php echo h($tp->nom) ?> </font></h1>
 <!-- Affiche le bouton ajouter un utilisateur -->
-<?= $this->Html->link(__('Ajouter un objectif pédagogique pour ce TP'),
-	['action' => 'add', $id])
-?>
+<?php echo $this->Html->link('Ajouter un objectif pédagogique pour ce TP',[
+    'action' => 'add',
+    $tp->id,'?' => ['selectedLVL2_id' => $selectedLVL2_id, 'selectedLVL1_id' => $selectedLVL1_id]
+    ],['class' => "btn btn-default",'role' => 'button']).PHP_EOL; ?>
+<br>
+<br>
 
-<table id="tableau" class="display">    
+<table id="tableau" class="display">
 	<thead>
 		<tr>
 			<th>Identifiants</th>
 			<th>Niveaux</th>
 			<th>Objectifs Pédagogiques</th>
-			<th class="actions"><h3><?= __('Actions') ?></th>
+			<th class="actions"><h3><?php echo __('Actions') ?></th>
 		</tr>
-	</thead>   
+	</thead>
 	<tbody>
 		<?php foreach ($listObjsPedas as $objPeda): ?>
 		<?php $tpObjPeda = $objPeda->_matchingData['TravauxPratiquesObjectifsPedas']; ?>
 		<?php //debug($objPeda);die; ?>
-		<tr> 
-			<td><?= h($objPeda->code); ?></td>
-			<td><?= h($objPeda->niveaux_competence->nom); ?></td>
-			<td><?= h($objPeda->nom); ?></td>
+		<tr>
+			<td><?php echo h($objPeda->code); ?></td>
+			<td><?php echo h($objPeda->niveaux_competence->nom); ?></td>
+			<td><?php echo h($objPeda->nom); ?></td>
 			<td class="actions">
 			<p>
-				<?= $this->Form->postLink(__('Supprimer'),
+				<?php echo $this->Form->postLink(__('Supprimer'),
 					['action' => 'delete', $tpObjPeda->id],
 					['confirm' => __('Etes vous sur de vouloirs supprimer {0}?',
 						$objPeda->fullName)
@@ -33,8 +36,13 @@
 			</td>
 		</tr>
 		<?php endforeach; ?>
-	</tbody>       
+	</tbody>
 </table>
+<?php echo $this->Html->link('Retour au TP',[
+    'controller' => 'TravauxPratiques',
+    'action' => 'index',
+    $tp->id,'?' => ['LVL1' => $selectedLVL1_id, 'LVL2' => $selectedLVL2_id]
+    ],['class' => "btn btn-default",'role' => 'button']).PHP_EOL; ?>
 <script>
 $(document).ready( function () {
     $('#tableau').DataTable({

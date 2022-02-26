@@ -150,35 +150,6 @@ class TravauxPratiquesController extends AppController
         }
         return $this->redirect(['action' => 'index']);
     }
-    /**
-     * suivi des TP
-     */
-    public function suivi($id = null)
-    {
-        //chargement des onglets du tableau classeur
-        $onglets = $this->_tabs();
-        $listLVL1 = $onglets["listLVL1"];
-        $listLVL2 = $onglets["listLVL2"];
-        $selectedLVL1 = $onglets["selectedLVL1"];
-        $selectedLVL2 = $onglets["selectedLVL2"];
-        $nameController = $onglets["nameController"];
-        $nameAction = $onglets["nameAction"];
-        $options = $onglets["options"];
-        //debug($onglets);die;
-
-        //passage des variables pour le layout
-        $this->set('titre', 'Progression des TP');
-
-
-        //passage des variables standardisées pour la vue tableauClasseur
-        $this->set(compact(
-            'selectedLVL2','selectedLVL1','listLVL1','listLVL2','nameController',
-            'nameAction','options'
-        ));
-
-        //FIN tableau classeur
-
-    }
     /*
      *Gestion du tableau classeur
      */
