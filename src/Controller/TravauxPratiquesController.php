@@ -227,7 +227,6 @@ class TravauxPratiquesController extends AppController
             //->contain(['Periodes.Classes'])
             ->contain(['Periodes'])
             ->order([
-                //'Classes.nom' => 'ASC',
                 'Periodes.numero' => 'ASC',
                 'Rotations.numero' =>'ASC'
             ]);
@@ -237,13 +236,19 @@ class TravauxPratiquesController extends AppController
             $listRotations = $tableRotations->find()
                 ->contain(['Periodes'])
                 ->where(['periode_id' => $selectedPeriode])
-                ->order(['Rotations.numero' => 'ASC']);
+                ->order([
+                    'Periodes.numero' => 'ASC',
+                    'Rotations.numero' =>'ASC'
+                ]);
 
             if ($rotation_id == null) { //si pas de rotation selectionnée on prend la première de la liste
                 $selectedRotation = $tableRotations->find()
                     ->contain(['Periodes'])
                     ->where(['periode_id' => $selectedPeriode])
-                    ->order(['Rotations.numero' => 'ASC'])
+                    ->order([
+                        'Periodes.numero' => 'ASC',
+                        'Rotations.numero' =>'ASC'
+                    ])
                     ->first();
             } else {
                 $selectedRotation = $tableRotations->get($rotation_id,['contain' => [] ]);
@@ -261,12 +266,18 @@ class TravauxPratiquesController extends AppController
             $listRotations = $tableRotations->find()
                 ->contain(['Periodes'])
                 ->where(['periode_id' => $selectedPeriode])
-                ->order(['Rotations.numero' => 'ASC']);
+                ->order([
+                    'Periodes.numero' => 'ASC',
+                    'Rotations.numero' =>'ASC'
+                ]);
 
             $selectedRotation = $tableRotations->find()
                 ->contain(['Periodes'])
                 ->where(['periode_id' => $selectedPeriode])
-                ->order(['Rotations.numero' => 'ASC'])
+                ->order([
+                    'Periodes.numero' => 'ASC',
+                    'Rotations.numero' =>'ASC'
+                ])
                 ->first();
         }
 

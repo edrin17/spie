@@ -403,18 +403,27 @@ class SuivisController extends AppController
                 $rotationsList = $tableRotations->find()
                     ->contain(['Periodes'])
                     ->where(['periode_id' => $selectedPeriode])
-                    ->order(['Rotations.nom' => 'ASC']);
+                    ->order([
+                        'Periodes.numero' => 'ASC',
+                        'Rotations.numero' =>'ASC'
+                    ]);
 
             } else {//sinon on récupere la première entity élève de classe coresspondante
                 $rotationsList = $tableRotations->find()
                     ->contain(['Periodes'])
                     ->where(['periode_id' => $selectedPeriode])
-                    ->order(['Rotations.nom' => 'ASC']);
+                    ->order([
+                        'Periodes.numero' => 'ASC',
+                        'Rotations.numero' =>'ASC'
+                    ]);
 
                 $selectedRotation = $tableRotations->find()
                     ->contain(['Periodes'])
                     ->where(['periode_id' => $selectedPeriode])
-                    ->order(['Rotations.nom' => 'ASC'])
+                    ->order([
+                        'Periodes.numero' => 'ASC',
+                        'Rotations.numero' =>'ASC'
+                    ])
                     ->first();
             }
         } else {
@@ -425,12 +434,12 @@ class SuivisController extends AppController
             $rotationsList = $tableRotations->find()
 				->contain(['Periodes'])
                 ->where(['periode_id' => $selectedPeriode])
-                ->order(['Rotations.nom' => 'ASC']);
+                ->order(['Rotations.numero' => 'ASC']);
 
             $selectedRotation = $tableRotations->find()
 				->contain(['Periodes'])
                 ->where(['periode_id' => $selectedPeriode])
-                ->order(['Rotations.nom' => 'ASC'])
+                ->order(['Rotations.numero' => 'ASC'])
                 ->first();
         }
 
