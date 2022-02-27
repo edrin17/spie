@@ -20,7 +20,10 @@ class TravauxPratiquesController extends AppController
      */
     public function index()
     {
-        //chargement des onglets du tableau classeur
+        $spe = $this->request->getQuery('spe');
+        if ($spe == null) {
+            $spe = 0;
+        }
         $onglets = $this->_tabs();
         $listLVL1 = $onglets["listLVL1"];
         $listLVL2 = $onglets["listLVL2"];
@@ -34,11 +37,11 @@ class TravauxPratiquesController extends AppController
         //passage des variables pour le layout
         $this->set('titre', 'Progression des TP');
 
-
+        //debug($selectedLVL2-);die;
         //passage des variables standardisées pour la vue tableauClasseur
         $this->set(compact(
             'selectedLVL2','selectedLVL1','listLVL1','listLVL2','nameController',
-            'nameAction','options'
+            'nameAction','options','spe'
         ));
 
         //FIN tableau classeur
@@ -46,10 +49,10 @@ class TravauxPratiquesController extends AppController
         //on récupère les bonnes données pour affichage
         $tableTPs = $this->TravauxPratiques;
         $listTPs = $tableTPs->find()
-            ->contain(['Rotations.Periodes.Classes', 'Rotations.Themes'])
+            ->contain(['Rotations.Periodes', 'Rotations.Themes'])
             ->where(['rotation_id' => $selectedLVL2->id])
-            ->where(['specifique' => 0]);
-
+            ->where(['specifique' => $spe]);
+        //debug($listTPs->toArray());
         $this->set(compact('listTPs'));
 
     }
@@ -78,6 +81,7 @@ class TravauxPratiquesController extends AppController
         if ($this->request->is('post')) {
             $tp = $this->TravauxPratiques->patchEntity($tp, $this->request->getData());
             if ($this->TravauxPratiques->save($tp)) {
+                $this->_updateTpEleves($tp);
                 $this->Flash->success(__('Le matériel a été sauvegardé.'));
                 return $this->redirect(['action' => 'index']);
             } else {
@@ -112,8 +116,13 @@ class TravauxPratiquesController extends AppController
 
         $tp = $this->TravauxPratiques->get($id);
 
-        if ($this->request->is(['patch', 'post', 'put'])) {                        // Vérifie le type de requête
-            $tp = $this->TravauxPratiques->patchEntity($tp, $this->request->getData());
+        if ($this->request->is(['patch', 'post', 'put'])) {
+            $data = $this->request->getData();
+            if (!isset($data['specifique'])) {
+                $data['specifique'] = false;
+            }
+            $tp = $this->TravauxPratiques->patchEntity($tp, $data);
+            //debug($tp);die;
             if ($this->TravauxPratiques->save($tp)) {                  //Sauvegarde les données dans la BDD
               $this->Flash->success(__('Le matériel a été sauvegardé.'));      //Affiche une infobulle
               return $this->redirect(['action' => 'index']);                      //Déclenche la fonction 'index' du controlleur
@@ -125,6 +134,29 @@ class TravauxPratiquesController extends AppController
         $this->set(compact('listRotations','tp','listTachesPro'));
     }
 
+    private function _updateTpEleves($tp = null) //on lie le nouveau TP au TP_Eleves
+    {
+        $tableTpEleves = TableRegistry::get('TpEleves');
+        $tableEleves = TableRegistry::get('Eleves');
+
+        $listEleves = $tableEleves->find();
+        foreach ($listEleves as $eleve) {
+            $tpEleve = $tableTpEleves->newEntity();
+            $tpEleve->eleve_id = $eleve->id;
+            $tpEleve->travaux_pratique_id = $tp->id;
+            $tpEleve->debut = null;
+            $tpEleve->fin = null;
+    		$tpEleve->note = null;
+            $tpEleve->pronote = false;
+    		$tpEleve->memo = '';
+            $tableTpEleves->save($tpEleve);
+        }
+
+
+
+
+
+    }
     /************* Affiche toutes les données d'un T.P************************
      ********************************************************************************/
     public function view($id = null)  //Met le paramètre id à null pour éviter un paramètre restant ou hack

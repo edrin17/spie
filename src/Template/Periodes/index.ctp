@@ -4,18 +4,9 @@
           <table class="table">
     <h1>Périodes</h1>
     <!-- Affiche le bouton ajouter un periode -->
-    <?= $this->Html->link(__('Ajouter une période'), ['action' => 'add', $classe_id]); ?>
-    <?php echo $this->Form->create(); ?>
-    <?php echo $this->Form->input('classe_id', [
-        'label' => 'Filtrer par classes',
-        'options' => $listeClasses,
-        'default' => $classe_id
-    ]); ?>
-    <?= $this->Form->button(__('Filtrer')); ?>
-    <?php echo $this->Form->end(); ?>
+    <?= $this->Html->link(__('Ajouter une période'), ['action' => 'add']); ?>
         <thead>
             <tr>
-                <th><?= $this->Paginator->sort('classe','Classe'); ?></th>
                 <th><?= $this->Paginator->sort('numero','Numéro'); ?> </th>
                 <th class="actions"><h3><?= __('Actions'); ?></th>
             </tr>
@@ -24,7 +15,6 @@
             <?php foreach ($periodes as $periode): ?> <!--Affiche le contenu de 'periodes'  -->
             <?php //debug($periode);die; ?>
             <tr>
-                <td><?= h($periode->classe->nom) ?></td>
                 <td><?= "P.".h($periode->numero) ?></td>
                 <td class="actions">
                 <!-- Affiche des urls/boutons et de leurs actions -->

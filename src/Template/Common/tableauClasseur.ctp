@@ -23,6 +23,7 @@ function isSelected ($itemToTest, $selectedItem) {
                 1,
                 '?' => [
                     'LVL1' => $elementLVL1->id,
+                    'spe' => $spe,
                     'options' => $options,
                     ]
             ]) ?>
@@ -40,6 +41,7 @@ function isSelected ($itemToTest, $selectedItem) {
             '?' => [
                 'LVL1' => $selectedLVL1,
                 'LVL2' => $elementLVL2->id,
+                'spe' => $spe,
                 'options' => $options,
             ]
             ]) ?>
@@ -48,4 +50,3 @@ function isSelected ($itemToTest, $selectedItem) {
 </ul>
 
 <?= $this->fetch('content') ?>
-

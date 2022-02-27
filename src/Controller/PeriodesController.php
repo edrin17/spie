@@ -13,33 +13,32 @@ class PeriodesController extends AppController
 		parent::initialize();
 		$this->viewBuilder()->setLayout('default');
 	}
-	
+
     public function index($classe_id = null)
     {
+		$tableClasse = TableRegistry::get('Classes');
 		$listeClasses = $this->Periodes->Classes->find('list')
-												->order(['nom' => 'ASC']);
-		
+			->order(['nom' => 'ASC']);
+
 		if ($this->request->is('post'))
 		{
 			//on stocke la valeur du formulaire pour utilisation utérieure
-			$classe_id = $this->request->getData()['classe_id'];
-			
+			//$classe_id = $this->request->getData()['classe_id'];
+
 			//debug($this->request->getData()['classe_id']);die;
-			$periodes = $this->Periodes->find()		
-							->contain(['Classes'])
-							->where(['classe_id' => $classe_id])
-							->order(['Classes.nom' =>'ASC'])
-							->order(['Periodes.numero' => 'ASC']);							
+			$periodes = $this->Periodes->find()
+							//->where(['classe_id' => $classe_id])
+							//->order(['Classes.nom' =>'ASC'])
+							->order(['Periodes.numero' => 'ASC']);
 		}else
 		{
-			$periodes = $this->Periodes->find()		
-							->contain(['Classes'])
-							->order(['Classes.nom' =>'ASC'])
+			$periodes = $this->Periodes->find()
+							//->order(['Classes.nom' =>'ASC'])
 							->order(['Periodes.numero' => 'ASC']);
 		}
-	$this->set(compact('periodes','classe_id','listeClasses'));
+	$this->set(compact('periodes'));
     }
-	
+
 	/**
      * Ajoute un utilisateur
      */
@@ -53,22 +52,22 @@ class PeriodesController extends AppController
 			'BFBFBF' => 'Gris',
 			'BCA4EC' => 'Violet',
         ];
-        
+
         $tableClasse = TableRegistry::get('Classes');
-        
+
         $classes = $tableClasse->find()
 						->select(['id', 'nom'])
 						->order(['nom' => 'ASC']);
-						
-		foreach ($classes as $classe) 
+
+		foreach ($classes as $classe)
 		{
 			$listeClasses[$classe->id] = $classe->nom;
 		}
-        
+
         $periode = $this->Periodes->newEntity();                                   // crée une nouvelle entité dans $periode
         if ($this->request->is('post')) {                                           //si requête de type post
 			$classe_id = $this->request->getData()['classe_id'];
-            $this->set(compact('classe_id'));  
+            $this->set(compact('classe_id'));
             $periode = $this->Periodes->patchEntity($periode, $this->request->getData());  //??
             if ($this->Periodes->save($periode)) {
 				                               //Met le champ 'id' de la base avec UUID CHAR(36)
@@ -78,10 +77,10 @@ class PeriodesController extends AppController
                 $this->Flash->error(__("La période n'a pas pu être sauvegardée ! Réessayer.")); //Affiche une infobulle
             }
         }
-        
-        $this->set(compact('periode','listeClasses','classe_id','colors')); 
+
+        $this->set(compact('periode','listeClasses','classe_id','colors'));
     }
-	
+
 	/**
      * Édite un utilisateur
      */
@@ -95,18 +94,18 @@ class PeriodesController extends AppController
 			'BFBFBF' => 'Gris',
 			'BCA4EC' => 'Violet',
         ];
-        
+
         $tableClasse = TableRegistry::get('Classes');
-        
+
         $classes = $tableClasse->find()
 						->select(['id', 'nom'])
 						->order(['nom' => 'ASC']);
-						
-		foreach ($classes as $classe) 
+
+		foreach ($classes as $classe)
 		{
 			$listeClasses[$classe->id] = $classe->nom;
 		}
-        
+
         $periode = $this->Periodes->get($id, ['contain' => [] ]);                  //récupère l'id de l'utilisateur
         if ($this->request->is(['patch', 'post', 'put'])) {                         // Vérifie le type de requête
             $periode = $this->Periodes->patchEntity($periode, $this->request->getData());
@@ -131,12 +130,12 @@ class PeriodesController extends AppController
 						->select(['id','numero', 'Classes.nom'])
 						->where(['Periodes.id' => $id])
 						->first();
-						
+
         $this->set('periode', $periode);                                  // Passe le paramètre 'periode' à la vue.
         $this->set('_serialize', ['periode']);                         // Sérialize 'periode'
     }
 
-	
+
     /**
      * Efface un utilisateur
      */
