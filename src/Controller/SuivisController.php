@@ -133,89 +133,6 @@ class SuivisController extends AppController
             ->order(['numero' => 'ASC']);
 
         //debug($tableEvals);die;
-        //verifie si 'l'élève à acquis la compétence
-        //@params $eleveId (CHAR36)
-        //@return array $etat[integer 'type' => (
-        //  0'= 'non évalué' ou '1' = formée ou 2 = 'évaluée'),
-        //  char 'color'
-        function evaluateMicroComp($eleveId, $microCompId) {
-
-            //on récupere les évaluations correpondantes aux microComp et à l'élève
-            //on les classes par dates
-            $tableEvals = TableRegistry::get('Evaluations');
-            $listEvals = $tableEvals->find()
-                ->contain([
-                    'Eleves', 'ValeursEvals',
-                    'TypesEvals', 'ObjectifsPedas',
-                    'TravauxPratiques.Rotations.Periodes',
-                ])
-                ->where([
-                    'eleve_id' => $eleveId,
-                    'objectifs_peda_id' => $microCompId
-                ])
-                ->order([
-                        'Periodes.numero' => 'ASC',
-                        'Rotations.numero' => 'ASC',
-                        'date_eval' => 'ASC'
-                    ])
-                ;
-            //debug($listEvals->toArray());die;
-            //mise des variables aux valeurs par défaut
-            $valeur = 0;
-            $color = 'transparent';
-            //$nbEvals = $listEvals->count();
-            //s'il y a des évals
-            if (!$listEvals == []) {
-                $nbEvalsFormatives = 0;
-                foreach ($listEvals as $eval) {
-
-
-                    //si PAS DEJA évaluée 4fois OU sommatif on recupère le type et la valeur de l'éval
-                    if ($valeur !== 3) {
-                        $typeEval = $eval->types_eval->numero;
-                        $note = $eval->valeurs_eval->numero;
-                        $nbEvalsFormatives ++;
-                        //si sommatif
-                        if ($typeEval == 2) { // si sommatif
-                            $valeur = 3;//évalué en sommatif
-                            //si acquis on met en vert sinon rouge
-                            if ($note > 1) {
-                                $color = '#00B70B';//vert
-                            } else {
-                                $color = '#FF5E5E';//rouge
-                            }
-                        } elseif ($typeEval == 1) { //si eval formative
-                            if ($nbEvalsFormatives > 3) { //si + de 3 éval c'est du sommatif'
-
-                                $valeur = 2;//on met à évalué
-
-                                //si acquis on met en vert sinon rouge
-                                if ($note > 1) {
-                                    $color = '#00B70B';//vert
-                                } else {
-                                    $color = '#FF5E5E';//rouge
-                                }
-
-                        } else {
-                            $valeur = 1;//formée
-                            $color = '#CCCCCC';//gris
-
-                        }
-                    }
-
-
-                    }
-
-                }
-            }
-            //debug($microCompId);debug('nbEvals_'.$nbEvals);
-            //debug($nbEvalsFormatives);die;
-            return $etat = ['type' => $valeur, 'color' => $color, $listEvals];
-        }
-
-
-
-
         //On crée l'en-tête du tableau dynamiquement en fonction des niveaux de compétence
         //le nb de colonnes servira dimensionnement de référence pour la suite du tableau
 
@@ -244,67 +161,160 @@ class SuivisController extends AppController
             $listMicroComps = $comp->objectifs_pedas;
             $nomComp = $comp->fullName;
             $row = $comp->fullName;
+
             for ($col = 0; $col <= $nbColonnes ; $col++) {
 
-                $written = false;
-                if ($col == 0) {
-                    $tableau[$row][$col] = [
-                            'nom' => $nomComp,
-                            'contenu' => [
-                                'type' => 0,
-                                'bgcolor'=> 'transparent',
-                            ]
-                    ];
-                    $written = true;
-                }
-
-
-
+                $tableau[$row][$col] = [ //on mets une valeur de base dans toutes les cases
+                        'nom' => '',
+                        'contenu' => [
+                            'type' => 0,
+                            'maxLvl' => -1,
+                            'bgcolor'=> 'transparent',
+                        ]
+                ];
                 foreach ($listMicroComps as $microComp) {
                     $numero = $microComp->niveaux_competence->numero;
                     $nomMicroComp = $microComp->nom;
                     $contenu = [];
 
-                    if ($numero === $col) {
-                        //on regarde si l'état des évals sur la compétence
-                        $etat = evaluateMicroComp($eleveId, $microComp->id);
-                        $color = $etat['color'];
+                    if ($numero === $col) { //si le n° de la µcomp correspond à la bon colonne(débutant, intégration, approfondissement, maîtrise)
+                        $etat = $this->_evaluateMicroComp($eleveId, $microComp->id);//on évalue les µcomp
 
-                        //on fait le tableau avec son contenu
-                        $tableau[$row][$col] = [
+                        $tableau[$row][$col] = [ //on fait le tableau avec son contenu
                             'nom' => $nomMicroComp,
                             'contenu' => [
-                                'type' => 0,
-                                'bgcolor'=> $color,
+                                'type' => $etat['type'],
+                                'maxLvl' => $etat['maxLvl'],
+                                'bgcolor'=> $etat['color']
                             ]
                         ];
-                        $written = true;
                     }
-
                 }
-                if (!$written) {
-                    $tableau[$row][$col] = [
-                            'nom' => '',
-                            'contenu' => [
-                                'type' => 0,
-                                'bgcolor'=> 'transparent',
-                            ]
-                    ];
-                }
-
-
             }
-
+            //debug($tableau[$row]);die;
+            $tableau[$row][0] = [ //on evalue le couleut de la comp inter
+                    'nom' => $nomComp,
+                    'contenu' => [
+                        'type' => 0,
+                        'bgcolor'=> $this->_evalComp($tableau[$row]),
+                    ]
+            ];
+            //debug($tableau[$row]);die;
         }
 
-
-        //debug($tableau);die;
         $tableau = ['tableau' => $tableau,
             'tableHeader' =>$tableHeader,
             'nbColonnes' =>$nbColonnes,
             ];
 
         return $tableau;
+
+    }
+    private function _evalComp($tableau){
+        $maxlvl = -1; //pas evalué
+        foreach ($tableau as $key => $col) {
+            $lvl = $col['contenu']['maxLvl'];
+
+            if ($lvl > $maxlvl ) { //si meilleure eval
+                $maxlvl = $lvl;
+            }
+        }
+        switch ($maxlvl) {
+            case -1:
+                $bgcolor = '#ffffff';
+                break;
+            case 0:
+                $bgcolor = '#CCCCCC';
+                break;
+            case 1:
+                $bgcolor = '#ff3333';
+                break;
+            case 2:
+                $bgcolor = '#ff6600';
+                break;
+            case 3:
+                $bgcolor = '#00B70B';
+                break;
+            case 4:
+                $bgcolor = '#0066cc';
+                break;
+        }
+        return $bgcolor;
+    }
+    //verifie si 'l'élève à acquis la compétence
+    //@params $eleveId (CHAR36)
+    //@return array $etat[integer 'type' => (
+    //  0'= 'non évalué' ou '1' = formée ou 2 = 'évaluée'),
+    //  char 'color'
+    private function _evaluateMicroComp($eleveId, $microCompId) {
+
+        //on récupere les évaluations correpondantes aux microComp et à l'élève
+        //on les classes par dates
+        $tableEvals = TableRegistry::get('Evaluations');
+        $listEvals = $tableEvals->find()
+            ->contain([
+                'Eleves', 'ValeursEvals',
+                'TypesEvals', 'ObjectifsPedas.NiveauxCompetences',
+                'TravauxPratiques.Rotations.Periodes',
+            ])
+            ->where([
+                'eleve_id' => $eleveId,
+                'objectifs_peda_id' => $microCompId
+            ])
+            ->order([
+                    'Periodes.numero' => 'ASC',
+                    'Rotations.numero' => 'ASC',
+                    'date_eval' => 'ASC'
+                ])
+            ;
+        //debug($listEvals->toArray());die;
+        //mise des variables aux valeurs par défaut
+        $valeur = 0;
+        $color = 'transparent';
+        $maxlvl = -1;
+        //$nbEvals = $listEvals->count();
+        //s'il y a des évals
+        if (!$listEvals == []) {
+            $nbEvalsFormatives = 0;
+
+            foreach ($listEvals as $eval) {
+                //debug($listEvals->toArray());die;
+                //si PAS DEJA évaluée 4fois OU sommatif on recupère le type et la valeur de l'éval
+                if ($valeur !== 3) {
+                    $typeEval = $eval->types_eval->numero;//on stocke le type d'eval (formatif ou sommatif)
+                    $note = $eval->valeurs_eval->numero;
+                    $nbEvalsFormatives ++;
+
+                    if ($typeEval == 2) { // si sommatif
+                        $valeur = 3;//évalué en sommatif
+                        //si acquis on met en vert sinon rouge
+                        if ($note > 1) {
+                            $maxlvl = $eval->objectifs_peda->niveaux_competence->numero; //on note le niveau d'aquisition pour plus tard
+                            $color = '#00B70B';//vert
+                        }else{
+                            $color = '#FF5E5E';//rouge
+                        }
+                    }else{ //si eval formative
+                        if ($nbEvalsFormatives > 3) { //si + de 3 éval c'est du sommatif'
+                            $valeur = 2;//on met à évalué
+                            //si acquis on met en vert sinon rouge
+                            if ($note > 1) {
+                                $maxlvl = $eval->objectifs_peda->niveaux_competence->numero;
+                                $color = '#00B70B';//vert
+                            }
+                        }else{
+                            //il y a des eval au moins formatives donc valeurs de base
+                            $maxlvl = 0;
+                            $valeur = 1;//formée
+                            $color = '#CCCCCC';//gris
+                        }
+                    }
+                }
+            }
+        }
+        $etat = ['type' => $valeur, 'color' => $color, 'maxLvl' => $maxlvl, $listEvals];
+        //debug($etat);die;
+        return $etat;
 
     }
 

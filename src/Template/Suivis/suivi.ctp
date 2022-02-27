@@ -26,7 +26,3 @@ echo $this->fetch('tableauClasseur');
         <?php endforeach ?>
     </tbody>
 </table>
-
-<div class="sidebar">
-    test
-</div>
