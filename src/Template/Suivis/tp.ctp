@@ -10,7 +10,7 @@ function editButton($tp){
     $tp['contenu'] .= '"><i class="fa fa-cog" aria-hidden="true"></i></button>';
     return $tp;
 }
-function deleteButton($tp, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode){
+function deleteButton($tp, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode, $spe){
     return $vue->Html->link(
         '<i class="fa fa-trash" aria-hidden="true"></i>',
         ['controller' => 'Suivis',
@@ -20,7 +20,8 @@ function deleteButton($tp, $vue, $selectedRotation,  $selectedClasse, $selectedP
                 'periode' => $selectedPeriode,
                 'rotation' => $selectedRotation->id,
                 'classe' => $selectedClasse,
-                'tp_id' => $tp['tp_id']
+                'tp_id' => $tp['tp_id'],
+                'spe' => $spe,
                 ]
         ],[
         'confirm' => 'Etes-vous sûr de voulour supprimer le TP: '.$tp['tp_nom']." pour l'élève:".$tp['eleve_nom'].'.?' ,
@@ -31,7 +32,7 @@ function deleteButton($tp, $vue, $selectedRotation,  $selectedClasse, $selectedP
     );
 
 }
-function evalButton($tp, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode){
+function evalButton($tp, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode, $spe){
     return $vue->Html->link(
         'Evaluer',
         ['controller' => 'Evaluations',
@@ -43,6 +44,7 @@ function evalButton($tp, $vue, $selectedRotation,  $selectedClasse, $selectedPer
                 'classe' => $selectedClasse,
                 'tp_id' => $tp['tp_id'],
                 'eleve_id' => $tp['eleve_id'],
+                'spe' => $spe,
             ]
         ],['class' => "btn btn-default",'role' => 'button']
     );
@@ -65,7 +67,7 @@ function note($tp, $selectedRotation,  $selectedClasse, $selectedPeriode){
     return $tp['contenu'];
 }
 
-function state($tp, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode){
+function state($tp, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode, $spe){
     if (is_null($tp['debut'])) {
         $tp = editButton($tp);
 
@@ -76,25 +78,26 @@ function state($tp, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode)
         $tp['contenu'] .= 'Base: '.isBase($tp, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode);
         $tp['contenu'] .=pronote($tp, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode);
         $tp['contenu'] = editButton($tp)['contenu'];
-        $tp['contenu'] .= deleteButton($tp, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode);
+        $tp['contenu'] .= deleteButton($tp, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode, $spe);
     }else{
         $tp['contenu'] = 'Début: <span class="label label-info label-as-badge">'.date_format($tp['debut'],'d-m-Y')."</span><br>";
         $tp['contenu'] = editButton($tp)['contenu'];
-        $tp['contenu'] .= deleteButton($tp, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode);
+        $tp['contenu'] .= deleteButton($tp, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode, $spe);
     }
     //debug($tp);die;
     return $tp;
 }
 
-function tabProcess($tableau, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode){
+function tabProcess($tableau, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode , $spe){
+    $tab = null;
     foreach ($tableau as $eleve => $tps) {
         foreach ($tps as $tp => $cell) {
-            $tab[$eleve][$tp] = state($cell,$vue, $selectedRotation,  $selectedClasse, $selectedPeriode);
+            $tab[$eleve][$tp] = state($cell,$vue, $selectedRotation,  $selectedClasse, $selectedPeriode, $spe);
         }
     }
     return $tab;
 }
-$tableau = tabProcess($tableau, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode);
+$tableau = tabProcess($tableau, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode, $spe);
 //debug($tableau);die;
 
 function inputDebut($date){
@@ -148,12 +151,36 @@ function inputMemo($memo){
     }
     return $html;
 }
+if ($spe) {
+    $html['spe'] = 0;
+    $html['label'] = 'Voir les TP normaux';
+    $html['color'] = 'btn-success';
+}else {
+    $html['spe'] = 1;
+    $html['label'] = 'Voir les TP spécifiques';
+    $html['color'] = 'btn-warning';
+}
+
 
 $this->start('tableauClasseur');
 echo $this->element('TableauxClasseurs/suivi_tp');
 $this->end();
 echo $this->fetch('tableauClasseur');
 ?>
+<div class="row">
+    <div class="col-md-8">
+        <?php echo $this->Html->link($html['label'],
+            ['action' => 'tp',1,
+                '?' => [
+                    'periode' => $selectedPeriode,
+                    'rotation' => $selectedRotation->id,
+                    'spe' => $html['spe'],
+                    'classe' => $selectedClasse,
+                ]
+            ],['class' => "btn ".$html['color'],'role' => 'button' ]); ?>
+    </div>
+</div>
+
 <table class="table table-hover">
     <thead>
         <tr>
@@ -164,85 +191,90 @@ echo $this->fetch('tableauClasseur');
         </tr>
     </thead>
     <tbody>
-        <?php foreach ($tableau as $cell => $key ) :?>
-            <tr>
-                <td><b><?php echo $cell ?></b></td>
-                <?php foreach ($key as $eleve => $value) :?>
-                    <td><?php echo $value['contenu']?></td>
-                <?php endforeach; ?>
-            </tr>
-        <?php endforeach; ?>
+        <?php if (isset($tableau)): ?>
+            <?php foreach ($tableau as $cell => $key ) :?>
+                <tr>
+                    <td><b><?php echo $cell ?></b></td>
+                    <?php foreach ($key as $eleve => $value) :?>
+                        <td><?php echo $value['contenu']?></td>
+                    <?php endforeach; ?>
+                </tr>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </tbody>
 </table>
 
-
-<?php foreach ($tableau as $cell => $key ) :?>
-    <?php foreach ($key as $eleve => $tp) :?>
-        <?php echo $this->Form->create(); ?>
-        <?php echo $this->Form->hidden('eleve_id',['value' =>$tp['eleve_id']]) ?>
-        <?php echo $this->Form->hidden('tp_id',['value' =>$tp['tp_id']]) ?>
-        <?php echo $this->Form->hidden('selectedClasseId',['value' =>$selectedClasse]) ?>
-        <?php echo $this->Form->hidden('selectedRotationId',['value' =>$selectedRotation->id]) ?>
-        <?php echo $this->Form->hidden('selectedPeriodeId',['value' =>$selectedPeriode]) ?>
-        <!-- modal-for <?php echo $tp['eleve_nom'].'-'.$tp['tp_nom'] ?>-->
-        <div class="modal fade bs-example-modal-lg" id="myModal<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>"  tabindex="-1" role="dialog" aria-labelledby="test">
-          <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <h4 class="modal-title" id="myModalLabel"><?php echo $tp['eleve_nom'].'-'.$tp['tp_nom'] ?> </h4>
+<?php if (isset($tableau)): ?>
+    <?php foreach ($tableau as $cell => $key ) :?>
+        <?php foreach ($key as $eleve => $tp) :?>
+            <?php echo $this->Form->create(); ?>
+            <?php echo $this->Form->hidden('eleve_id',['value' =>$tp['eleve_id']]) ?>
+            <?php echo $this->Form->hidden('tp_id',['value' =>$tp['tp_id']]) ?>
+            <?php echo $this->Form->hidden('selectedClasseId',['value' =>$selectedClasse]) ?>
+            <?php echo $this->Form->hidden('selectedRotationId',['value' =>$selectedRotation->id]) ?>
+            <?php echo $this->Form->hidden('selectedPeriodeId',['value' =>$selectedPeriode]) ?>
+            <?php echo $this->Form->hidden('spe',['value' =>$spe]) ?>
+            <!-- modal-for <?php echo $tp['eleve_nom'].'-'.$tp['tp_nom'] ?>-->
+            <div class="modal fade bs-example-modal-lg" id="myModal<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>"  tabindex="-1" role="dialog" aria-labelledby="test">
+              <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title" id="myModalLabel"><?php echo $tp['eleve_nom'].'-'.$tp['tp_nom'] ?> </h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label>Début TP:</label>
+                                <input type="date" class="form-control" name="date_debut" id="date_debut_<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>" <?php echo inputDebut($tp['debut'])?> required>
+                            </div>
+                            <div class="col-md-2">
+                                <label>TP fini:</label>
+                                <input type="checkbox" id="blankCheckbox" value="false" onclick="document.getElementById('date_fin_<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>').disabled = changeDateFinState(document.getElementById('date_fin_<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>').disabled)" <?php echo inputIsFini($tp['fin'])?>>
+                            </div>
+                            <div class="col-md-3">
+                                <label>Fin du TP:</label>
+                                <input type="date" class="form-control" name="date_fin" id="date_fin_<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>" <?php echo inputFin($tp['fin'])?>>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label for="note" >Note:</label>
+                                <input type="number" class="form-control" max=10 name="note" id="note<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>" <?php echo inputNote($tp['note'])?>>
+                            </div>
+                            <div class="col-md-3">
+                                <label>Pronote: </label>
+                                <input type="radio" name="pronote" id="radio1<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>" value="true" <?php echo inputRadioOui($tp['pronote'])?>> Oui
+                                <input type="radio" name="pronote" id="radio2<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>" value="false"<?php echo inputRadioNon($tp['pronote'])?>> Non
+                            </div>
+                            <div class="col-md-3">
+                                <label>Base: </label>
+                                <?php echo isBase($tp, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode ) ?>
+                                <?php echo evalButton($tp, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode, $spe) ?>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <textarea  name="memo" class="form-control" rows="5" id="memo<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>" placeholder="Memo ici"><?php echo inputMemo($tp['memo'])?></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer"><!-- modal-footer -->
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+                        <button type="sumbit" class="btn btn-primary">Sauvegarder</button>
+                    </div><!-- /modal-footer -->
                 </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-3">
-                            <label>Début TP:</label>
-                            <input type="date" class="form-control" name="date_debut" id="date_debut_<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>" <?php echo inputDebut($tp['debut'])?> required>
-                        </div>
-                        <div class="col-md-2">
-                            <label>TP fini:</label>
-                            <input type="checkbox" id="blankCheckbox" value="false" onclick="document.getElementById('date_fin_<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>').disabled = changeDateFinState(document.getElementById('date_fin_<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>').disabled)" <?php echo inputIsFini($tp['fin'])?>>
-                        </div>
-                        <div class="col-md-3">
-                            <label>Fin du TP:</label>
-                            <input type="date" class="form-control" name="date_fin" id="date_fin_<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>" <?php echo inputFin($tp['fin'])?>>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="row">
-                        <div class="col-md-3">
-                            <label for="note" >Note:</label>
-                            <input type="number" class="form-control" max=10 name="note" id="note<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>" <?php echo inputNote($tp['note'])?>>
-                        </div>
-                        <div class="col-md-3">
-                            <label>Pronote: </label>
-                            <input type="radio" name="pronote" id="radio1<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>" value="true" <?php echo inputRadioOui($tp['pronote'])?>> Oui
-                            <input type="radio" name="pronote" id="radio2<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>" value="false"<?php echo inputRadioNon($tp['pronote'])?>> Non
-                        </div>
-                        <div class="col-md-3">
-                            <label>Base: </label>
-                            <?php echo isBase($tp, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode ) ?>
-                            <?php echo evalButton($tp, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode) ?>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <textarea  name="memo" class="form-control" rows="5" id="memo<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>" placeholder="Memo ici"><?php echo inputMemo($tp['memo'])?></textarea>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer"><!-- modal-footer -->
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
-                    <button type="sumbit" class="btn btn-primary">Sauvegarder</button>
-                </div><!-- /modal-footer -->
+              </div>
             </div>
-          </div>
-        </div>
-        <?php echo $this->Form->end(); ?>
+            <?php echo $this->Form->end(); ?>
+        <?php endforeach; ?>
     <?php endforeach; ?>
-<?php endforeach; ?>
+<?php endif; ?>
+
 <script>
 function changeDateFinState(state) {
     if (state) {

@@ -54,7 +54,7 @@
                                 <?php echo $this->Html->link('Objectifs pédagogiques', [
             						'controller' => 'TravauxPratiquesObjectifsPedas',
             						'action' => 'index',
-        						    $tp->id,'?' => ['selectedLVL2_id' => $selectedLVL2->id, 'selectedLVL1_id' => $selectedLVL1]
+        						    $tp->id,'?' => ['selectedLVL2_id' => $selectedLVL2->id, 'selectedLVL1_id' => $selectedLVL1, 'spe' => $spe,]
                                 ]).PHP_EOL; ?>
                             </li>
                             <li>

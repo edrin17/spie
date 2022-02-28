@@ -379,7 +379,7 @@ class SuivisController extends AppController
         return $selectedClasse;
     }
 
-    private function tabPeriodesRotations($nameController, $nameAction, $options, $request)
+    private function tabPeriodesRotations($nameController, $nameAction, $options, $request, $spe)
     {
 
         $selectedPeriode = $this->request->getQuery('periode');
@@ -456,7 +456,7 @@ class SuivisController extends AppController
         //passage des variables standardisées pour la vue tableauClasseur
         $this->set(compact(
             'rotationsList','periodesList','selectedPeriode','selectedRotation','nameController',
-            'nameAction','options'
+            'nameAction','options', 'spe',
         ));
         return $selectedRotation;
     }
@@ -467,20 +467,23 @@ class SuivisController extends AppController
         $nameController = 'Suivis';
         $nameAction = 'tp';
         $options = '';
+        $spe = 0 ;
         $request = $this->request;
+        if ($request->getQuery('spe') !== null) {
+            $spe = $request->getQuery('spe');
+        }
 		$selectedClasse = $this->tabClassesEleves($nameController, $nameAction, $options, $request);
-        $selectedRotation = $this->tabPeriodesRotations($nameController, $nameAction, $options, $request);
+        $selectedRotation = $this->tabPeriodesRotations($nameController, $nameAction, $options, $request, $spe);
 
 		// ***************************************************************************
         //on récupère les info du tableauClasseur id de l'élève et id de la rotation
         $selectedClasseId = $request->getQuery('classe');
         $selectedRotationId = $request->getQuery('rotation');
 
-
 		if ($this->request->is('post')) {
 			$this->save($request);
         }
-
+        //debug($spe);die;
 
         if ($selectedClasseId == '') {
             $selectedClasseId = $selectedClasse;
@@ -501,7 +504,8 @@ class SuivisController extends AppController
             ->distinct()
             ->contain(['Eleves','TravauxPratiques'])
             ->where(['classe_id' => $selectedClasseId])
-            ->where(['TravauxPratiques.rotation_id'=> $selectedRotationId])
+            ->where(['TravauxPratiques.rotation_id'=> $selectedRotationId,
+                'specifique' => $spe])
             ->order(['TravauxPratiques.nom' => 'ASC']);
 
         $tableau = array();
@@ -510,7 +514,8 @@ class SuivisController extends AppController
             $listTpEleves = $tableTpEleves->find()
                 ->contain(['TravauxPratiques'])
                 ->where(['eleve_id' => $eleve->id])
-                ->where(['TravauxPratiques.rotation_id'=> $selectedRotationId])
+                ->where(['TravauxPratiques.rotation_id'=> $selectedRotationId,
+                        'specifique' => $spe])
 				->order(['TravauxPratiques.nom' => 'ASC']);
             foreach ($listTpEleves as $tp) {
                 $tableau[$eleve->nom][$tp->id]['eleve_id'] = $eleve->id;
@@ -578,6 +583,7 @@ class SuivisController extends AppController
         $selectedPeriodeId = $this->request->getData('selectedPeriodeId');
         $selectedClasseId = $this->request->getData('selectedClasseId');
         $selectedRotationId = $this->request->getData('selectedRotationId');
+        $spe = $this->request->getData('spe');
 
         $tpElevesTable = TableRegistry::get('TpEleves');
         $tp = $tpElevesTable->get($tp_id);
@@ -617,6 +623,7 @@ class SuivisController extends AppController
                 'classe' => $selectedClasseId,
                 'rotation' => $selectedRotationId,
                 'periode' => $selectedPeriodeId,
+                'spe' => $spe
                 ]]
         );
     }
@@ -628,6 +635,7 @@ class SuivisController extends AppController
         $selectedPeriodeId = $this->request->getQuery('periode');
         $selectedClasseId = $this->request->getQuery('classe');
         $selectedRotationId = $this->request->getQuery('rotation');
+        $spe = $this->request->getQuery('spe');
 
         $tpElevesTable = TableRegistry::get('TpEleves');
         $tp = $tpElevesTable->get($tp_id);
@@ -645,6 +653,7 @@ class SuivisController extends AppController
                 'classe' => $selectedClasseId,
                 'rotation' => $selectedRotationId,
                 'periode' => $selectedPeriodeId,
+                'spe' => $spe,
                 ]]
         );
     }

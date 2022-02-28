@@ -3,6 +3,7 @@
     <?php echo $this->Form->hidden('tp_id',['value' =>$tp_id]) ?>
     <?php echo $this->Form->hidden('selectedLVL2_id',['value' =>$selectedLVL2_id]) ?>
     <?php echo $this->Form->hidden('selectedLVL1_id',['value' =>$selectedLVL1_id]) ?>
+    <?php echo $this->Form->hidden('spe',['value' => $spe]) ?>
     <fieldset>
         <legend>
 			<?php echo __('Associer le tp') ?>

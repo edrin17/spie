@@ -25,6 +25,7 @@ function isSelected ($itemToTest, $selectedItem) {
                     'rotation' => $selectedRotation->id,
                     'options' => $options,
                     'classe' => $selectedClasse,
+                    'spe' => $spe,
                     ]
             ]) ?>
         </li>
@@ -43,6 +44,7 @@ function isSelected ($itemToTest, $selectedItem) {
                 'rotation' => $rotation->id,
                 'options' => $options,
                 'classe' => $selectedClasse,
+                'spe' => $spe,
             ]
             ]) ?>
         </li>
@@ -61,6 +63,7 @@ function isSelected ($itemToTest, $selectedItem) {
                     'options' => $options,
                     'periode' => $selectedPeriode,
                     'rotation' => $selectedRotation->id,
+                    'spe' => $spe,
                     ]
             ]) ?>
         </li>

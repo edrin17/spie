@@ -33,9 +33,10 @@ class TravauxPratiquesObjectifsPedasController extends AppController
         $objectifsPedas = TableRegistry::get('ObjectifsPedas');
         $selectedLVL1_id = $this->request->getQuery('selectedLVL1_id');
 		$selectedLVL2_id =$this->request->getQuery('selectedLVL2_id');
+		$spe =$this->request->getQuery('spe');
         //find list of objectifs pedas writtening $id
         $tp = $travauxPratiques->get($tp_id,[
-			'contain' => ['Rotations.Periodes.Classes','Rotations.Themes']
+			'contain' => ['Rotations.Periodes','Rotations.Themes']
 		]);
 
 
@@ -48,7 +49,7 @@ class TravauxPratiquesObjectifsPedasController extends AppController
 				'NiveauxCompetences'
 			]);
 		//debug($listObjsPedas->toArray());//die;
-        $this->set(compact('tp','listObjsPedas','tp_id','selectedLVL1_id','selectedLVL2_id'));
+        $this->set(compact('tp','listObjsPedas','tp_id','selectedLVL1_id','selectedLVL2_id', 'spe'));
 
     }
 	/**
@@ -64,6 +65,7 @@ class TravauxPratiquesObjectifsPedasController extends AppController
 		}
         $selectedLVL1_id = $this->request->getQuery('selectedLVL1_id');
 		$selectedLVL2_id =$this->request->getQuery('selectedLVL2_id');
+		$spe =$this->request->getQuery('spe');
 
 		$objsPedas = TableRegistry::get('ObjectifsPedas');
 		$listObjsPedas = $objsPedas->find('list')
@@ -80,13 +82,14 @@ class TravauxPratiquesObjectifsPedasController extends AppController
 
 		$travauxPratiques = TableRegistry::get('TravauxPratiques');
 		$tp = $travauxPratiques->get($tp_id,[
-			'contain' => ['Rotations.Periodes.Classes','Rotations.Themes']
+			'contain' => ['Rotations.Periodes','Rotations.Themes']
 		]);
 
         $tpObjPeda = $this->TravauxPratiquesObjectifsPedas->newEntity();
         if ($this->request->is('post')) {
             $selectedLVL1_id = $this->request->getData('selectedLVL1_id');
     		$selectedLVL2_id =$this->request->getData('selectedLVL2_id');
+			$spe = $this->request->getData('spe');
             $tp_id =$this->request->getData('tp_id');
 			//debug($this->request->getData());die;
             $tpObjPeda = $this->TravauxPratiquesObjectifsPedas
@@ -96,7 +99,7 @@ class TravauxPratiquesObjectifsPedasController extends AppController
 					"L'association TP - Objectif Péda a été sauvegardée."
 				));
                 return $this->redirect(['action' => 'index',
-                    $tp->id,'?' => ['selectedLVL2_id' => $selectedLVL2_id, 'selectedLVL1_id' => $selectedLVL1_id]
+                    $tp->id,'?' => ['selectedLVL2_id' => $selectedLVL2_id, 'selectedLVL1_id' => $selectedLVL1_id, 'spe' => $spe]
                 ]);
             } else {
                 $this->Flash->error(__(
@@ -105,7 +108,7 @@ class TravauxPratiquesObjectifsPedasController extends AppController
             }
         }
 
-        $this->set(compact('tpObjPeda','listObjsPedas','tp_id','tp','selectedLVL1_id','selectedLVL2_id'));
+        $this->set(compact('tpObjPeda','listObjsPedas','tp_id','tp','selectedLVL1_id','selectedLVL2_id', 'spe'));
 
     }
 
