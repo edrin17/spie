@@ -63,7 +63,7 @@ class TravauxPratiquesController extends AppController
 		$rotations = TableRegistry::get('Rotations');
 
 		$listRotations = $rotations->find('list')
-			->contain(['Periodes.Classes'])
+			->contain(['Periodes'])
 			->order([
 				'Periodes.Numero' => 'ASC',
 				'Rotations.Numero' => 'ASC'
@@ -100,7 +100,7 @@ class TravauxPratiquesController extends AppController
     {
         $rotations = TableRegistry::get('Rotations');
           $listRotations = $rotations->find('list')
-        	->contain(['Periodes.Classes'])
+        	->contain(['Periodes'])
         	->order([
         		'Periodes.Numero' => 'ASC',
         		'Rotations.Numero' => 'ASC'
@@ -162,7 +162,7 @@ class TravauxPratiquesController extends AppController
     public function view($id = null)  //Met le paramètre id à null pour éviter un paramètre restant ou hack
     {
         $tp = $this->TravauxPratiques->get($id,[
-			'contain' => ['Rotations.Periodes.Classes','Rotations.Themes']
+			'contain' => ['Rotations.Periodes','Rotations.Themes']
 		]);
         $this->set(compact('tp'));;
 
@@ -224,7 +224,7 @@ class TravauxPratiquesController extends AppController
             ]);
 
         $listRotations = $tableRotations->find()
-            //->contain(['Periodes.Classes'])
+            //->contain(['Periodes'])
             ->contain(['Periodes'])
             ->order([
                 'Periodes.numero' => 'ASC',

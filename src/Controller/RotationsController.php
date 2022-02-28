@@ -55,7 +55,7 @@ class RotationsController extends AppController
 			//debug($this->request->getData()['periode_id']);die;
 			$rotations = $this->Rotations->find('all')		
                 ->contain([
-                    'Periodes.Classes',
+                    'Periodes',
                     'Themes',
                     'Users'
                 ])
@@ -84,7 +84,7 @@ class RotationsController extends AppController
 			//on recupere de toutes les rotations
 			$rotations = $this->Rotations->find('all')		
                 ->contain([
-                    'Periodes.Classes',
+                    'Periodes',
                     'Themes',
                     'Users',
                 ])
@@ -191,7 +191,7 @@ class RotationsController extends AppController
         //on recupere les donnees de l'entity
         $rotation = $this->Rotations->get($id, [
             'contain' => [
-                'Periodes.Classes',
+                'Periodes',
                 'Themes',
                 'Users',
             ]
@@ -242,7 +242,7 @@ class RotationsController extends AppController
         //on recupere les donnees de l'entity
         $rotation = $this->Rotations->get($id, [
             'contain' => [
-                'Periodes.Classes',
+                'Periodes',
                 'Themes',
                 'Users',
             ]

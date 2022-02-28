@@ -178,7 +178,7 @@ class AnalysesController extends AppController
         $tpXobjTable = TableRegistry::get('TravauxPratiquesObjectifsPedas');
         $listMatch = $tpXobjTable->find()
             ->contain([
-                'TravauxPratiques.Rotations.Periodes.Classes',
+                'TravauxPratiques.Rotations.Periodes',
                 'ObjectifsPedas.CompetencesIntermediaires.CompetencesTerminales.Capacites',
                 'ObjectifsPedas.NiveauxCompetences',
             ])

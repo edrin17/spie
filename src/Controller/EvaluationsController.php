@@ -68,7 +68,7 @@ class EvaluationsController extends AppController
             $tp_id = $this->request->getData('tp_id');
             $tp = $tableTps->get($tp_id,[
                 'contain' => [
-                    'Rotations.Periodes.Classes',
+                    'Rotations.Periodes',
                     'ObjectifsPedas.CompetencesIntermediaires.CompetencesTerminales.Capacites',
                     'ObjectifsPedas.NiveauxCompetences',
                 ]
@@ -241,8 +241,8 @@ class EvaluationsController extends AppController
 			'contain' => [
 				'TravauxPratiques.ObjectifsPedas.CompetencesIntermediaires.CompetencesTerminales.Capacites',
 				'TravauxPratiques.ObjectifsPedas.NiveauxCompetences',
-                'TravauxPratiques.Rotations.Periodes.Classes',
-                'Periodes.Classes'
+                'TravauxPratiques.Rotations.Periodes',
+                'Periodes'
 			]
 		]);
 
@@ -264,7 +264,7 @@ class EvaluationsController extends AppController
 
         $tp = $tableTps->get($tp_eleve->travaux_pratique->id,[
             'contain' => [
-                'Rotations.Periodes.Classes',
+                'Rotations.Periodes',
                 'ObjectifsPedas.CompetencesIntermediaires.CompetencesTerminales.Capacites',
                 'ObjectifsPedas.NiveauxCompetences',
                 ]

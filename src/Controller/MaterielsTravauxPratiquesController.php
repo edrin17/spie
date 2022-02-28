@@ -33,7 +33,7 @@ class MaterielsTravauxPratiquesController extends AppController
 
         //find list of objectifs pedas matching $id
         $tp = $travauxPratiques->get($id,[
-			'contain' => ['Rotations.Periodes.Classes','Rotations.Themes']
+			'contain' => ['Rotations.Periodes','Rotations.Themes']
 		]);
 
 
@@ -69,7 +69,7 @@ class MaterielsTravauxPratiquesController extends AppController
 
 		$travauxPratiques = TableRegistry::get('TravauxPratiques');
 		$tp = $travauxPratiques->get($id,[
-			'contain' => ['Rotations.Periodes.Classes','Rotations.Themes']
+			'contain' => ['Rotations.Periodes','Rotations.Themes']
 		]);
         $tpMateriel = $this->MaterielsTravauxPratiques->newEntity();
         if ($this->request->is('post')) {
