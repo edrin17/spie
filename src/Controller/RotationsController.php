@@ -16,87 +16,32 @@ class RotationsController extends AppController
 
     public function index($periode_id = null)
     {
-		$listClasses = $this->Rotations->Periodes->Classes->find('list')
-			->order(['nom' => 'ASC']);											
-		
-		/* On regarde si un filtre par période est appliqué sur la page index en POST
-		 * (appuie sur le bouton 'filtrer du formulaire') */
-		if ( ($this->request->is('post')) or ($periode_id !== null) )
+		$listClasses = $this->Rotations->Periodes->find('list')
+			->order(['nom' => 'ASC']);
+
+		//on récupère les liste de periodes correpondantes en la classe
+		$listPeriodes = $this->Rotations->Periodes->find()
+            ->order(['Periodes.numero' => 'ASC']);
+		//mise en forme du select
+		foreach ($listPeriodes as $listPeriode)
 		{
-			if ( $this->request->is('post') ) 
-			{
-				//on stocke la valeur du formulaire pour utilisation utérieure
-				$periode_id = $this->request->getData()['periode_id'];
-			}
-			//on recupère la id de la classe correpondant à la période à partir de l'id de la période
-			$periode = $this->Rotations->Periodes->find()
-                ->contain([
-                    'Classes',
-                ])
-                ->where(['Periodes.id' => $periode_id])
-                ->first();
-			$classe_id = $periode->classe_id;
-			//on liste les periodes pour le select de la vue avec numeNom								
-			$listPeriodes = $this->Rotations->Periodes->find()
-                ->contain([
-                    'Classes',
-                ])
-                ->where(['classe_id' => $classe_id])
-                ->order(['Periodes.numero' => 'ASC']);
-			
-			//debug($listPeriodes->toArray());die;
-			//mise en forme de l'affichage
-			foreach ($listPeriodes as $listPeriode) 
-			{
-				$selectPeriodes[$listPeriode->id] = "Période n°" .$listPeriode->numero;
-			}
-			
-			
-			//debug($this->request->getData()['periode_id']);die;
-			$rotations = $this->Rotations->find('all')		
-                ->contain([
-                    'Periodes',
-                    'Themes',
-                    'Users'
-                ])
-                ->where(['periode_id' => $periode_id])
-                ->order(['Rotations.numero' =>'ASC']);
-		}else //donc $periode_id == null
-		{
-			
-		
-			//On cherche le premier resultat pour le 'default' du select de le vue
-			$classe_id = $this->Rotations->Periodes->Classes->find()
-                ->order(['nom' => 'ASC'])
-                ->first();
-										
-			//on récupère les liste de periodes correpondantes en la classe
-			$listPeriodes = $this->Rotations->Periodes->find()
-                ->contain(['Classes'])
-                ->where(['classe_id' => $classe_id->id])
-                ->order(['Periodes.numero' => 'ASC']);
-			//mise en forme du select
-			foreach ($listPeriodes as $listPeriode) 
-			{
-				$selectPeriodes[$listPeriode->id] = "Période n°" .$listPeriode->numero;
-			}
-													
-			//on recupere de toutes les rotations
-			$rotations = $this->Rotations->find('all')		
-                ->contain([
-                    'Periodes',
-                    'Themes',
-                    'Users',
-                ])
-                ->order(['Classes.nom' => 'ASC',
-                        'Periodes.numero' =>'ASC',
-                        'Rotations.numero' =>'ASC'
-                ]);
-		}					
-        
+			$selectPeriodes[$listPeriode->id] = "Période n°" .$listPeriode->numero;
+		}
+
+		//on recupere de toutes les rotations
+		$rotations = $this->Rotations->find('all')
+            ->contain([
+                'Periodes',
+                'Themes',
+                'Users',
+            ])
+            ->order(['Periodes.numero' =>'ASC',
+                    'Rotations.numero' =>'ASC'
+            ]);
+
         //debug($rotations->toArray());die;
-        $this->set(compact('rotations','selectPeriodes','periode_id','classe_id','listClasses'));
-		
+        $this->set(compact('rotations','selectPeriodes','periode_id'));
+
     }
 
     /**
@@ -107,15 +52,15 @@ class RotationsController extends AppController
         //on recupere la liste des thèmes
         $listThemes = $this->Rotations->Themes->find('list')
             ->order(['nom' => 'ASC']);
-        
+
         //on recupere la liste des utilisateurs
         $listUsers = $this->Rotations->Users->find('list')
             ->order(['nom' => 'ASC']);
-        
+
         //on liste les classe pour le select de la vue
 		$listClasses = $this->Rotations->Periodes->Classes->find('list')
             ->order(['nom' => 'ASC']);
-		
+
 		/* si il y a un parametre on recupere l'id de la classe pui son liste les periodes correspondantes
 		 * à la classe
 		 * sinon On charge la premiere classe avec la période correspondante dans les select*/
@@ -127,19 +72,19 @@ class RotationsController extends AppController
                 ->where(['Periodes.id' => $periode_id])
                 ->first();
 			$classe_id = $periode->classe_id;
-			//on liste les periodes pour le select de la vue avec numeNom								
+			//on liste les periodes pour le select de la vue avec numeNom
 			$listPeriodes = $this->Rotations->Periodes->find()
                 ->contain(['Classes'])
                 ->where(['classe_id' => $classe_id])
                 ->order(['Periodes.numero' => 'ASC']);
-			
+
 			//debug($listPeriodes->toArray());die;
 			//mise en forme de l'affichage
-			foreach ($listPeriodes as $listPeriode) 
+			foreach ($listPeriodes as $listPeriode)
 			{
 				$selectPeriodes[$listPeriode->id] = "Période n°" .$listPeriode->numero;
-			}											
-		
+			}
+
 		}else{
 			//On cherche le premier resultat pour le 'default' du select de le vue
 			$classe_id = $this->Rotations->Periodes->Classes->find()
@@ -151,17 +96,17 @@ class RotationsController extends AppController
                 ->contain(['Classes'])
                 ->where(['classe_id' => $classe_id])
                 ->order(['Periodes.numero' => 'ASC']);
-			
+
 			//on met en forme le resultat
-			foreach ($listPeriodes as $listPeriode) 
+			foreach ($listPeriodes as $listPeriode)
 			{
 				$selectPeriodes[$listPeriode->id] = "Période n°" .$listPeriode->numero;
 			}
 
 		}
-        
-        
-        
+
+
+
         $rotation = $this->Rotations->newEntity();                                   // crée une nouvelle entité dans $rotation
         if ($this->request->is('post')) {
 			$periode_id = $this->request->getData()['periode_id'];                                           //si requête de type post
@@ -173,7 +118,7 @@ class RotationsController extends AppController
                 $this->Flash->error(__("La rotation n'a pas pu être sauvegardé ! Réessayer.")); //Affiche une infobulle
             }
         }
-  
+
         $this->set(compact(
             'rotation',
             'selectPeriodes',
@@ -182,12 +127,12 @@ class RotationsController extends AppController
             'listClasses',
             'classe_id',
             'listUsers'
-        )); 
+        ));
     }
-    
-    
+
+
        public function edit($id = null)
-    {                                 
+    {
         //on recupere les donnees de l'entity
         $rotation = $this->Rotations->get($id, [
             'contain' => [
@@ -196,30 +141,30 @@ class RotationsController extends AppController
                 'Users',
             ]
         ]);
-        
+
         //on recupere la liste des thèmes
         $listThemes = $this->Rotations->Themes->find('list')
             ->order(['nom' => 'ASC']);
-        
+
         //on recupere la liste des utilisateurs
         $listUsers = $this->Rotations->Users->find('list')
             ->order(['nom' => 'ASC']);
-        
+
         //on liste les classe pour le select de la vue
 		$listClasses = $this->Rotations->Periodes->Classes->find('list')
             ->order(['nom' => 'ASC']);
-													
+
         //on liste les periodes correpondante à l'entity
 		$listPeriodes = $this->Rotations->Periodes->find()
             ->where(['classe_id' => $rotation->periode->classe_id])
             ->order(['Periodes.numero' => 'ASC']);
-													
+
 		//mise en forme du select
-		foreach ($listPeriodes as $listPeriode) 
+		foreach ($listPeriodes as $listPeriode)
 		{
 			$selectPeriodes[$listPeriode->id] = "Période n°" .$listPeriode->numero;
 		}
-													
+
         if ($this->request->is(['patch','post','put'])) {                                           //si requête de type post
             $periode_id = $this->request->getData()['periode_id'];
             $rotation = $this->Rotations->patchEntity($rotation, $this->request->getData());  //??
@@ -230,9 +175,9 @@ class RotationsController extends AppController
                 $this->Flash->error(__("La rotation n'a pas pu être sauvegardé ! Réessayer.")); //Affiche une infobulle
             }
         }
-		
-        $themes = $this->Rotations->Themes->find('list');   
-        $this->set(compact('rotation','selectPeriodes','listThemes','listClasses','listUsers')); 
+
+        $themes = $this->Rotations->Themes->find('list');
+        $this->set(compact('rotation','selectPeriodes','listThemes','listClasses','listUsers'));
     }
     /**
      * Affiche toutes les données d'un utilisateur
@@ -246,7 +191,7 @@ class RotationsController extends AppController
                 'Themes',
                 'Users',
             ]
-        ]);					     
+        ]);
 		$this->set(compact('rotation'));
     }
 

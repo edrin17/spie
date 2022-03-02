@@ -6,11 +6,6 @@
     <!-- Affiche le bouton ajouter un utilisateur -->
     <?= $this->Html->link(__('Ajouter une rotation'), ['action' => 'add', $periode_id]); ?>
     <?= $this->Form->create(); ?>
-    <?= $this->Form->input('classe_id', [
-        'label' => 'Filtrer par classes',
-        'onchange' => 'select_periodes()',
-        'options' => $listClasses
-    ]); ?>
     <?= $this->Form->input('periode_id', [
         'label' => 'Filtrer par periode',
         'options' => $selectPeriodes,
@@ -23,20 +18,16 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Classe</th>
                 <th>Nom</th>
                 <th>Thèmes</th>
-                <th>Responsable</th>
                 <th class="actions"><h3><?= __('Actions'); ?></h3></th>
             </tr>
         </thead>
         <tbody>
             <?php foreach ($rotations as $rotation): ?> <!--Affiche le contenu de 'periodess'  -->
             <tr style = "background-color:#<?= $rotation->theme->color ?>;" >
-                <td><?= $rotation->periode->classe->nom ?></td>
                 <td><?= $rotation->fullName?></td>
                 <td><?= $rotation->theme->nom ?></td>
-                <td><?= $rotation->user->nom ?></td>
 				<td class="actions">
                 <!-- Affiche des urls/boutons et de leurs actions -->
                 <p>
