@@ -1,4 +1,28 @@
-<?php $this->assign('title', 'Association Objectifs Pédas et T.P'); ?>  <!-- Customise le titre de la page -->
+<?php $this->assign('title', 'Association Objectifs Pédas et T.P');
+if ($spe) {
+    $html['spe'] = 0;
+    $html['label'] = 'Voir les TP normaux';
+    $html['color'] = 'btn-success';
+}else {
+    $html['spe'] = 1;
+    $html['label'] = 'Voir les TP spécifiques';
+    $html['color'] = 'btn-warning';
+}
+?>
+<div class="row">
+    <div class="col-md-8">
+        <?php echo $this->Html->link($html['label'],
+            ['action' => 'view',1,
+                '?' => [
+                    //'LVL1' => $selectedLVL1,
+                    //'LVL2' => $selectedLVL2->id,
+                    'spe' => $html['spe'],
+                    //'options' => $options,
+                ]
+            ],['class' => "btn ".$html['color'],'role' => 'button' ]); ?>
+    </div>
+</div>
+
 <table class = 'table table-bordered table-hover'>
     <thead>
         <tr>

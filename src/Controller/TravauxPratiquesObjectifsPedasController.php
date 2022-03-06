@@ -133,6 +133,10 @@ class TravauxPratiquesObjectifsPedasController extends AppController
      */
     public function view()
     {
+        $spe = 0;
+        if ($this->request->getQuery() !== null){
+            $spe = $this->request->getQuery('spe');
+        }
         //On crée l'en-tête du tableau dynamiquement en fonction des niveaux de compétence
         //le nb de colonnes servira dimensionnement de référence pour la suite du tableau
 
@@ -156,6 +160,7 @@ class TravauxPratiquesObjectifsPedasController extends AppController
                 'ObjectifsPedas.NiveauxCompetences',
                 'ObjectifsPedas.TravauxPratiques.Rotations.Periodes',
 			])
+            //->where(['ObjectifsPedas.TravauxPratiques.specifique' => 0])
 			->order(['Capacites.numero' => 'ASC',
 				'CompetencesTerminales.numero' => 'ASC',
 				'CompetencesIntermediaires.numero' => 'ASC',
@@ -169,6 +174,7 @@ class TravauxPratiquesObjectifsPedasController extends AppController
          * on stocke la valeur sinon on stocke ""
          * @return: tableau[$ligne][$numColonne]["nom" => $nom, $contenu[]]
          */
+         //debug($listCompsInters->toArray());die;
         foreach ($listCompsInters as $comp) {
             $listMicroComps = $comp->objectifs_pedas;
             $nomComp = $comp->fullName;
@@ -188,22 +194,28 @@ class TravauxPratiquesObjectifsPedasController extends AppController
 
 
                 foreach ($listMicroComps as $microComp) {
+                    $nbTps = 0;
                     $numero = $microComp->niveaux_competence->numero;
                     $nomMicroComp = $microComp->nom;
                     $listTps = $microComp->travaux_pratiques;
                     //on ajoute remplace la clé de chaque TP par fullName contaténer avec son ID
                     if (!empty($listTps)) {
                         foreach ($listTps as $tp) {
-                            $intermediateTable[$tp->fullName.'-'.$tp->id] = $tp;
+                            if ($tp->specifique == $spe) {
+                                $nbTps ++;
+                                $intermediateTable[$tp->fullName.'-'.$tp->id] = $tp;
+                            }
                         }
-                        ksort($intermediateTable);
-                        $listTps = $intermediateTable;
-                        unset($intermediateTable);
+                        if ($nbTps > 0){ //on regarde que la liste de Tp ne soir pas vide
+                            ksort($intermediateTable);
+                            $listTps = $intermediateTable;
+                            unset($intermediateTable);
+                        }
                     }
 
 
                     //on compte le nombre de TP par micro-competence
-                    $nbTps = count($listTps);
+                    //$nbTps = count($listTps);
                     //en fonction du nombre de TP on change la couleur du badge
                     /*
                     success = "vert"
@@ -232,7 +244,9 @@ class TravauxPratiquesObjectifsPedasController extends AppController
 
                     // on concatene les nom de tp au fromat html
                     foreach ($listTps as $tp) {
-                        $contenu .= $tp->fullName ."</br>";
+                        if ($tp->specifique == $spe) {
+                            $contenu .= $tp->fullName ."</br>";
+                        }
                     }
 
 
@@ -265,7 +279,7 @@ class TravauxPratiquesObjectifsPedasController extends AppController
         //debug($tableau);die;
 
 
-        $this->set(compact('tableau','tableHeader','nbColonnes'));
+        $this->set(compact('tableau','tableHeader','nbColonnes','spe'));
 
     }
 }
