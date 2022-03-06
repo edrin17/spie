@@ -49,7 +49,10 @@ class TravauxPratiquesController extends AppController
         //on récupère les bonnes données pour affichage
         $tableTPs = $this->TravauxPratiques;
         $listTPs = $tableTPs->find()
-            ->contain(['Rotations.Periodes', 'Rotations.Themes'])
+            ->contain(['Rotations.Periodes',
+				'Rotations.Themes',
+				'MaterielsTravauxPratiques.Materiels.Marques',
+			])
             ->where(['rotation_id' => $selectedLVL2->id])
             ->where(['specifique' => $spe]);
         //debug($listTPs->toArray());

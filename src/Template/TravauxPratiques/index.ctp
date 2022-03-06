@@ -10,6 +10,23 @@
         $html['label'] = 'Voir les TP spécifiques';
         $html['color'] = 'btn-warning';
     }
+
+    function machines($tp){
+        $html = '';
+        $listeMachines = $tp->materiels_travaux_pratiques;
+        if (!is_null($listeMachines)) {
+            foreach ($listeMachines as $machine) {
+                $html .= $machine->materiel->marque->nom;
+                $html .= ': ';
+                $html .= $machine->materiel->nom;
+                $html .= '<br>';
+            }
+        } else {
+            $html = '';
+        }
+        return $html;
+    }
+
 ?>
 <?php $this->assign('title', 'Travaux Pratiques'); ?>  <!-- Customise le titre de la page -->
 <br>
@@ -33,7 +50,8 @@
 <table class="table table-hover">
     <thead>
         <tr>
-            <th> Nom du TP </th>
+            <th>Nom du TP</th>
+            <th>Machines du TP</th>
             <th><h3>Actions</h3></th>
         </tr>
     </thead>
@@ -42,6 +60,7 @@
         <tr>
             <td><?php echo $this->Html->link($tp->nom,
                 ['action' => 'edit', $tp->id]); ?></td>
+            <td><?php echo machines($tp) ?></td>
 			<td class="actions">
                 <div class="btn-group" role="group" >
                     <div class="btn-group" role="group">
