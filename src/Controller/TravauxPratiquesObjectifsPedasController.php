@@ -160,7 +160,6 @@ class TravauxPratiquesObjectifsPedasController extends AppController
                 'ObjectifsPedas.NiveauxCompetences',
                 'ObjectifsPedas.TravauxPratiques.Rotations.Periodes',
 			])
-            //->where(['ObjectifsPedas.TravauxPratiques.specifique' => 0])
 			->order(['Capacites.numero' => 'ASC',
 				'CompetencesTerminales.numero' => 'ASC',
 				'CompetencesIntermediaires.numero' => 'ASC',
@@ -174,7 +173,6 @@ class TravauxPratiquesObjectifsPedasController extends AppController
          * on stocke la valeur sinon on stocke ""
          * @return: tableau[$ligne][$numColonne]["nom" => $nom, $contenu[]]
          */
-         //debug($listCompsInters->toArray());die;
         foreach ($listCompsInters as $comp) {
             $listMicroComps = $comp->objectifs_pedas;
             $nomComp = $comp->fullName;
