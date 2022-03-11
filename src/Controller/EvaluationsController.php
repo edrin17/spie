@@ -73,56 +73,6 @@ class EvaluationsController extends AppController
                     'ObjectifsPedas.NiveauxCompetences',
                 ]
             ]);
-            //$selectedRotationId = $this->request->getData('selectedRotationId');
-            //$selectedPeriodeId = $this->request->getData('selectedPeriodeId');
-            //$selectedClasseId = $this->request->getData('selectedClasseId');
-            /*
-            foreach ($request as $key => $value) {
-                //on extrait le debut de la clé pour voir si c'est uuid
-                $dataKey = substr($key,0,5);
-                // si uuid
-                // on extrait les données d'indentification du TP & de l'élève pour la sauvegarde
-                // et le rafraichissement
-                switch ($dataKey) {
-                    case 'tpId_';
-                        //on supprime de la chaîne le bout 'tpId_'
-                        //debug($key);
-                        $key = substr($key,5);
-                        //debug($key);
-                        //récupère l'id du TP
-                        $tp_id = substr($key,0,36);
-                        //debug('tp_id:'.$tp_id);
-                        //on supprime de la chaîne l'id du TP + '_selectedLVL1_'
-                        $key = substr(substr($key,36),13);
-                        //debug($key);
-                        //récupère l'id du selectedLVL1
-                        $selectedClasse = substr($key,0,36);
-                        //debug('tp_id:'.$selectedClasse);
-                        //on supprime de la chaîne l'id du TP + '_selectedLVL1_'
-                        $key = substr(substr($key,36),13);
-                        //debug($key);
-                        //récupère l'id du selectedLVL2
-                        $selectedEleve = substr($key,0,36);
-                        //debug('tp_id:'.$selectedEleve);
-                        //on supprime de la chaîne l'id du TP + '_options_'
-                        $key = substr(substr($key,36),9);
-                        //on supprime de la chaîne l'id de selectedEleve + '_options_'
-                        $rotation_id = substr($key,0,36);
-                        //debug('rotation_id:'.$rotation_id);die;
-
-                    break;
-
-                    case 'valeu'; //si valeurEval
-                        $objPedaId = substr($key,-36);
-                        $data[$objPedaId]['value'] = $value;
-                    break;
-
-                    case 'typeE'; //si typeEval
-                        $objPedaId = substr($key,-36);
-                        $data[$objPedaId]['type'] = $value;
-                    break;
-                }
-            }*/
             $tp_id = $this->request->getData('tp_id');
             $selectedEleve = $this->request->getData('eleve_id');
             foreach ($tp->objectifs_pedas as $objPeda) {
@@ -144,97 +94,6 @@ class EvaluationsController extends AppController
                     ]]
             );
         }
-        /*elseif (isset($_GET['options'])) { //juste un choix normal de selection
-            $rotation_id = $_GET['options'];
-        }
-		//@returns $selectedClasse
-        function getClasse() {
-            if (isset($_GET['LVL1'])) {
-                $selectedClasse = $_GET['LVL1'];
-            }else{
-                $selectedClasse = null;
-            }
-            return $selectedClasse;
-        }
-
-        //@returns $eleve_id
-        function getEleve() {
-            if (isset($_GET['LVL2'])) {
-                $eleve_id = $_GET['LVL2'];
-            }else{
-                $eleve_id = null;
-            }
-            return $eleve_id;
-        }
-
-        $selectedClasse = getClasse();
-        $eleve_id = getEleve();
-
-        $tableEleves = TableRegistry::get('Eleves');
-        $tableClasses = TableRegistry::get('Classes');
-
-        $listClasses = $tableClasses->find()
-						->where(['Classes.archived' => 0])
-            ->order(['Classes.nom' => 'ASC']);
-
-        $listEleves = $tableEleves->find()
-						->order(['Eleves.nom' => 'ASC']);
-        //debug($listClasses->toArray());die;
-
-        //si on a sélectionné une classe
-        if ($selectedClasse != null) {
-            //si on a sélectionné un élève récupère l'entity eleve'
-            if ($eleve_id != null) {
-                $selectedEleve = $tableEleves->get($eleve_id,['contain' => [] ]);
-                $listEleves = $tableEleves->find()
-                    ->where(['classe_id' => $selectedClasse])
-                    ->order(['Eleves.nom' => 'ASC']);
-
-            } else {//sinon on récupere la première entity élève de classe coresspondante
-                $listEleves = $tableEleves->find()
-                    ->where(['classe_id' => $selectedClasse])
-                    ->order(['Eleves.nom' => 'ASC']);
-
-                $selectedEleve = $tableEleves->find()
-                    ->where(['classe_id' => $selectedClasse])
-                    ->order(['Eleves.nom' => 'ASC'])
-                    ->first();
-            }
-        } else {
-            $classe = $tableClasses->find()
-                ->where(['Classes.archived' => 0])
-                ->order(['Classes.nom'])
-                ->first();
-            $selectedClasse = $classe->id;
-            $listEleves = $tableEleves->find()
-                ->where(['classe_id' => $selectedClasse])
-                ->order(['Eleves.nom' => 'ASC']);
-
-            $selectedEleve = $tableEleves->find()
-                ->where(['classe_id' => $classe->id])
-                ->order(['Eleves.nom' => 'ASC'])
-                ->first();
-        }
-
-        //changement de variable pour correspondre à la vue standard
-        $nameController = 'Evaluations';
-        $nameAction = 'evaluate';
-        $options = $rotation_id;
-
-        $listLVL1 = $listClasses;
-        $listLVL2 = $listEleves;
-
-        $selectedLVL1 = $selectedClasse;
-        $selectedLVL2 = $selectedEleve;
-
-        //passage des variables pour le layout
-        $this->set('titre', "Evaluation ".$selectedEleve->nom." ".$selectedEleve->prenom);
-
-        //passage des variables standardisées pour la vue tableauClasseur
-        $this->set(compact(
-            'selectedLVL2','selectedLVL1','listLVL1','listLVL2','nameController',
-            'nameAction', 'options'
-        )); */
         $selectedEleve = $tableEleves->get($eleve_id);
         //on charge la rotation correspondante
         $rotation = $tableRotations->get($rotation_id,[
@@ -360,7 +219,97 @@ class EvaluationsController extends AppController
         $tableTps = TableRegistry::get('TravauxPratiques');
         $tp = $tableTps->get($tp_id,['contain'=> 'TravauxPratiquesObjectifsPedas']);
 
-        //debug($tp_id);debug($eleve_id);die;
+        //debug($tp_id);debug($eleve_/*elseif (isset($_GET['options'])) { //juste un choix normal de selection
+            $rotation_id = $_GET['options'];
+
+		//@returns $selectedClasse
+        function getClasse() {
+            if (isset($_GET['LVL1'])) {
+                $selectedClasse = $_GET['LVL1'];
+            }else{
+                $selectedClasse = null;
+            }
+            return $selectedClasse;
+        }
+
+        //@returns $eleve_id
+        function getEleve() {
+            if (isset($_GET['LVL2'])) {
+                $eleve_id = $_GET['LVL2'];
+            }else{
+                $eleve_id = null;
+            }
+            return $eleve_id;
+        }
+
+        $selectedClasse = getClasse();
+        $eleve_id = getEleve();
+
+        $tableEleves = TableRegistry::get('Eleves');
+        $tableClasses = TableRegistry::get('Classes');
+
+        $listClasses = $tableClasses->find()
+						->where(['Classes.archived' => 0])
+            ->order(['Classes.nom' => 'ASC']);
+
+        $listEleves = $tableEleves->find()
+						->order(['Eleves.nom' => 'ASC']);
+        //debug($listClasses->toArray());die;
+
+        //si on a sélectionné une classe
+        if ($selectedClasse != null) {
+            //si on a sélectionné un élève récupère l'entity eleve'
+            if ($eleve_id != null) {
+                $selectedEleve = $tableEleves->get($eleve_id,['contain' => [] ]);
+                $listEleves = $tableEleves->find()
+                    ->where(['classe_id' => $selectedClasse])
+                    ->order(['Eleves.nom' => 'ASC']);
+
+            } else {//sinon on récupere la première entity élève de classe coresspondante
+                $listEleves = $tableEleves->find()
+                    ->where(['classe_id' => $selectedClasse])
+                    ->order(['Eleves.nom' => 'ASC']);
+
+                $selectedEleve = $tableEleves->find()
+                    ->where(['classe_id' => $selectedClasse])
+                    ->order(['Eleves.nom' => 'ASC'])
+                    ->first();
+            }
+        } else {
+            $classe = $tableClasses->find()
+                ->where(['Classes.archived' => 0])
+                ->order(['Classes.nom'])
+                ->first();
+            $selectedClasse = $classe->id;
+            $listEleves = $tableEleves->find()
+                ->where(['classe_id' => $selectedClasse])
+                ->order(['Eleves.nom' => 'ASC']);
+
+            $selectedEleve = $tableEleves->find()
+                ->where(['classe_id' => $classe->id])
+                ->order(['Eleves.nom' => 'ASC'])
+                ->first();
+        }
+
+        //changement de variable pour correspondre à la vue standard
+        $nameController = 'Evaluations';
+        $nameAction = 'evaluate';
+        $options = $rotation_id;
+
+        $listLVL1 = $listClasses;
+        $listLVL2 = $listEleves;
+
+        $selectedLVL1 = $selectedClasse;
+        $selectedLVL2 = $selectedEleve;
+
+        //passage des variables pour le layout
+        $this->set('titre', "Evaluation ".$selectedEleve->nom." ".$selectedEleve->prenom);
+
+        //passage des variables standardisées pour la vue tableauClasseur
+        $this->set(compact(
+            'selectedLVL2','selectedLVL1','listLVL1','listLVL2','nameController',
+            'nameAction', 'options'
+        ));
 
         //on compte combien il y a d'ObjectifsPedas dans le TP
         $objsPedasDuTp = $tp->travaux_pratiques_objectifs_pedas;
@@ -526,5 +475,158 @@ class EvaluationsController extends AppController
         } */
         return $existingData;
     }
+    public function bilan()
+    {
+        $trimestre[1] = '2021-09-01';
+        $trimestre[2] = '2021-11-29';
+        $trimestre[3] = '2022-03-14';
 
+        $nameController = 'Evaluations';
+        $nameAction = 'bilan';
+        $options = '';
+        $request = $this->request;
+		$this->tabClassesEleves($nameController, $nameAction, $options, $request);
+        //$this->tabPeriodesRotations($nameController, $nameAction, $options, $request);
+        $eleve_id = $this->request->getQuery('eleve');
+        $tableTpEleves = TableRegistry::get('TpEleves');
+
+        foreach ($trimestre as $key => $value) {
+            switch ($key) {
+                case 1:
+                    $date_min = $trimestre[1];
+                    $date_max = $trimestre[2];
+                    break;
+
+                case 2:
+                $date_min = $trimestre[2];
+                $date_max = $trimestre[3];
+                    break;
+
+                case 3:
+                $date_min = $trimestre[3];
+                $date_max = '2022-07-05';
+                    break;
+            }
+            //debug($this->Evaluations);die;
+            $nb_tps[$key] = $tableTpEleves->find()
+                ->where([
+                    'eleve_id' => $eleve_id,
+                    'fin >' => $date_min,
+                    'fin <' => $date_max,
+                ])
+                ->count();
+
+
+            $nb_evals[$key] = $this->Evaluations->find()
+                ->where([
+                    'eleve_id' => $eleve_id,
+                    'date_eval >' => $date_min,
+                    'date_eval <' => $date_max,
+                ])
+                ->count();
+
+            $listEval[$key] = $this->Evaluations->find()
+                ->where([
+                    'eleve_id' => $eleve_id,
+                    'date_eval >' => $date_min,
+                    'date_eval <' => $date_max,
+                ])
+                ->contain(['TypesEvals','ValeursEvals'])
+                ->toArray();
+        }
+        //debug($listEval);die;
+        foreach ($listEval as $key => $trimestre) {
+            $note[$key]['atteint'] = 0;
+            $note[$key]['sommatif'] = 0;
+            $note[$key]['bg_color'] = '';
+            foreach ($trimestre as $eval) {
+                if ($eval->valeurs_eval->numero == 2) { //si objectiff atteint
+                    if ($eval->types_eval->numero == 2) { //si sommatif 4 pts aulieu de 1
+                        //$note[$key]['atteint'] += 4;
+                        $note[$key]['sommatif'] ++;
+                    }else {
+                        $note[$key]['atteint'] ++;
+                    }
+                }
+            }
+            if ($nb_evals[$key] !== 0) { //evite division par 0
+                $note[$key]['sur20'] = round($note[$key]['atteint'] * 20 / $nb_evals[$key], 2);
+                $val = $note[$key]['sur20'];
+                if ($val > 16) {
+                    $note[$key]['bg_color'] = '#0066cc';
+                }elseif (($val > 12) and ($val < 16)) {
+                    $note[$key]['bg_color'] = '#00B70B';
+                }elseif (($val > 8) and ($val < 12)) {
+                    $note[$key]['bg_color'] = '#ff6600';
+                }else {
+                    $note[$key]['bg_color'] = '#ff3333';
+                }
+            }else {
+                $note[$key]['sur20'] = 'Non Noté';
+            }
+            unset($val);
+        }
+        //debug($nb_tps);die;
+        $this->set(compact('nb_evals','note','nb_tps'));
+    }
+    private function tabClassesEleves($nameController, $nameAction, $options, $request)
+    {
+
+        $selectedClasse = $this->request->getQuery('classe');
+        $eleve_id = $this->request->getQuery('eleve');
+        $tableEleves = TableRegistry::get('Eleves');
+        $tableClasses = TableRegistry::get('Classes');
+
+        $classesList = $tableClasses->find()
+						->where(['Classes.archived' => 0])
+						->order(['Classes.nom' => 'ASC']);
+
+        $elevesList = $tableEleves->find()
+            ->order(['Eleves.nom' => 'ASC']);
+        //debug($classesList->toArray());die;
+
+        //si on a sélectionné une classe
+        if ($selectedClasse != null) {
+            //si on a sélectionné un élève récupère l'entity eleve'
+            if ($eleve_id != null) {
+                $selectedEleve = $tableEleves->get($eleve_id,['contain' => [] ]);
+                $elevesList = $tableEleves->find()
+                    ->where(['classe_id' => $selectedClasse])
+                    ->order(['Eleves.nom' => 'ASC']);
+
+            } else {//sinon on récupere la première entity élève de classe coresspondante
+                $elevesList = $tableEleves->find()
+                    ->where(['classe_id' => $selectedClasse])
+                    ->order(['Eleves.nom' => 'ASC']);
+
+                $selectedEleve = $tableEleves->find()
+                    ->where(['classe_id' => $selectedClasse])
+                    ->order(['Eleves.nom' => 'ASC'])
+                    ->first();
+            }
+        } else {
+            $classe = $tableClasses->find()
+								->where(['Classes.archived' => 0])
+								->order(['Classes.nom'])
+                ->first();
+            $selectedClasse = $classe->id;
+            $elevesList = $tableEleves->find()
+                ->where(['classe_id' => $selectedClasse])
+                ->order(['Eleves.nom' => 'ASC']);
+
+            $selectedEleve = $tableEleves->find()
+                ->where(['classe_id' => $classe->id])
+                ->order(['Eleves.nom' => 'ASC'])
+                ->first();
+        }
+        //passage des variables pour le layout
+        $this->set('titre', "Suivi de l'élève ".$selectedEleve->nom." ".$selectedEleve->prenom);
+
+        //passage des variables standardisées pour la vue tableauClasseur
+        $this->set(compact(
+            'classesList','elevesList','selectedClasse','selectedEleve','nameController',
+            'nameAction','options'
+        ));
+        return $selectedClasse;
+    }
 }
