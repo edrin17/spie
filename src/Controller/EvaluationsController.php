@@ -534,19 +534,14 @@ class EvaluationsController extends AppController
                 ->contain(['TypesEvals','ValeursEvals'])
                 ->toArray();
         }
-        //debug($listEval);die;
+        //debug($listEval);
         foreach ($listEval as $key => $trimestre) {
             $note[$key]['atteint'] = 0;
             $note[$key]['sommatif'] = 0;
             $note[$key]['bg_color'] = '';
             foreach ($trimestre as $eval) {
                 if ($eval->valeurs_eval->numero == 2) { //si objectiff atteint
-                    if ($eval->types_eval->numero == 2) { //si sommatif 4 pts aulieu de 1
-                        //$note[$key]['atteint'] += 4;
-                        $note[$key]['sommatif'] ++;
-                    }else {
-                        $note[$key]['atteint'] ++;
-                    }
+                    	$note[$key]['atteint'] ++;
                 }
             }
             if ($nb_evals[$key] !== 0) { //evite division par 0
