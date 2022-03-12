@@ -23,8 +23,7 @@ class ProgressionsController extends AppController
 			->contain([
                 'Rotations.TravauxPratiques.Materiels.Marques',
                 'Rotations.TravauxPratiques.Materiels.TypesMachines',
-                'Rotations.Themes',
-                'Rotations.Users'
+                'Rotations.Themes'
             ])
 			->order(['Periodes.numero' => 'ASC']);
 

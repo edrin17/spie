@@ -24,34 +24,33 @@ class RotationsTable extends Table
     public function initialize(array $config)
     {
         parent::initialize($config);
-        
+
         /*$this->belongsTo('Periodes', [
             'foreignKey' => 'periode_id',
             'joinType' => 'INNER'
         ]);
-        
+
         $this->belongsTo('Themes', [
             'foreignKey' => 'theme_id',
             'joinType' => 'INNER'
         ]);
-        
+
         $this->hasMany('TravauxPratiques', [
             'foreignKey' => 'rotation_id'
         ]);*/
-        
-        $this->addAssociations([			
+
+        $this->addAssociations([
 			'belongsTo' => [
                 'Themes',
                 'Periodes',
-                'Users',
 			],
 			'hasMany' => [
                 'TravauxPratiques'
 			]
         ]);
-        
+
         $this->setDisplayField('fullName');
     }
 
- 
+
 }

@@ -27,11 +27,10 @@ class UsersTable extends Table
 
         //$this->table('utilisateurs');
         $this->setDisplayField('nom');
-        $this->addAssociations([			
+        $this->addAssociations([
 			'belongsTo' => [
 			],
 			'hasMany' => [
-                'Rotations'
 			]
         ]);
     }

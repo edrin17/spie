@@ -33,7 +33,6 @@ class RotationsController extends AppController
             ->contain([
                 'Periodes',
                 'Themes',
-                'Users',
             ])
             ->order(['Periodes.numero' =>'ASC',
                     'Rotations.numero' =>'ASC'
@@ -47,63 +46,21 @@ class RotationsController extends AppController
     /**
      * Ajoute un utilisateur
      */
-    public function add($periode_id = null)
+    public function add()
     {
         //on recupere la liste des thèmes
         $listThemes = $this->Rotations->Themes->find('list')
             ->order(['nom' => 'ASC']);
+		//on cherche la liste des periodes qui correpondent à l'id de la classe
+		$listPeriodes = $this->Rotations->Periodes->find()
+            ->order(['Periodes.numero' => 'ASC']);
 
-        //on recupere la liste des utilisateurs
-        $listUsers = $this->Rotations->Users->find('list')
-            ->order(['nom' => 'ASC']);
-
-        //on liste les classe pour le select de la vue
-		$listClasses = $this->Rotations->Periodes->Classes->find('list')
-            ->order(['nom' => 'ASC']);
-
-		/* si il y a un parametre on recupere l'id de la classe pui son liste les periodes correspondantes
-		 * à la classe
-		 * sinon On charge la premiere classe avec la période correspondante dans les select*/
-		if ( $periode_id !== null)
+		//on met en forme le resultat
+		foreach ($listPeriodes as $listPeriode)
 		{
-			//on recupère la id de la classe correpondant à la période à partir de l'id de la période
-			$periode = $this->Rotations->Periodes->find()
-                ->contain(['Classes'])
-                ->where(['Periodes.id' => $periode_id])
-                ->first();
-			$classe_id = $periode->classe_id;
-			//on liste les periodes pour le select de la vue avec numeNom
-			$listPeriodes = $this->Rotations->Periodes->find()
-                ->contain(['Classes'])
-                ->where(['classe_id' => $classe_id])
-                ->order(['Periodes.numero' => 'ASC']);
-
-			//debug($listPeriodes->toArray());die;
-			//mise en forme de l'affichage
-			foreach ($listPeriodes as $listPeriode)
-			{
-				$selectPeriodes[$listPeriode->id] = "Période n°" .$listPeriode->numero;
-			}
-
-		}else{
-			//On cherche le premier resultat pour le 'default' du select de le vue
-			$classe_id = $this->Rotations->Periodes->Classes->find()
-                ->order(['nom' => 'ASC'])
-                ->first();
-			$classe_id = $classe_id->id;
-			//on cherche la liste des periodes qui correpondent à l'id de la classe
-			$listPeriodes = $this->Rotations->Periodes->find()
-                ->contain(['Classes'])
-                ->where(['classe_id' => $classe_id])
-                ->order(['Periodes.numero' => 'ASC']);
-
-			//on met en forme le resultat
-			foreach ($listPeriodes as $listPeriode)
-			{
-				$selectPeriodes[$listPeriode->id] = "Période n°" .$listPeriode->numero;
-			}
-
+			$selectPeriodes[$listPeriode->id] = "Période n°" .$listPeriode->numero;
 		}
+
 
 
 
@@ -123,10 +80,6 @@ class RotationsController extends AppController
             'rotation',
             'selectPeriodes',
             'listThemes',
-            'periode_id',
-            'listClasses',
-            'classe_id',
-            'listUsers'
         ));
     }
 
@@ -138,16 +91,11 @@ class RotationsController extends AppController
             'contain' => [
                 'Periodes',
                 'Themes',
-                'Users',
             ]
         ]);
 
         //on recupere la liste des thèmes
         $listThemes = $this->Rotations->Themes->find('list')
-            ->order(['nom' => 'ASC']);
-
-        //on recupere la liste des utilisateurs
-        $listUsers = $this->Rotations->Users->find('list')
             ->order(['nom' => 'ASC']);
 
         //on liste les classe pour le select de la vue
@@ -177,7 +125,7 @@ class RotationsController extends AppController
         }
 
         $themes = $this->Rotations->Themes->find('list');
-        $this->set(compact('rotation','selectPeriodes','listThemes','listClasses','listUsers'));
+        $this->set(compact('rotation','selectPeriodes','listThemes'));
     }
     /**
      * Affiche toutes les données d'un utilisateur
@@ -189,7 +137,6 @@ class RotationsController extends AppController
             'contain' => [
                 'Periodes',
                 'Themes',
-                'Users',
             ]
         ]);
 		$this->set(compact('rotation'));

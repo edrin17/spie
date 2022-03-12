@@ -5,8 +5,7 @@
 
             <?= $this->Form->input('periode_id', [
                 'label' => 'Période correspondante dans le référentiel',
-                'options' => $selectPeriodes,
-				'default' => $periode_id
+                'options' => $selectPeriodes
             ]); ?>
 
             <?= $this->Form->input('numero',[
