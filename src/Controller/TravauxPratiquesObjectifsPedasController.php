@@ -33,7 +33,9 @@ class TravauxPratiquesObjectifsPedasController extends AppController
         $objectifsPedas = TableRegistry::get('ObjectifsPedas');
         $selectedLVL1_id = $this->request->getQuery('selectedLVL1_id');
 		$selectedLVL2_id =$this->request->getQuery('selectedLVL2_id');
-		$spe =$this->request->getQuery('spe');
+		$spe = $this->request->getQuery('spe');
+        debug($this->request->getQuery());
+        debug($tp_id);
         //find list of objectifs pedas writtening $id
         $tp = $travauxPratiques->get($tp_id,[
 			'contain' => ['Rotations.Periodes','Rotations.Themes']
@@ -117,6 +119,11 @@ class TravauxPratiquesObjectifsPedasController extends AppController
      */
     public function delete($id = null)      //Met le paramètre id à null pour éviter un paramètre restant ou hack
     {
+        $selectedLVL1_id = $this->request->getQuery('selectedLVL1_id');
+        $selectedLVL2_id =$this->request->getQuery('selectedLVL2_id');
+        $spe = $this->request->getQuery('spe');
+        $tp_id =$this->request->getQuery('tp_id');
+        //debug($this->request->getQuery());die;
         $this->request->allowMethod(['post', 'delete']); // Autoriste que certains types de requête
         $tpObjPeda = $this->TravauxPratiquesObjectifsPedas->get($id);
         if ($this->TravauxPratiquesObjectifsPedas->delete($tpObjPeda)) {
@@ -124,7 +131,9 @@ class TravauxPratiquesObjectifsPedasController extends AppController
         } else {
             $this->Flash->error(__("L'association n'a pas pu être supprimé ! Réessayer."));
         }
-        return $this->redirect(['action' => 'index']);
+        return $this->redirect(['action' => 'index',
+            $tp_id,'?' => ['selectedLVL2_id' => $selectedLVL2_id, 'selectedLVL1_id' => $selectedLVL1_id, 'spe' => $spe]
+        ]);
     }
 
     /**

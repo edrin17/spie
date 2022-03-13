@@ -26,8 +26,11 @@
 			<td><?php echo h($objPeda->nom); ?></td>
 			<td class="actions">
 			<p>
-				<?php echo $this->Form->postLink(__('Supprimer'),
-					['action' => 'delete', $tpObjPeda->id],
+				<?php echo $this->Form->postLink(__('Supprimer'),[
+                        'action' => 'delete',
+                        $tpObjPeda->id,
+                        '?'=> ['selectedLVL1_id' => $selectedLVL1_id, 'selectedLVL2_id' => $selectedLVL2_id, 'spe' => $spe, 'tp_id' => $tp->id],
+                    ],
 					['confirm' => __('Etes vous sur de vouloirs supprimer {0}?',
 						$objPeda->fullName)
 					]
