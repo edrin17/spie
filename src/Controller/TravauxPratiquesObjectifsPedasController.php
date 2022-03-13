@@ -222,14 +222,11 @@ class TravauxPratiquesObjectifsPedasController extends AppController
                     info = "bleu"
                     danger = "rouge"
                     */
-                    if ($nbTps === 4) {
+                    if ($nbTps >= 4) {
                         $lblColor = "success";
                     }
                     elseif ($nbTps === 0) {
                         $lblColor = "danger";
-                    }
-                    elseif ($nbTps > 4) {
-                        $lblColor = "info";
                     }
                     else {
                         $lblColor = "warning";
