@@ -1,5 +1,5 @@
 <?php $this->assign('title', "Tp en fonction du temps"); ?>
-<span class="badge"><?php echo $listPeriodes['nbTpTotal'];  ?> TP</span>
+<span class="badge"><?php echo $nbTpTotal;  ?> TP</span>
 <?php foreach ($listPeriodes as $periode): ?>
 
             <h2>

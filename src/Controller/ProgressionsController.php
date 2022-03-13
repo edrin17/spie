@@ -52,12 +52,11 @@ class ProgressionsController extends AppController
 			$periode->rotations = $numberedRotations;
 			$numberedRotations =[];
 		}
-        $listPeriodes['nbTpTotal'] = $nbTpTotal;
         //debug($listPeriodes);die;
 		//$listPeriodes = new Collection($tablePeriodes);
 
 		//debug($listPeriodes);die;
-		$this->set(compact('listPeriodes'));
+		$this->set(compact('listPeriodes','nbTpTotal'));
 	}
 
     public function competences()
