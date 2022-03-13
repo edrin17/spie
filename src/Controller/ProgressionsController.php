@@ -27,28 +27,42 @@ class ProgressionsController extends AppController
             ])
 			->order(['Periodes.numero' => 'ASC']);
 
-		//on convertit en tableau pour classer les rotations de chaque periode par numero ASC
-		$tablePeriodes = $listPeriodes->toArray();
-		//on classe les rotations de chaque periode par numero ASC
-		foreach ($tablePeriodes as $key => $periode) {
-			foreach ($periode->rotations as $rotation) {
+        $listPeriodes = $listPeriodes->toArray();
 
+        //on classe les rotations de chaque periode par numero ASC
+        $nbTpTotal = 0;
+        foreach ($listPeriodes as $periode) {
+            $tpByPeriode = 0;
+            foreach ($periode->rotations as $rotation) {
 				$numberedRotations[$rotation->numero] = $rotation;
+                $tpByRotation = 0;
+                foreach ($rotation->travaux_pratiques as $tp) {
+                    if ($tp->specifique == 0) {
+                        $tpByPeriode ++;
+                        $tpByRotation ++;
+                        $nbTpTotal ++;
+
+                        $rotation->tpByRotation = $tpByRotation;
+                    }
+
+                }
+            $periode->tpByPeriode = $tpByPeriode;
 			}
 			ksort($numberedRotations);
 			$periode->rotations = $numberedRotations;
 			$numberedRotations =[];
 		}
-
-		$listPeriodes = new Collection($tablePeriodes);
+        $listPeriodes['nbTpTotal'] = $nbTpTotal;
+        //debug($listPeriodes);die;
+		//$listPeriodes = new Collection($tablePeriodes);
 
 		//debug($listPeriodes);die;
 		$this->set(compact('listPeriodes'));
 	}
+
     public function competences()
 	{
-        ini_set('memory_limit', '-1');
-
+        ini_set('memory_limit', '-1'); //car trop de ligne en latéral FIXME
         /*
             tableau[row;col]
             recuperer les tp dans l'ordre de et les objectifs pedas à travers les TP et les compétencesInter
