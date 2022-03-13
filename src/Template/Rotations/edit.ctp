@@ -1,5 +1,5 @@
+<?= $this->Form->create($rotation); ?>
 <div class="users form large-9 medium-8 columns content">
-    <?= $this->Form->create($rotation); ?>
     <fieldset>
         <legend><?= __('Editer une rotation') ?></legend>
 
@@ -28,8 +28,8 @@
 
     </fieldset>
     <?= $this->Form->button(__('Editer')); ?>
-    <?= $this->Form->end(); ?>
 </div>
+<?= $this->Form->end(); ?>
 
 <script>
 function select_periodes()

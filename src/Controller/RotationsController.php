@@ -98,13 +98,8 @@ class RotationsController extends AppController
         $listThemes = $this->Rotations->Themes->find('list')
             ->order(['nom' => 'ASC']);
 
-        //on liste les classe pour le select de la vue
-		$listClasses = $this->Rotations->Periodes->Classes->find('list')
-            ->order(['nom' => 'ASC']);
-
         //on liste les periodes correpondante à l'entity
 		$listPeriodes = $this->Rotations->Periodes->find()
-            ->where(['classe_id' => $rotation->periode->classe_id])
             ->order(['Periodes.numero' => 'ASC']);
 
 		//mise en forme du select
