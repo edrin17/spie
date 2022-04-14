@@ -1,6 +1,6 @@
 <li class="dropdown">
     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-        Suivi&nbsp;<i class="fa fa-check-square-o" aria-hidden="true"></i>
+        Suivi&nbsp;<i class="fa-solid fa-chart-line"></i>
     <span class="caret"></span></a>
     <ul class="dropdown-menu">
       <li><?= $this->Html->link(__('Suivi des TP'), ['controller' => 'Suivis','action' => 'tp']); ?></li>

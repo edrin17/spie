@@ -65,7 +65,7 @@
                 <div class="btn-group" role="group" >
                     <div class="btn-group" role="group">
                         <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fa fa-link" aria-hidden="true"></i>
+                            <i class="fa-solid fa-link" aria-hidden="true"></i>
                             <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
@@ -85,7 +85,7 @@
                         </ul>
                     </div>
                     <?php echo $this->Form->postButton(
-                        '<i class="fa fa-trash" aria-hidden="true"></i>',
+                        '<i class="fa-solid fa-trash" aria-hidden="true"></i>',
                         ['controller' => 'TravauxPratiques', 'action' => 'delete', $tp->id],
                         ['confirm' => 'Etes-vous sûr de voulour supprimer le TP: '.$tp->nom.'?' ,'escape'=> false]
                     );?>

@@ -7,12 +7,12 @@ function editButton($tp){
     $tp['contenu'] .= '<button type="button" class="btn btn-default" data-dismiss="modal" data-toggle="modal"';
     $tp['contenu'] .= ' data-target="#myModal';
     $tp['contenu'] .= $tp['eleve_id'].'-'.$tp['tp_id'];
-    $tp['contenu'] .= '"><i class="fa fa-cog" aria-hidden="true"></i></button>';
+    $tp['contenu'] .= '"><i class="fa-solid fa-cog" aria-hidden="true"></i></button>';
     return $tp;
 }
 function deleteButton($tp, $vue, $selectedRotation,  $selectedClasse, $selectedPeriode, $spe){
     return $vue->Html->link(
-        '<i class="fa fa-trash" aria-hidden="true"></i>',
+        '<i class="fa-solid fa-trash" aria-hidden="true"></i>',
         ['controller' => 'Suivis',
             'action' => 'delete',
             1,

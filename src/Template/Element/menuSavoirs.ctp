@@ -1,6 +1,6 @@
 <li class="dropdown">
 			<a class="dropdown-toggle" data-toggle="dropdown" href="#">
-				Savoirs&nbsp;<i class="fa fa-book" aria-hidden="true"></i>
+				Savoirs&nbsp;<i class="fa-solid fa-book" aria-hidden="true"></i>
 			<span class="caret"></span></a>
 			<ul class="dropdown-menu">
                 <li>

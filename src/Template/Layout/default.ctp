@@ -11,7 +11,8 @@
 	<?php echo $this->Html->css([
     	'jquery.dataTables.min.css',
         'bootstrap.min.css',
-        'all.css', //fontawesome
+        './fa-v6/all.css', //fontawesome
+        './fa-v6/v4-shims.css',
         'bootstrap-select.css',
         'custom',
     //'../easyui/themes/default/easyui.css',
@@ -22,6 +23,8 @@
 		'bootstrap.min.js',
         'bootstrap-select.min.js',
 		'jquery.dataTables.min.js',
+        './fa-v6/all.js', //fontawesome
+        './fa-v6/v4-shims.js',
     //'easyui/jquery.easyui.min.js',
 	]) ?>
 </head>
@@ -32,13 +35,14 @@
 	      <a class="navbar-brand">SPIE</a>
 	  </div>
 		<ul class="nav navbar-nav">
-			<?php echo $this->element('menuSavoirsFaire') ?>
-	    <?php echo $this->element('menuCompetences') ?>
-	    <?php echo $this->element('menuSavoirs') ?>
-			<?php echo $this->element('menuProgression') ?>
-	    <?php echo $this->element('menuMateriels') ?>
-			<?php echo $this->element('menuSuivis') ?>
-	    <?php echo $this->element('menuEvaluations') ?>
+    		<?php echo $this->element('menuSavoirsFaire') ?>
+    	    <?php echo $this->element('menuCompetences') ?>
+    	    <?php echo $this->element('menuSavoirs') ?>
+    		<?php echo $this->element('menuProgression') ?>
+    	    <?php echo $this->element('menuMateriels') ?>
+    		<?php echo $this->element('menuSuivis') ?>
+    	    <?php echo $this->element('menuEvaluations') ?>
+            <?php echo $this->element('menuCommandes') ?>
 		</ul>
 		<ul class ="nav navbar-nav navbar-right">
 			<?php echo $this->element('menuAdministration') ?>

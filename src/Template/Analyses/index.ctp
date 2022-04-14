@@ -18,7 +18,7 @@
                 {
                     $exist = isset($tableauMatch[$idComp][$idTP]);
                     if ($exist) {
-                        echo '<td><h4 style="text-align:center"><i class="fa fa-check" aria-hidden="true"></i></h4></td>';
+                        echo '<td><h4 style="text-align:center"><i class="fa-solid fa-check" aria-hidden="true"></i></h4></td>';
                     } else {
                        echo '<td></i></td>';
                     }

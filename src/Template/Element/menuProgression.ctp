@@ -1,6 +1,6 @@
 <li class="dropdown">
     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-        Progression&nbsp;<i class="fa fa-calendar" aria-hidden="true"></i>
+        Progression&nbsp;<i class="fa-solid fa-calendar" aria-hidden="true"></i>
     <span class="caret"></span></a>
     <ul class="dropdown-menu">
         <li>

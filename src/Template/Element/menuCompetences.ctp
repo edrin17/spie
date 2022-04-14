@@ -1,6 +1,6 @@
 <li class="dropdown">
     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-        Compétences&nbsp;<i class="fa fa-cogs" aria-hidden="true"></i>
+        Compétences&nbsp;<i class="fa-solid fa-cogs" aria-hidden="true"></i>
     <span class="caret"></span></a>
     <ul class="dropdown-menu">
     <li><?= $this->Html->link(__('Capacités'), ['controller' => 'Capacites','action' => 'index']); ?></li>
