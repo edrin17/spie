@@ -24,7 +24,7 @@ function isSelected ($itemToTest, $selectedItem) {
                     'periode' => $periode->id,
                     'rotation' => $selectedRotation->id,
                     'options' => $options,
-                    'classe' => $selectedClasse,
+                    'classe' => $selectedClasseId,
                     'spe' => $spe,
                     ]
             ]) ?>
@@ -43,7 +43,7 @@ function isSelected ($itemToTest, $selectedItem) {
                 'periode' => $selectedPeriode,
                 'rotation' => $rotation->id,
                 'options' => $options,
-                'classe' => $selectedClasse,
+                'classe' => $selectedClasseId,
                 'spe' => $spe,
             ]
             ]) ?>
@@ -53,7 +53,7 @@ function isSelected ($itemToTest, $selectedItem) {
 
 <ul class="nav nav-tabs nav-justified">
     <?php foreach($classesList as $classe): ?>
-        <li role="presentation" <?= isSelected($classe, $selectedClasse) ?> >
+        <li role="presentation" <?= isSelected($classe, $selectedClasseId) ?> >
             <?= $this->Html->link($classe->nom,[
                 'controller'=> $nameController,
                 'action'=> $nameAction,

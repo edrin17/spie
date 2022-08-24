@@ -44,68 +44,19 @@ class SuivisController extends AppController
         $nameAction = 'suivi';
         $options = '';
         $request = $this->request;
-		$this->tabClassesEleves($nameController, $nameAction, $options, $request);
-        //$this->tabPeriodesRotations($nameController, $nameAction, $options, $request);
+		$selectedEleve = $this->genTabloClassesEleves($nameController, $nameAction, $options, $request);
         $eleve = $this->request->getQuery('eleve');
-
-        //on récupère les évaluations de l'élève
-
-        $tableEvaluations = TableRegistry::get('Evaluations');
-		$evaluations = $tableEvaluations->find()
-			->where(['eleve_id' => $eleve])
-            ->contain([
-                 'TravauxPratiquesObjectifsPedas.ObjectifsPedas.CompetencesIntermediaires.CompetencesTerminales.Capacites',
-                'ValeursEvals','TypesEvals'
-			]);
-
-        //on récupère la liste compétences intermédiaires
-		$tableObjsPedas = TableRegistry::get('ObjectifsPedas');
-		$objsPedas = $tableObjsPedas->find()
-            ->contain([
-                'CompetencesIntermediaires.CompetencesTerminales.Capacites',
-                'NiveauxCompetences'
-			])
-            ->order([
-                'Capacites.numero' => 'ASC',
-                'CompetencesTerminales.numero' => 'ASC',
-                'CompetencesIntermediaires.numero' => 'ASC',
-                'NiveauxCompetences.numero' => 'ASC'
-            ]);
-
-
-        //on récupère la liste compétences intermédiaires
-		$tableCompsInters = TableRegistry::get('CompetencesIntermediaires');
-		$compsInters = $tableCompsInters->find()
-            ->contain(['CompetencesTerminales.Capacites'])
-            ->order(['Capacites.numero' => 'ASC', 'CompetencesTerminales.numero' => 'ASC',
-                'CompetencesIntermediaires.numero' => 'ASC']);
-
-        //on récupère la liste compétences Terminales
-        $tableCompsTerms = TableRegistry::get('CompetencesTerminales');
-        $compsTerms = $tableCompsTerms->find()
-            ->contain(['Capacites'])
-            ->order([
-                    'Capacites.numero' => 'ASC',
-                    'CompetencesTerminales.numero' => 'ASC'
-                ]);
-
-
-        /*
-        $classesList = $classesList;
-        $elevesList = $elevesList;
-
-        $selectedLVL1 = $selectedClasse;
-        $selectedLVL2 = $selectedEleve;
-        */
+        //si pas d'élève sélectionné
+        if ( $eleve == null) {
+            $eleve = $selectedEleve->id;
+        }
 
         //création du tableau
-        $table = $this->tableau($eleve);
+        $table = $this->genTabloDeSuivi($eleve);
         $tableau = $table['tableau'];
         $tableHeader = $table['tableHeader'];
         $nbColonnes = $table['nbColonnes'];
 
-
-        //passage des variables à la vue pour le "content""
         $this->set(compact('tableau','tableHeader','nbColonnes'));
 	}
 
@@ -113,7 +64,7 @@ class SuivisController extends AppController
     //@params $eleveId (CHAR36)
     //@returns $tableau (array): contient le nom de la microComp et le contenu sous forme de tableau
 
-    private function tableau($eleveId = null)
+    private function genTabloDeSuivi($eleveId = null)
     {
         //chargement des données
         $tableCompsInters = TableRegistry::get('CompetencesIntermediaires');
@@ -240,7 +191,7 @@ class SuivisController extends AppController
                 break;
         }
         return $bgcolor;
-    }
+    }        //$this->tabPeriodesRotations($nameController, $nameAction, $options, $request);
     //verifie si 'l'élève à acquis la compétence
     //@params $eleveId (CHAR36)
     //@return array $etat[integer 'type' => (
@@ -318,7 +269,7 @@ class SuivisController extends AppController
 
     }
 
-    private function tabClassesEleves($nameController, $nameAction, $options, $request)
+    private function genTabloClassesEleves($nameController, $nameAction, $options, $request)
     {
 
         $selectedClasse = $this->request->getQuery('classe');
@@ -371,12 +322,12 @@ class SuivisController extends AppController
         //passage des variables pour le layout
         $this->set('titre', "Suivi de l'élève ".$selectedEleve->nom." ".$selectedEleve->prenom);
 
-        //passage des variables standardisées pour la vue tableauClasseur
+        //passage des variables pour la vue "./tableauClasseur/classes_eleves.ctp
         $this->set(compact(
             'classesList','elevesList','selectedClasse','selectedEleve','nameController',
             'nameAction','options'
         ));
-        return $selectedClasse;
+        return $selectedEleve;
     }
 
     private function tabPeriodesRotations($nameController, $nameAction, $options, $request, $spe)
@@ -472,7 +423,15 @@ class SuivisController extends AppController
         if ($request->getQuery('spe') !== null) {
             $spe = $request->getQuery('spe');
         }
-		$selectedClasse = $this->tabClassesEleves($nameController, $nameAction, $options, $request);
+		//récupere la première classe dans l'ordre
+        $tableClasses = TableRegistry::get('Classes');
+
+        $selectedClasse = $tableClasses->find()
+						->where(['Classes.archived' => 0])
+						->order(['Classes.nom' => 'ASC'])
+                        ->first();
+
+        $this->genTabloClassesEleves($nameController, $nameAction, $options, $request, $spe);
         $selectedRotation = $this->tabPeriodesRotations($nameController, $nameAction, $options, $request, $spe);
 
 		// ***************************************************************************
@@ -485,8 +444,8 @@ class SuivisController extends AppController
         }
         //debug($spe);die;
 
-        if ($selectedClasseId == '') {
-            $selectedClasseId = $selectedClasse;
+        if ($selectedClasseId == null) {
+            $selectedClasseId = $selectedClasse->id;
         }
         if ($selectedRotationId == '') {
             $selectedRotationId = $selectedRotation->id;
@@ -533,7 +492,7 @@ class SuivisController extends AppController
         }
 
 
-        $this->set(compact('tableau','listTpHead'));
+        $this->set(compact('tableau','listTpHead','selectedClasseId'));
 
 	}
 
@@ -658,47 +617,6 @@ class SuivisController extends AppController
         );
     }
 
-    /*public function start()
-    {
-        $eleve_id = $this->request->getQuery('eleve');
-        $tp_id = $this->request->getQuery('tp');
-        $selectedPeriode = $this->request->getQuery('periode');
-        $selectedClasse = $this->request->getQuery('classe');
-        $selectedRotation = $this->request->getQuery('rotation');
-
-        $tpElevesTable = TableRegistry::get('TpEleves');
-        $tp = $tpElevesTable->get($tp_id);
-        $tp->debut = date('Y-m-d');
-        $tpElevesTable->save($tp);
-        return $this->redirect([
-            'action' => 'tp',1,
-            '?' => [
-                'classe' => $selectedClasse,
-                'rotation' => $selectedRotation,
-                'periode' => $selectedPeriode,
-                ]]
-        );
-    }*
-    /*public function end()
-    {
-        $eleve_id = $this->request->getQuery('eleve');
-        $tp_id = $this->request->getQuery('tp');
-        $tpElevesTable = TableRegistry::get('TpEleves');
-        $selectedPeriode = $this->request->getQuery('periode');
-        $selectedClasse = $this->request->getQuery('classe');
-        $selectedRotation = $this->request->getQuery('rotation');
-        $tp = $tpElevesTable->get($tp_id);
-        $tp->fin = date('Y-m-d');
-        $tpElevesTable->save($tp);
-        return $this->redirect([
-            'action' => 'tp',1,
-            '?' => [
-                'classe' => $selectedClasse,
-                'rotation' => $selectedRotation,
-                'periode' => $selectedPeriode,
-                ]]
-        );
-    }*/
     public function validate()
     {
         $eleve_id = $this->request->getQuery('eleve');
