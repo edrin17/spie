@@ -186,7 +186,7 @@ echo $this->fetch('tableauClasseur');
         <tr>
             <th> </th>
             <?php foreach ($listTpHead as $header) :?>
-                <th> <?php echo $header->travaux_pratique->nom ?></th>
+                <th> <?php echo $header->nom ?></th>
             <?php endforeach; ?>
         </tr>
     </thead>

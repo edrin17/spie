@@ -154,12 +154,8 @@ class TravauxPratiquesController extends AppController
     		$tpEleve->memo = '';
             $tableTpEleves->save($tpEleve);
         }
-
-
-
-
-
     }
+
     /************* Affiche toutes les données d'un T.P************************
      ********************************************************************************/
     public function view($id = null)  //Met le paramètre id à null pour éviter un paramètre restant ou hack

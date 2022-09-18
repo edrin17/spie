@@ -425,7 +425,6 @@ class SuivisController extends AppController
         }
 		//récupere la première classe dans l'ordre
         $tableClasses = TableRegistry::get('Classes');
-
         $selectedClasse = $tableClasses->find()
 						->where(['Classes.archived' => 0])
 						->order(['Classes.nom' => 'ASC'])
@@ -442,7 +441,7 @@ class SuivisController extends AppController
 		if ($this->request->is('post')) {
 			$this->save($request);
         }
-        //debug($spe);die;
+
 
         if ($selectedClasseId == null) {
             $selectedClasseId = $selectedClasse->id;
@@ -457,12 +456,13 @@ class SuivisController extends AppController
             ->order(['Eleves.nom' => 'ASC']);
 
         $tableTpEleves = TableRegistry::get('TpEleves');
+		$tableTp = TableRegistry::get('TravauxPratiques');
 
-        $listTpHead = $tableTpEleves->find()
+        $listTpHead = $tableTp->find() //On récupère la liste de TP pour faire l'en-tête
             ->select(['TravauxPratiques.nom'])
-            ->distinct()
-            ->contain(['Eleves','TravauxPratiques'])
-            ->where(['classe_id' => $selectedClasseId])
+            //->distinct()
+            //->contain(['Eleves','TravauxPratiques'])
+            //->where(['classe_id' => $selectedClasseId])
             ->where(['TravauxPratiques.rotation_id'=> $selectedRotationId,
                 'specifique' => $spe])
             ->order(['TravauxPratiques.nom' => 'ASC']);
@@ -491,7 +491,7 @@ class SuivisController extends AppController
             }
         }
 
-
+        //debug($tableau);//die;
         $this->set(compact('tableau','listTpHead','selectedClasseId'));
 
 	}

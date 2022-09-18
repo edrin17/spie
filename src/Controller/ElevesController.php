@@ -20,21 +20,21 @@ class ElevesController extends AppController
 			->order(['nom' => 'ASC']);
         /* On regarde si un filtre par classe est appliqué sur la page index en POST
 		 * (appuie sur le bouton 'filtrer du formulaire') ou si on a passé un paramètre */
-		
+
 		if ( ($this->request->is('post')) or ($classe_id !== null) )
 		{
 			//on stocke la valeur du formulaire pour utilisation utérieure
 			$classe_id = $this->request->getData()['classe_id'];
-			
+
 			//debug($this->request->getData()['classe_id']);die;
-			$eleves = $this->Eleves->find()		
+			$eleves = $this->Eleves->find()
 							->contain(['Classes'])
 							->where(['classe_id' => $classe_id])
 							->order(['Eleves.nom' =>'ASC'])
-							->order(['Eleves.prenom' => 'ASC']);							
+							->order(['Eleves.prenom' => 'ASC']);
 		}else
 		{
-			$eleves = $this->Eleves->find()		
+			$eleves = $this->Eleves->find()
 							->contain(['Classes'])
 							->order(['Classes.nom' =>'ASC'])
 							->order(['Eleves.nom' =>'ASC'])
@@ -51,7 +51,8 @@ class ElevesController extends AppController
         $eleve = $this->Eleves->newEntity();                                   // crée une nouvelle entité dans $eleve
         if ($this->request->is('post')) {                                           //si requête de type post
             $eleve = $this->Eleves->patchEntity($eleve, $this->request->getData());  //??
-            if ($this->Eleves->save($eleve)) {                                 //Met le champ 'id' de la base avec UUID CHAR(36)
+            if ($this->Eleves->save($eleve)) {
+                $this->_updateTpEleves($eleve);                                 //Met le champ 'id' de la base avec UUID CHAR(36)
                 $this->Flash->success(__("L'élève a été sauvegardé."));      //Affiche une infobulle
                 return $this->redirect(['action' => 'index']);                      //Déclenche la fonction 'index' du controlleur
             } else {
@@ -59,21 +60,21 @@ class ElevesController extends AppController
             }
         }
         $classes = $this->Eleves->Classes->find('list')->order(['nom' => 'ASC'])->toArray();
-        $this->set(compact('eleve','classes','typesMachines','classe_id'));
+        $this->set(compact('eleve','classes','classe_id'));
     }
-    
-    
+
+
     /**
      * Édite un utilisateur
      */
     public function edit($id = null)   //Met le paramètre id à null pour éviter un paramètre restant ou hack
     {
-        
+
         //récupère le contenu de la table eleves_terminales en fonction de l'id'
         $eleve = $this->Eleves->get($id, [
             'contain' => []
         ]);
-		
+
         if ($this->request->is(['patch', 'post', 'put'])) {                        // Vérifie le type de requête
             $eleve = $this->Eleves->patchEntity($eleve, $this->request->getData());
             if ($this->Eleves->save($eleve)) {                  //Sauvegarde les données dans la BDD
@@ -113,11 +114,11 @@ class ElevesController extends AppController
     public function delete($id = null)      //Met le paramètre id à null pour éviter un paramètre restant ou hack
     {
         $tableEval = TableRegistry::get('Evaluations');
-        
-        
+
+
         $this->request->allowMethod(['post', 'delete']); // Autoriste que certains types de requête
         $eleve = $this->Eleves->get($id);
-        
+
         //selection de toutes les évals qui concernent l'élève'
         $listEvals = $tableEval ->find()
             ->where(['eleve_id' => $id])
@@ -126,7 +127,7 @@ class ElevesController extends AppController
         foreach ($listEvals as $eval) {
             $tableEval->delete($eval);
         }
-        //suppression de l'élève    
+        //suppression de l'élève
         if ($this->Eleves->delete($eleve)) {
             $this->Flash->success(__("L'élève a été supprimé."));
         } else {
@@ -135,4 +136,22 @@ class ElevesController extends AppController
         return $this->redirect(['action' => 'index']);
     }
 
+    private function _updateTpEleves($eleve = null) //on lie le nouveau TP au TP_Eleves
+    {
+        $tableTpEleves = TableRegistry::get('TpEleves');
+        $tableTps = TableRegistry::get('TravauxPratiques');
+        $listTPs = $tableTps->find();
+
+        foreach ($listTPs as $tp) {
+            $tpEleve = $tableTpEleves->newEntity();
+            $tpEleve->eleve_id = $eleve->id;
+            $tpEleve->travaux_pratique_id = $tp->id;
+            $tpEleve->debut = null;
+            $tpEleve->fin = null;
+            $tpEleve->note = null;
+            $tpEleve->pronote = false;
+            $tpEleve->memo = '';
+            $tableTpEleves->save($tpEleve);
+        }
+    }
 }
