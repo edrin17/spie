@@ -477,9 +477,10 @@ class EvaluationsController extends AppController
     }
     public function bilan()
     {
-        $trimestre[1] = '2021-09-01';
-        $trimestre[2] = '2021-11-29';
+        $trimestre[1] = '2022-09-01';
+        $trimestre[2] = '2022-11-29';
         $trimestre[3] = '2022-03-14';
+
 
         $nameController = 'Evaluations';
         $nameAction = 'bilan';
