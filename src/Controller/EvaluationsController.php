@@ -478,8 +478,8 @@ class EvaluationsController extends AppController
     public function bilan()
     {
         $trimestre[1] = '2022-09-01';
-        $trimestre[2] = '2022-11-29';
-        $trimestre[3] = '2022-03-14';
+        $trimestre[2] = '2022-11-28';
+        $trimestre[3] = '2023-03-10';
 
 
         $nameController = 'Evaluations';
@@ -505,7 +505,7 @@ class EvaluationsController extends AppController
 
                 case 3:
                 $date_min = $trimestre[3];
-                $date_max = '2022-07-05';
+                $date_max = '2023-07-05';
                     break;
             }
             //debug($this->Evaluations);die;
