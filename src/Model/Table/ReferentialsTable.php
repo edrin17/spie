@@ -30,5 +30,8 @@ class ReferentialsTable extends Table
         $this->hasMany('Classes', [
             'foreignKey' => 'referential_id'
         ]);
+        $this->hasMany('Periodes', [
+            'foreignKey' => 'referential_id'
+        ]);
     }
 }

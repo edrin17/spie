@@ -16,26 +16,19 @@ class PeriodesController extends AppController
 
     public function index($classe_id = null)
     {
-		$tableClasse = TableRegistry::get('Classes');
-		$listeClasses = $this->Periodes->Classes->find('list')
-			->order(['nom' => 'ASC']);
 
 		if ($this->request->is('post'))
 		{
-			//on stocke la valeur du formulaire pour utilisation utérieure
-			//$classe_id = $this->request->getData()['classe_id'];
-
-			//debug($this->request->getData()['classe_id']);die;
 			$periodes = $this->Periodes->find()
-							//->where(['classe_id' => $classe_id])
-							//->order(['Classes.nom' =>'ASC'])
-							->order(['Periodes.numero' => 'ASC']);
+				->contain(['Classes','Referentials'])
+				->order(['Periodes.numero' => 'ASC']);
 		}else
 		{
 			$periodes = $this->Periodes->find()
-							//->order(['Classes.nom' =>'ASC'])
-							->order(['Periodes.numero' => 'ASC']);
+                ->contain(['Classes','Referentials'])
+				->order(['Periodes.numero' => 'ASC']);
 		}
+    //debug($periodes->toArray());
 	$this->set(compact('periodes'));
     }
 

@@ -24,16 +24,20 @@ class PeriodesTable extends Table
     public function initialize(array $config)
     {
         parent::initialize($config);
-		
+
 		$this->setDisplayField('NumeNom');
-		
+
         $this->hasMany('Rotations', [
             'foreignKey' => 'periode_id'
         ]);
-        
+
         $this->belongsTo('Classes',[
         'foreignKey' => 'classe_id',
         'joinType' => 'INNER'
+        ]);
+
+        $this->belongsTo('Referentials',[
+        'foreignKey' => 'referential_id'
         ]);
     }
 
