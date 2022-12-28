@@ -2,7 +2,7 @@
     <?= $this->Form->create($referential) ?>
     <fieldset>
         <legend><?= __('Ajouter un référentiel') ?></legend>
-        <?= $this->Form->input('name',['label' => 'Nom']); ?>
+        <?= $this->Form->input('nom',['label' => 'Nom']); ?>
     </fieldset>
     <?= $this->Form->button(__('Sauvegarder')) ?>
     <?= $this->Form->end() ?>

@@ -16,7 +16,7 @@ class ReferentialsController extends AppController
 
      public function index()
     {
-      $referentials = $this->Referentials->find()->order(['name' => 'ASC']);
+      $referentials = $this->Referentials->find()->order(['nom' => 'ASC']);
       $this->set(compact('referentials'));
     }
 

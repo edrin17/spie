@@ -45,7 +45,7 @@ class ClassesController extends AppController
                 $this->Flash->error(__("La classe n'a pas pu être sauvegardée ! Réessayer.")); //Affiche une infobulle
             }
         }
-        $referentials = $this->Classes->Referentials->find('list')->order(['name' => 'ASC'])->toArray();
+        $referentials = $this->Classes->Referentials->find('list')->order(['nom' => 'ASC'])->toArray();
         $this->set(compact('classe','referentials'));
     }
 
@@ -64,7 +64,7 @@ class ClassesController extends AppController
                 $this->Flash->error(__("La classe n'a pas pu être sauvegardée ! Réessayer."));
             }
         }
-				$referentials = $this->Classes->Referentials->find('list')->order(['name' => 'ASC'])->toArray();
+				$referentials = $this->Classes->Referentials->find('list')->order(['nom' => 'ASC'])->toArray();
         $this->set(compact('classe','referentials'));
     }
 
