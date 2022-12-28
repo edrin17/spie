@@ -25,6 +25,8 @@ class ReferentialsTable extends Table
     {
         parent::initialize($config);
 
+        $this->setDisplayField('nom');
+
         $this->hasMany('Classes', [
             'foreignKey' => 'referential_id'
         ]);

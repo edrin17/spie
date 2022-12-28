@@ -57,34 +57,40 @@ class PeriodesController extends AppController
 
         $classes = $tableClasse->find()
 						->select(['id', 'nom'])
+                        ->where(['archived' => false])
 						->order(['nom' => 'ASC']);
 
 		foreach ($classes as $classe)
 		{
 			$listeClasses[$classe->id] = $classe->nom;
 		}
+        $referentialTbl = TableRegistry::get('Referentials');
+
+        $referentials = $referentialTbl->find('list')
+						->order(['nom' => 'ASC']);
 
         $periode = $this->Periodes->newEntity();                                   // crée une nouvelle entité dans $periode
         if ($this->request->is('post')) {                                           //si requête de type post
-			$classe_id = $this->request->getData()['classe_id'];
-            $this->set(compact('classe_id'));
             $periode = $this->Periodes->patchEntity($periode, $this->request->getData());  //??
             if ($this->Periodes->save($periode)) {
 				                               //Met le champ 'id' de la base avec UUID CHAR(36)
                 $this->Flash->success(__("La période a été sauvegardée."));      //Affiche une infobulle
-                return $this->redirect(['action' => 'index', $classe_id]);                      //Déclenche la fonction 'index' du controlleur
+                return $this->redirect(['action' => 'index', $classe_id, $referential_id]);                      //Déclenche la fonction 'index' du controlleur
             } else {
                 $this->Flash->error(__("La période n'a pas pu être sauvegardée ! Réessayer.")); //Affiche une infobulle
             }
         }
 
-        $this->set(compact('periode','listeClasses','classe_id','colors'));
+        $this->set(compact('periode',
+            'listeClasses','colors',
+            'referentials'
+        ));
     }
 
 	/**
      * Édite un utilisateur
      */
-    public function edit($id = null, $classe_id = null)                                        //Met le paramètre id à null pour éviter un paramètre restant ou hack
+    public function edit($id = null)                                        //Met le paramètre id à null pour éviter un paramètre restant ou hack
     {
         $colors = [
 			'1E90FF' => 'Bleu',
@@ -99,24 +105,32 @@ class PeriodesController extends AppController
 
         $classes = $tableClasse->find()
 						->select(['id', 'nom'])
+                        ->where(['archived' => false])
+						->order(['nom' => 'ASC']);
+
+        $referentialTbl = TableRegistry::get('Referentials');
+
+        $referentials = $referentialTbl->find('list')
 						->order(['nom' => 'ASC']);
 
 		foreach ($classes as $classe)
 		{
 			$listeClasses[$classe->id] = $classe->nom;
 		}
-
-        $periode = $this->Periodes->get($id, ['contain' => [] ]);                  //récupère l'id de l'utilisateur
+        $periode = $this->Periodes->get($id);                  //recupère l'entité corespondante à l'id
         if ($this->request->is(['patch', 'post', 'put'])) {                         // Vérifie le type de requête
             $periode = $this->Periodes->patchEntity($periode, $this->request->getData());
             if ($this->Periodes->save($periode)) {                                 //Sauvegarde les données dans la BDD
-                $this->Flash->success(__('La période a été sauvegardé.'));      //Affiche une infobulle
+                $this->Flash->success(__('La période a été modifée.'));      //Affiche une infobulle
                 return $this->redirect(['action' => 'index']);                      //Déclenche la fonction 'index' du controlleur
             } else {
                 $this->Flash->error(__('La période n\' a pas pu être sauvegarder ! Réessayer.'));
             }
         }
-        $this->set(compact('periode','listeClasses','classe_id','colors'));
+        $this->set(compact('periode',
+            'listeClasses','colors',
+            'referentials'
+        ));
     }
 
     /**

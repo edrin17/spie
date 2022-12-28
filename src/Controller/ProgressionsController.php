@@ -17,14 +17,26 @@ class ProgressionsController extends AppController
 
 	public function tp()
 	{
-		$periodes = TableRegistry::get('Periodes');
+        $referential_id = $this->request->getQuery('referential_id');
+        $referentialsTable = TableRegistry::get('Referentials');
+		$referentials = $referentialsTable->find('list')
+			->order(['id' => 'ASC']);
+
+        if (is_null($referential_id)) {
+            $referential_id = $referentialsTable->find()
+                ->first()
+                ->id;
+        }
+        $periodes = TableRegistry::get('Periodes');
 
 		$listPeriodes = $periodes->find()
-			->contain([
+            ->where(['referential_id' => $referential_id])
+            ->contain([
                 'Rotations.TravauxPratiques.Materiels.Marques',
                 'Rotations.TravauxPratiques.Materiels.TypesMachines',
                 'Rotations.Themes'
             ])
+
 			->order(['Periodes.numero' => 'ASC']);
 
         $listPeriodes = $listPeriodes->toArray();
@@ -56,7 +68,7 @@ class ProgressionsController extends AppController
 		//$listPeriodes = new Collection($tablePeriodes);
 
 		//debug($listPeriodes);die;
-		$this->set(compact('listPeriodes','nbTpTotal'));
+		$this->set(compact('listPeriodes','nbTpTotal','referentials','referential_id'));
 	}
 
     public function competences()
