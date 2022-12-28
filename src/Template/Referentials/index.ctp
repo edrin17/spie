@@ -1,7 +1,8 @@
 <?php $this->assign('title', 'Référentiels'); ?>  <!-- Customise le titre de la page -->
-
 <h1>Référentiels</h1>
-<table id ="tableau" class="display">
+<div class="row">
+    <div class="col-lg-12">
+    <table id ="tableau" class="display" class="table">
         <thead>
             <tr>
                 <th> Nom du référentiel </th>
@@ -22,6 +23,7 @@
             </tr>
             <?php endforeach; ?>
         </tbody>
-</table>
+    </table>
+</div>
 <!-- Affiche le bouton ajouter un referential -->
 <?= $this->Html->link(__('Ajouter un référentiel'), ['action' => 'add']); ?>

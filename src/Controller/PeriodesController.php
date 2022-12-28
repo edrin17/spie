@@ -14,28 +14,40 @@ class PeriodesController extends AppController
 		$this->viewBuilder()->setLayout('default');
 	}
 
-    public function index($classe_id = null)
+    public function index()
     {
+        $referential_id = $this->request->getQuery('referential_id');
+        $referentialsTable = TableRegistry::get('Referentials');
+		$referentials = $referentialsTable->find('list')
+			->order(['id' => 'ASC']);
+
+        if (is_null($referential_id)) {
+            $referential_id = $referentialsTable->find()
+                ->first()
+                ->id;
+        }
 
 		if ($this->request->is('post'))
 		{
 			$periodes = $this->Periodes->find()
 				->contain(['Classes','Referentials'])
+                ->where(['Referentials.id' => $referential_id])
 				->order(['Periodes.numero' => 'ASC']);
 		}else
 		{
 			$periodes = $this->Periodes->find()
                 ->contain(['Classes','Referentials'])
+                ->where(['Referentials.id' => $referential_id])
 				->order(['Periodes.numero' => 'ASC']);
 		}
-    //debug($periodes->toArray());
-	$this->set(compact('periodes'));
+        //debug($periodes->toArray());
+    	$this->set(compact('periodes','referentials','referential_id'));
     }
 
 	/**
      * Ajoute un utilisateur
      */
-    public function add($classe_id = null)
+    public function add()
     {
         $colors = [
 			'1E90FF' => 'Bleu',
@@ -68,7 +80,7 @@ class PeriodesController extends AppController
             if ($this->Periodes->save($periode)) {
 				                               //Met le champ 'id' de la base avec UUID CHAR(36)
                 $this->Flash->success(__("La période a été sauvegardée."));      //Affiche une infobulle
-                return $this->redirect(['action' => 'index', $classe_id, $referential_id]);                      //Déclenche la fonction 'index' du controlleur
+                return $this->redirect(['action' => 'index']);                      //Déclenche la fonction 'index' du controlleur
             } else {
                 $this->Flash->error(__("La période n'a pas pu être sauvegardée ! Réessayer.")); //Affiche une infobulle
             }
