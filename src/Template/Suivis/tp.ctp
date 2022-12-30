@@ -10,16 +10,16 @@ function editButton($tp){
     $tp['contenu'] .= '"><i class="fa-solid fa-cog" aria-hidden="true"></i></button>';
     return $tp;
 }
-function deleteButton($tp, $vue, $selectedRotation,  $selectedClasseId, $selectedPeriode, $spe){
+function deleteButton($tp, $vue, $rotation_id,  $classe_id, $periode_id, $spe){
     return $vue->Html->link(
         '<i class="fa-solid fa-trash" aria-hidden="true"></i>',
         ['controller' => 'Suivis',
             'action' => 'delete',
             1,
             '?' => [
-                'periode' => $selectedPeriode,
-                'rotation' => $selectedRotation->id,
-                'classe' => $selectedClasseId,
+                'periode' => $periode_id,
+                'rotation' => $rotation_id,
+                'classe' => $classe_id,
                 'tp_id' => $tp['tp_id'],
                 'spe' => $spe,
                 ]
@@ -32,16 +32,16 @@ function deleteButton($tp, $vue, $selectedRotation,  $selectedClasseId, $selecte
     );
 
 }
-function evalButton($tp, $vue, $selectedRotation,  $selectedClasseId, $selectedPeriode, $spe){
+function evalButton($tp, $vue, $rotation_id,  $classe_id, $periode_id, $spe){
     return $vue->Html->link(
         'Evaluer',
         ['controller' => 'Evaluations',
             'action' => 'evaluate',
             1,
             '?' => [
-                'periode' => $selectedPeriode,
-                'rotation' => $selectedRotation->id,
-                'classe' => $selectedClasseId,
+                'periode' => $periode_id,
+                'rotation' => $rotation_id,
+                'classe' => $classe_id,
                 'tp_id' => $tp['tp_id'],
                 'eleve_id' => $tp['eleve_id'],
                 'spe' => $spe,
@@ -50,7 +50,7 @@ function evalButton($tp, $vue, $selectedRotation,  $selectedClasseId, $selectedP
     );
 
 }
-function pronote($tp, $vue, $selectedRotation,  $selectedClasseId, $selectedPeriode){
+function pronote($tp, $vue, $rotation_id,  $classe_id, $periode_id){
     if ($tp['pronote']) {
         $tp['contenu'] = 'Pronote: <span class="label label-success label-as-badge">Ok</span>';
     } else {
@@ -58,7 +58,7 @@ function pronote($tp, $vue, $selectedRotation,  $selectedClasseId, $selectedPeri
     }
     return $tp['contenu'];
 }
-function note($tp, $selectedRotation,  $selectedClasseId, $selectedPeriode){
+function note($tp, $rotation_id,  $classe_id, $periode_id){
     if ($tp['note']) {
         $tp['contenu'] = 'Note: <span class="label label-info label-as-badge">'.$tp['note'].'</span><br>';
     } else {
@@ -67,37 +67,37 @@ function note($tp, $selectedRotation,  $selectedClasseId, $selectedPeriode){
     return $tp['contenu'];
 }
 
-function state($tp, $vue, $selectedRotation,  $selectedClasseId, $selectedPeriode, $spe){
+function state($tp, $vue, $rotation_id,  $classe_id, $periode_id, $spe){
     if (is_null($tp['debut'])) {
         $tp = editButton($tp);
 
     }elseif ($tp['fin'] != null){
         $tp['contenu'] = 'Début: <span class="label label-success label-as-badge">'.date_format($tp['debut'],'d-m-Y')."</span><br>";
         $tp['contenu'] .= 'Fin: <span class="label label-success label-as-badge">'.date_format($tp['fin'],'d-m-Y')."</span><br>";
-        $tp['contenu'] .= note($tp, $selectedRotation->id,  $selectedClasseId, $selectedPeriode);
-        $tp['contenu'] .= 'Base: '.isBase($tp, $vue, $selectedRotation,  $selectedClasseId, $selectedPeriode);
-        $tp['contenu'] .=pronote($tp, $vue, $selectedRotation,  $selectedClasseId, $selectedPeriode);
+        $tp['contenu'] .= note($tp, $rotation_id,  $classe_id, $periode_id);
+        $tp['contenu'] .= 'Base: '.isBase($tp, $vue, $rotation_id,  $classe_id, $periode_id);
+        $tp['contenu'] .=pronote($tp, $vue, $rotation_id,  $classe_id, $periode_id);
         $tp['contenu'] = editButton($tp)['contenu'];
-        $tp['contenu'] .= deleteButton($tp, $vue, $selectedRotation,  $selectedClasseId, $selectedPeriode, $spe);
+        $tp['contenu'] .= deleteButton($tp, $vue, $rotation_id,  $classe_id, $periode_id, $spe);
     }else{
         $tp['contenu'] = 'Début: <span class="label label-info label-as-badge">'.date_format($tp['debut'],'d-m-Y')."</span><br>";
         $tp['contenu'] = editButton($tp)['contenu'];
-        $tp['contenu'] .= deleteButton($tp, $vue, $selectedRotation,  $selectedClasseId, $selectedPeriode, $spe);
+        $tp['contenu'] .= deleteButton($tp, $vue, $rotation_id,  $classe_id, $periode_id, $spe);
     }
     //debug($tp);die;
     return $tp;
 }
 
-function tabProcess($tableau, $vue, $selectedRotation,  $selectedClasseId, $selectedPeriode , $spe){
+function tabProcess($tableau, $vue, $rotation_id,  $classe_id, $periode_id , $spe){
     $tab = null;
     foreach ($tableau as $eleve => $tps) {
         foreach ($tps as $tp => $cell) {
-            $tab[$eleve][$tp] = state($cell,$vue, $selectedRotation,  $selectedClasseId, $selectedPeriode, $spe);
+            $tab[$eleve][$tp] = state($cell,$vue, $rotation_id,  $classe_id, $periode_id, $spe);
         }
     }
     return $tab;
 }
-//$tableau = tabProcess($tableau, $vue, $selectedRotation,  $selectedClasseId, $selectedPeriode, $spe);
+$tableau = tabProcess($tableau, $vue, $rotation_id,  $classe_id, $periode_id, $spe);
 //debug($tableau);die;
 
 function inputDebut($date){
@@ -121,7 +121,7 @@ function inputFin($date){
     }
     return $html;
 }
-function isBase($tp, $vue, $selectedRotation,  $selectedClasseId, $selectedPeriode){
+function isBase($tp, $vue, $rotation_id,  $classe_id, $periode_id){
     $html = '<span class="label '.$tp['base']['label_color'].' label-as-badge">'.$tp['base']['value'].'</span><br>';
     return $html;
 }
@@ -172,10 +172,10 @@ echo $this->fetch('tableauClasseur');
         <?php echo $this->Html->link($html['label'],
             ['action' => 'tp',1,
                 '?' => [
-                    'periode' => $selectedPeriode,
-                    'rotation' => $selectedRotation->id,
+                    'periode' => $periode_id,
+                    'rotation' => $rotation_id,
                     'spe' => $html['spe'],
-                    'classe' => $selectedClasseId,
+                    'classe' => $classe_id,
                 ]
             ],['class' => "btn ".$html['color'],'role' => 'button' ]); ?>
     </div>
@@ -196,7 +196,7 @@ echo $this->fetch('tableauClasseur');
                 <tr>
                     <td><b><?php echo $cell ?></b></td>
                     <?php foreach ($key as $eleve => $value) :?>
-                        <td><?php echo $value['contenu']?></td>
+                        <td><?php echo $value['contenu'] ?> </td>
                     <?php endforeach; ?>
                 </tr>
             <?php endforeach; ?>
@@ -210,9 +210,9 @@ echo $this->fetch('tableauClasseur');
             <?php echo $this->Form->create(); ?>
             <?php echo $this->Form->hidden('eleve_id',['value' =>$tp['eleve_id']]) ?>
             <?php echo $this->Form->hidden('tp_id',['value' =>$tp['tp_id']]) ?>
-            <?php echo $this->Form->hidden('selectedClasseId',['value' =>$selectedClasseId]) ?>
-            <?php echo $this->Form->hidden('selectedRotationId',['value' =>$selectedRotation->id]) ?>
-            <?php echo $this->Form->hidden('selectedPeriodeId',['value' =>$selectedPeriode]) ?>
+            <?php echo $this->Form->hidden('classe_id',['value' =>$classe_id]) ?>
+            <?php echo $this->Form->hidden('rotation_idId',['value' =>$rotation_id]) ?>
+            <?php echo $this->Form->hidden('periode_idId',['value' =>$periode_id]) ?>
             <?php echo $this->Form->hidden('spe',['value' =>$spe]) ?>
             <!-- modal-for <?php echo $tp['eleve_nom'].'-'.$tp['tp_nom'] ?>-->
             <div class="modal fade bs-example-modal-lg" id="myModal<?php echo $tp['eleve_id'].'-'.$tp['tp_id'] ?>"  tabindex="-1" role="dialog" aria-labelledby="test">
@@ -252,8 +252,8 @@ echo $this->fetch('tableauClasseur');
                             </div>
                             <div class="col-md-3">
                                 <label>Base: </label>
-                                <?php echo isBase($tp, $vue, $selectedRotation,  $selectedClasseId, $selectedPeriode ) ?>
-                                <?php echo evalButton($tp, $vue, $selectedRotation,  $selectedClasseId, $selectedPeriode, $spe) ?>
+                                <?php echo isBase($tp, $vue, $rotation_id,  $classe_id, $periode_id ) ?>
+                                <?php echo evalButton($tp, $vue, $rotation_id,  $classe_id, $periode_id, $spe) ?>
                             </div>
                         </div>
                         <br>

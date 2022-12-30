@@ -3,6 +3,8 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use Cake\ORM\TableRegistry;
+use PhpParser\Node\Expr\Cast\Array_;
+
 /**
  * MaterielsTravauxPratiques Controller
  */
@@ -413,60 +415,68 @@ class SuivisController extends AppController
 
 	public function tp()
 	{
-        $this->_initializeFilters();
+        $request = $this->request;
+        $query = $request->getQuery();
+        //si pas de paramètres on lance l'initinilasiton des filtres et on récupère les données par défault
+        if ($query == []) {
+            $filter = $this->_initializeFilters();
+            $referential_id = $filter['referential_id'];
+            $classe_id = $filter['classe_id'];
+            $periode_id = $filter['periode_id'];
+            $rotation_id = $filter['rotation_id'];
+        }else { //sinon on prend les paramètres dans la requête
+            $referential_id = $request->getQuery('referential_id');
+            $classe_id = $request->getQuery('classe_id');
+            $periode_id = $request->getQuery('periode_id');
+            $rotation_id = $request->getQuery('rotation_id');
+        }
+        unset($query);
 
-
-
-        //tableauClasseur double
         $nameController = 'Suivis';
         $nameAction = 'tp';
         $options = '';
         $spe = 0 ;
-        $request = $this->request;
+        
+        /*
         if ($request->getQuery('spe') !== null) {
-            $spe = $request->getQuery('spe');
-        }
+            spe = $request->getQuery('spe');
+            //$selectedClasseId = $filtre['classe_id'];
+            //$selectedRotationId = $filtre['rotation_id'];
+
+        } */
 		//récupere la première classe dans l'ordre
+        
         $tableClasses = TableRegistry::get('Classes');
         $selectedClasse = $tableClasses->find()
 						->where(['Classes.archived' => 0])
 						->order(['Classes.nom' => 'ASC'])
                         ->first();
+        
 
         //$this->genTabloClassesEleves($nameController, $nameAction, $options, $request, $spe);
         //$selectedRotation = $this->tabPeriodesRotations($nameController, $nameAction, $options, $request, $spe);
 
 		// ***************************************************************************
         //on récupère les info du tableauClasseur id de l'élève et id de la rotation
-        $selectedClasseId = $request->getQuery('classe_id');
-        $selectedRotationId = $request->getQuery('rotation_id');
+        
 
 		if ($this->request->is('post')) {
 			$this->save($request);
         }
-
-
-        if ($selectedClasseId == null) {
-            $selectedClasseId = $selectedClasse->id;
-        }
-        if ($selectedRotationId == '') {
-            $selectedRotationId = $selectedRotation->id;
-        }
-
         $tableEleves = TableRegistry::get('Eleves');
         $listEleves = $tableEleves->find()
-            ->where(['classe_id' => $selectedClasseId])
+            ->where(['classe_id' => $classe_id])
             ->order(['Eleves.nom' => 'ASC']);
 
         $tableTpEleves = TableRegistry::get('TpEleves');
 		$tableTp = TableRegistry::get('TravauxPratiques');
-
+        
         $listTpHead = $tableTp->find() //On récupère la liste de TP pour faire l'en-tête
             ->select(['TravauxPratiques.nom'])
             //->distinct()
             //->contain(['Eleves','TravauxPratiques'])
             //->where(['classe_id' => $selectedClasseId])
-            ->where(['TravauxPratiques.rotation_id'=> $selectedRotationId,
+            ->where(['TravauxPratiques.rotation_id'=> $rotation_id,
                 'specifique' => $spe])
             ->order(['TravauxPratiques.nom' => 'ASC']);
 
@@ -476,7 +486,7 @@ class SuivisController extends AppController
             $listTpEleves = $tableTpEleves->find()
                 ->contain(['TravauxPratiques'])
                 ->where(['eleve_id' => $eleve->id])
-                ->where(['TravauxPratiques.rotation_id'=> $selectedRotationId,
+                ->where(['TravauxPratiques.rotation_id'=> $rotation_id,
                         'specifique' => $spe])
 				->order(['TravauxPratiques.nom' => 'ASC']);
             foreach ($listTpEleves as $tp) {
@@ -493,9 +503,8 @@ class SuivisController extends AppController
 
             }
         }
-
         //debug($tableau);//die;
-        $this->set(compact('tableau','listTpHead','selectedClasseId'));
+        $this->set(compact('tableau','listTpHead','classe_id','referential_id','rotation_id','periode_id','spe'));
 
 	}
 
@@ -521,7 +530,7 @@ class SuivisController extends AppController
         return $this->redirect(['action' => 'suivi']);
     }
 
-    private function _initializeFilters($value= null)
+    private function _initializeFilters()
     {
         $referentialsTbl = TableRegistry::get('Referentials');
         $referentials = $referentialsTbl->find('list')
@@ -568,7 +577,19 @@ class SuivisController extends AppController
         ->first()->id;
 
         $this->set(compact('classes','classe_id','referential_id','referentials','rotations','rotation_id','periodes','periode_id'));
+        $filter = array(
+            'classes' => $classes,
+            'classe_id' => $classe_id,
+            'referential_id' => $referential_id,
+            'referentials' => $referentials,
+            'rotations' => $rotations,
+            'rotation_id' => $rotation_id,
+            'periodes' => $periodes,
+            'periode_id' => $periode_id
 
+        );
+
+        return $filter;
     }
     public function reset()
     {
