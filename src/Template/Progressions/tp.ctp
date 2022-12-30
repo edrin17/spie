@@ -23,11 +23,7 @@
 
                         <h4>
                             <span class="label label-primary">
-                                <?php echo "P". h($periode->numero).
-                                    "-". "R".
-                                    h($rotation->numero) .": "
-                                    .h($rotation->nom)
-                                ?>
+                                <?php echo $rotation->fullName; ?>
                             </span>
                             <span class="badge"><?php echo $rotation->tpByRotation;  ?> TP </span>
                         </h4>

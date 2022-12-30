@@ -97,7 +97,7 @@ function tabProcess($tableau, $vue, $selectedRotation,  $selectedClasseId, $sele
     }
     return $tab;
 }
-//$tableau = tabProcess($tableau, $vue, $selectedRotation,  $selectedClasseId, $selectedPeriode, $spe);
+$tableau = tabProcess($tableau, $vue, $selectedRotation,  $selectedClasseId, $selectedPeriode, $spe);
 //debug($tableau);die;
 
 function inputDebut($date){
@@ -163,7 +163,7 @@ if ($spe) {
 
 
 $this->start('tableauClasseur');
-echo $this->element('TableauxClasseurs/suivi_tp2');
+echo $this->element('TableauxClasseurs/suivi_tp');
 $this->end();
 echo $this->fetch('tableauClasseur');
 ?>

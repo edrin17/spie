@@ -129,16 +129,10 @@ class FiltresAjaxesController extends AppController
 	{
 		$periodesTbl = TableRegistry::get('Periodes');
         $referential_id = $this->request->getQuery('referential_id');
-		$periodes = $periodesTbl->find()
+		$periodes = $periodesTbl->find('list')
 			->where(['referential_id' => $referential_id])
 			->order(['Periodes.numero' => 'ASC']);
-
-		foreach ($periodes as $periode)
-		{
-			$chainedPeriodes[$periode->id] = "Période n°". $periode->numero;
-		}
-        $chainedPeriodes;
-		$this->set('ajaxContent',$chainedPeriodes);
+        $this->set('ajaxContent', $periodes);
 		$this->render('filtres_ajaxes');
 	}
 

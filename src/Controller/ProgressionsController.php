@@ -34,6 +34,7 @@ class ProgressionsController extends AppController
             ->contain([
                 'Rotations.TravauxPratiques.Materiels.Marques',
                 'Rotations.TravauxPratiques.Materiels.TypesMachines',
+                'Rotations.Periodes',
                 'Rotations.Themes'
             ])
 

@@ -53,18 +53,10 @@ class RotationsController extends AppController
             }
         }
 
-        $periodes = $this->Rotations->Periodes->find()
+        $periodes = $this->Rotations->Periodes->find('list')
             ->where(['referential_id' => $referential_id])
             ->order(['Periodes.numero' => 'ASC']);
 
-        //mise en forme du select
-        $selectPeriodes = array();
-		foreach ($periodes as $value)
-		{
-			$selectPeriodes[$value->id] = "Période n°" .$value->numero;
-		}
-        //debug($selectPeriodes);
-        $periodes = $selectPeriodes;
 		//on recupere de toutes les rotations
 		$rotations = $this->Rotations->find()
             ->contain(['Periodes','Themes'])
@@ -107,17 +99,10 @@ class RotationsController extends AppController
             ->order(['nom' => 'ASC']);
 
 		//on cherche la liste des periodes qui correpondent à referential_id
-		$periodes = $this->Rotations->Periodes->find()
+		$periodes = $this->Rotations->Periodes->find('list')
             ->where(['referential_id' => $referential_id])
             ->order(['Periodes.numero' => 'ASC']);
 
-        $selectPeriodes = array();
-		foreach ($periodes as $value)
-		{
-			$selectPeriodes[$value->id] = "Période n°" .$value->numero;
-		}
-        //debug($selectPeriodes);
-        $periodes = $selectPeriodes;
 
 
 
@@ -161,17 +146,10 @@ class RotationsController extends AppController
             ->order(['nom' => 'ASC']);
 
 		//on cherche la liste des periodes qui correpondent à referential_id
-		$periodes = $this->Rotations->Periodes->find()
+		$periodes = $this->Rotations->Periodes->find('list')
             ->where(['referential_id' => $referential_id])
             ->order(['Periodes.numero' => 'ASC']);
 
-        $selectPeriodes = array();
-		foreach ($periodes as $value)
-		{
-			$selectPeriodes[$value->id] = "Période n°" .$value->numero;
-		}
-        //debug($selectPeriodes);
-        $periodes = $selectPeriodes;
 
         if ($this->request->is(['patch','post','put'])) {                                           //si requête de type post
             $periode_id = $this->request->getData('periode_id');

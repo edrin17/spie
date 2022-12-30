@@ -269,8 +269,7 @@ class SuivisController extends AppController
 
     }
 
-    private function genTabloClassesEleves($nameController, $nameAction, $options, $request)
-    {
+    private function genTabloClassesEleves($nameController, $nameAction, $options, $request){
 
         $selectedClasse = $this->request->getQuery('classe');
         $eleve_id = $this->request->getQuery('eleve');
@@ -414,7 +413,11 @@ class SuivisController extends AppController
 
 	public function tp()
 	{
-		//tableauClasseur double
+        $this->_initializeFilters();
+
+
+
+        //tableauClasseur double
         $nameController = 'Suivis';
         $nameAction = 'tp';
         $options = '';
@@ -430,13 +433,13 @@ class SuivisController extends AppController
 						->order(['Classes.nom' => 'ASC'])
                         ->first();
 
-        $this->genTabloClassesEleves($nameController, $nameAction, $options, $request, $spe);
-        $selectedRotation = $this->tabPeriodesRotations($nameController, $nameAction, $options, $request, $spe);
+        //$this->genTabloClassesEleves($nameController, $nameAction, $options, $request, $spe);
+        //$selectedRotation = $this->tabPeriodesRotations($nameController, $nameAction, $options, $request, $spe);
 
 		// ***************************************************************************
         //on récupère les info du tableauClasseur id de l'élève et id de la rotation
-        $selectedClasseId = $request->getQuery('classe');
-        $selectedRotationId = $request->getQuery('rotation');
+        $selectedClasseId = $request->getQuery('classe_id');
+        $selectedRotationId = $request->getQuery('rotation_id');
 
 		if ($this->request->is('post')) {
 			$this->save($request);
@@ -518,6 +521,55 @@ class SuivisController extends AppController
         return $this->redirect(['action' => 'suivi']);
     }
 
+    private function _initializeFilters($value= null)
+    {
+        $referentialsTbl = TableRegistry::get('Referentials');
+        $referentials = $referentialsTbl->find('list')
+            ->order(['id' => 'ASC']);
+        $referential_id = $referentialsTbl->find()
+            ->order(['id' => 'ASC'])
+            ->first()
+            ->id;
+
+        $classesTbl = TableRegistry::get('Classes');
+        $classes = $classesTbl->find('list')
+			->where([
+                'archived' => 0,
+                'referential_id' => $referential_id
+            ])
+			->order(['nom' => 'ASC']);
+        $classe_id = $classesTbl->find()
+			->where([
+                'archived' => 0,
+                'referential_id' => $referential_id
+            ])
+            ->first()
+            ->id;
+
+        $periodesTbl = TableRegistry::get('Periodes');
+        $periodes = $periodesTbl->find('list')
+            ->where(['referential_id' => $referential_id])
+            ->order(['numero' => 'ASC']);
+
+        $periode_id = $periodesTbl->find()
+        ->where(['referential_id' => $referential_id])
+        ->order(['numero' => 'ASC'])
+        ->first()->id;
+
+        $rotationsTbl = TableRegistry::get('Rotations');
+        $rotations = $rotationsTbl->find('list')
+            ->contain(['Periodes'])
+            ->where(['periode_id' => $periode_id])
+            ->order(['Rotations.numero' => 'ASC']);
+
+        $rotation_id = $rotationsTbl->find()
+        ->where(['periode_id' => $periode_id])
+        ->order(['numero' => 'ASC'])
+        ->first()->id;
+
+        $this->set(compact('classes','classe_id','referential_id','referentials','rotations','rotation_id','periodes','periode_id'));
+
+    }
     public function reset()
     {
         /*
