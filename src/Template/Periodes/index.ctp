@@ -13,7 +13,7 @@
     <div class="col-lg-2 col-lg-offset-1">
         <?php echo $this->Form->input('referential_id', [
             'label' => 'Filtrer par référentiel:',
-            'onchange' => 'select_referential()',
+            'onchange' => 'filtreByReferential()',
             'options' => $referentials,
             'default' => $referential_id
         ]); ?>
@@ -59,7 +59,7 @@ $(document).ready(function() {
     });
 } );
 
-function select_referential()
+function filtreByReferential()
 {
     var id = document.getElementById("referential-id").value;
     var url = "<?php echo $this->Url->build(['controller'=>'Periodes','action'=>'index']) ?>" + "/?referential_id=" + id

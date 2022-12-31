@@ -97,8 +97,6 @@ function tabProcess($tableau, $vue, $rotation_id,  $classe_id, $periode_id , $sp
     }
     return $tab;
 }
-$tableau = tabProcess($tableau, $vue, $rotation_id,  $classe_id, $periode_id, $spe);
-//debug($tableau);die;
 
 function inputDebut($date){
     if ($date !== null) {
@@ -161,6 +159,8 @@ if ($spe) {
     $html['color'] = 'btn-warning';
 }
 
+$tableau = tabProcess($tableau, $vue, $rotation_id,  $classe_id, $periode_id, $spe);
+//debug($tableau);die;
 
 $this->start('tableauClasseur');
 echo $this->element('TableauxClasseurs/suivi_tp2');
@@ -169,7 +169,7 @@ echo $this->fetch('tableauClasseur');
 ?>
 <div class="row">
     <div class="col-md-8">
-        <?php echo $this->Html->link($html['label'],
+        <?php /*echo $this->Html->link($html['label'],
             ['action' => 'tp',1,
                 '?' => [
                     'periode' => $periode_id,
@@ -177,7 +177,7 @@ echo $this->fetch('tableauClasseur');
                     'spe' => $html['spe'],
                     'classe' => $classe_id,
                 ]
-            ],['class' => "btn ".$html['color'],'role' => 'button' ]); ?>
+            ],['class' => "btn ".$html['color'],'role' => 'button' ]); */?>
     </div>
 </div>
 

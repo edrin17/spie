@@ -19,9 +19,8 @@
     <?php echo $this->Html->link(__('Ajouter une classe'), ['action' => 'add']); ?>
         <thead>
             <tr>
-                <th><?php echo $this->Paginator->sort('nom','Nom de la classe'); ?></th>
-                <th><?php echo $this->Paginator->sort('archived','Etat de la classe'); ?></th>
-                <th> archived </th>
+                <th><?php echo 'Nom'; ?></th>
+                <th><?php echo 'Etat de la classe' ?></th>
                 <th class="actions"><h3><?php echo __('Actions'); ?></th>
             </tr>
         </thead>
@@ -30,7 +29,6 @@
             <tr>
                 <td><?php echo h($classe->nom) ?></td>
                 <td><?php echo boolToText($classe->archived) ?></td>
-                <td><?php echo $classe->archived ?></td>
                 <td class="actions">
                 <!-- Affiche des urls/boutons et de leurs actions -->
                 <p>

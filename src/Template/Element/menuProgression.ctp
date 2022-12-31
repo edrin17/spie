@@ -1,7 +1,7 @@
 <li class="dropdown">
     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
         Progression&nbsp;<i class="fa-solid fa-calendar" aria-hidden="true"></i>
-    <span class="caret"></span></a>
+        <span class="caret"></span></a>
     <ul class="dropdown-menu">
         <li>
             <?= $this->Html->link(__('Progression TP'), [
@@ -10,12 +10,6 @@
             ]); ?>
         </li>
         <li>
-            <?= $this->Html->link(__("Analyse sur l'année"), [
-                'controller' => 'Progressions',
-                'action' => 'competences'
-            ]); ?>
-        </li>
-        <li >
             <?= $this->Html->link(__('Analyse par rotation'), [
                 'controller' => 'Analyses',
                 'action' => 'index'

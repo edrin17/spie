@@ -125,7 +125,20 @@ class FiltresAjaxesController extends AppController
 		$this->render('filtres_ajaxes');
 	}
 
-    public function chainedPeriodes()
+    public function chainedClassesByReferential()
+	{
+		$classesTbl = TableRegistry::get('Classes');
+        $referential_id = $this->request->getQuery('referential_id');
+		$classes = $classesTbl->find('list')
+			->where(['referential_id' => $referential_id,
+				'archived' => 0	
+			])
+			->order(['Classes.nom' => 'ASC']);
+        $this->set('ajaxContent', $classes);
+		$this->render('filtres_ajaxes');
+	}
+
+	public function chainedPeriodesByReferential()
 	{
 		$periodesTbl = TableRegistry::get('Periodes');
         $referential_id = $this->request->getQuery('referential_id');
@@ -136,4 +149,16 @@ class FiltresAjaxesController extends AppController
 		$this->render('filtres_ajaxes');
 	}
 
+	public function chainedRotationsByPeriode()
+	{
+		$rotationsTbl = TableRegistry::get('Rotations');
+        $periode_id = $this->request->getQuery('periode_id');
+		$rotations = $rotationsTbl = TableRegistry::get('Rotations')
+			->find('list')
+			->contain(['Periodes'])
+			->where(['periode_id' => $periode_id])
+			->order(['Rotations.numero' => 'ASC']);
+        $this->set('ajaxContent', $rotations);
+		$this->render('filtres_ajaxes');
+	}
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controller;
 
 use App\Controller\AppController;
@@ -10,46 +11,46 @@ use PhpParser\Node\Expr\Cast\Array_;
  */
 class SuivisController extends AppController
 {
-	public function initialize()
-	{
+    public function initialize()
+    {
         parent::initialize();
         $this->viewBuilder()->setLayout('default');
-	}
+    }
 
     /**
      *On récupère les classes et les prériodes pour le selection de l'évaluation
      */
     public function index()
     {
-		//on récupère la liste des classes
-		$tableClasses = TableRegistry::get('Classes');
-		$classes = $tableClasses->find()
-							->order(['nom' => 'ASC']);
+        //on récupère la liste des classes
+        $tableClasses = TableRegistry::get('Classes');
+        $classes = $tableClasses->find()
+            ->order(['nom' => 'ASC']);
 
-		$this->set(compact('classes'));
-	}
+        $this->set(compact('classes'));
+    }
 
-	public function view($id=null)
-	{
-		//on récupère la liste des élèves et la classe correpondante
-		$tableEleves = TableRegistry::get('Eleves');
-		$eleves = $tableEleves->find()
-							->where(['classe_id' => $id])
-							->order(['Eleves.nom' => 'ASC','Eleves.prenom' => 'ASC']);
-		$this->set(compact('eleves'));
-	}
+    public function view($id = null)
+    {
+        //on récupère la liste des élèves et la classe correpondante
+        $tableEleves = TableRegistry::get('Eleves');
+        $eleves = $tableEleves->find()
+            ->where(['classe_id' => $id])
+            ->order(['Eleves.nom' => 'ASC', 'Eleves.prenom' => 'ASC']);
+        $this->set(compact('eleves'));
+    }
 
-	public function suivi()
-	{
+    public function suivi()
+    {
         //changement de variable pour correspondre à la vue standard
         $nameController = 'Suivis';
         $nameAction = 'suivi';
         $options = '';
         $request = $this->request;
-		$selectedEleve = $this->genTabloClassesEleves($nameController, $nameAction, $options, $request);
+        $selectedEleve = $this->genTabloClassesEleves($nameController, $nameAction, $options, $request);
         $eleve = $this->request->getQuery('eleve');
         //si pas d'élève sélectionné
-        if ( $eleve == null) {
+        if ($eleve == null) {
             $eleve = $selectedEleve->id;
         }
 
@@ -59,8 +60,8 @@ class SuivisController extends AppController
         $tableHeader = $table['tableHeader'];
         $nbColonnes = $table['nbColonnes'];
 
-        $this->set(compact('tableau','tableHeader','nbColonnes'));
-	}
+        $this->set(compact('tableau', 'tableHeader', 'nbColonnes'));
+    }
 
     // crée le tableau de suivi avec l'état pour chaque micro compétences
     //@params $eleveId (CHAR36)
@@ -71,18 +72,19 @@ class SuivisController extends AppController
         //chargement des données
         $tableCompsInters = TableRegistry::get('CompetencesIntermediaires');
         $listCompsInters = $tableCompsInters->find()
-			->contain([
-				'CompetencesTerminales.Capacites',
+            ->contain([
+                'CompetencesTerminales.Capacites',
                 'ObjectifsPedas.NiveauxCompetences',
                 'ObjectifsPedas.TravauxPratiques.Rotations.Periodes',
-			])
-			->order(['Capacites.numero' => 'ASC',
-				'CompetencesTerminales.numero' => 'ASC',
-				'CompetencesIntermediaires.numero' => 'ASC',
+            ])
+            ->order([
+                'Capacites.numero' => 'ASC',
+                'CompetencesTerminales.numero' => 'ASC',
+                'CompetencesIntermediaires.numero' => 'ASC',
             ]);
 
         $tableNiveauxCompetences = TableRegistry::get('NiveauxCompetences');
-        $listNiveauxCompetences = $tableNiveauxCompetences -> find()
+        $listNiveauxCompetences = $tableNiveauxCompetences->find()
             ->order(['numero' => 'ASC']);
 
         //debug($tableEvals);die;
@@ -94,7 +96,7 @@ class SuivisController extends AppController
         $nbColonnes = $listNiveauxCompetences->count();
 
         //création des headers
-        $n = 0 ;
+        $n = 0;
         $tableHeader[$n] = '';
         foreach ($listNiveauxCompetences as $value) {
             $n++;
@@ -115,15 +117,15 @@ class SuivisController extends AppController
             $nomComp = $comp->fullName;
             $row = $comp->fullName;
 
-            for ($col = 0; $col <= $nbColonnes ; $col++) {
+            for ($col = 0; $col <= $nbColonnes; $col++) {
 
                 $tableau[$row][$col] = [ //on mets une valeur de base dans toutes les cases
-                        'nom' => '',
-                        'contenu' => [
-                            'type' => 0,
-                            'maxLvl' => -1,
-                            'bgcolor'=> 'transparent',
-                        ]
+                    'nom' => '',
+                    'contenu' => [
+                        'type' => 0,
+                        'maxLvl' => -1,
+                        'bgcolor' => 'transparent',
+                    ]
                 ];
                 foreach ($listMicroComps as $microComp) {
                     $numero = $microComp->niveaux_competence->numero;
@@ -131,14 +133,14 @@ class SuivisController extends AppController
                     $contenu = [];
 
                     if ($numero === $col) { //si le n° de la µcomp correspond à la bon colonne(débutant, intégration, approfondissement, maîtrise)
-                        $etat = $this->_evaluateMicroComp($eleveId, $microComp->id);//on évalue les µcomp
+                        $etat = $this->_evaluateMicroComp($eleveId, $microComp->id); //on évalue les µcomp
 
                         $tableau[$row][$col] = [ //on fait le tableau avec son contenu
                             'nom' => $nomMicroComp,
                             'contenu' => [
                                 'type' => $etat['type'],
                                 'maxLvl' => $etat['maxLvl'],
-                                'bgcolor'=> $etat['color']
+                                'bgcolor' => $etat['color']
                             ]
                         ];
                     }
@@ -146,29 +148,30 @@ class SuivisController extends AppController
             }
             //debug($tableau[$row]);die;
             $tableau[$row][0] = [ //on evalue le couleut de la comp inter
-                    'nom' => $nomComp,
-                    'contenu' => [
-                        'type' => 0,
-                        'bgcolor'=> $this->_evalComp($tableau[$row]),
-                    ]
+                'nom' => $nomComp,
+                'contenu' => [
+                    'type' => 0,
+                    'bgcolor' => $this->_evalComp($tableau[$row]),
+                ]
             ];
             //debug($tableau[$row]);die;
         }
 
-        $tableau = ['tableau' => $tableau,
-            'tableHeader' =>$tableHeader,
-            'nbColonnes' =>$nbColonnes,
-            ];
+        $tableau = [
+            'tableau' => $tableau,
+            'tableHeader' => $tableHeader,
+            'nbColonnes' => $nbColonnes,
+        ];
 
         return $tableau;
-
     }
-    private function _evalComp($tableau){
+    private function _evalComp($tableau)
+    {
         $maxlvl = -1; //pas evalué
         foreach ($tableau as $key => $col) {
             $lvl = $col['contenu']['maxLvl'];
 
-            if ($lvl > $maxlvl ) { //si meilleure eval
+            if ($lvl > $maxlvl) { //si meilleure eval
                 $maxlvl = $lvl;
             }
         }
@@ -199,7 +202,8 @@ class SuivisController extends AppController
     //@return array $etat[integer 'type' => (
     //  0'= 'non évalué' ou '1' = formée ou 2 = 'évaluée'),
     //  char 'color'
-    private function _evaluateMicroComp($eleveId, $microCompId) {
+    private function _evaluateMicroComp($eleveId, $microCompId)
+    {
 
         //on récupere les évaluations correpondantes aux microComp et à l'élève
         //on les classes par dates
@@ -215,11 +219,10 @@ class SuivisController extends AppController
                 'objectifs_peda_id' => $microCompId
             ])
             ->order([
-                    'Periodes.numero' => 'ASC',
-                    'Rotations.numero' => 'ASC',
-                    'date_eval' => 'ASC'
-                ])
-            ;
+                'Periodes.numero' => 'ASC',
+                'Rotations.numero' => 'ASC',
+                'date_eval' => 'ASC'
+            ]);
         //debug($listEvals->toArray());die;
         //mise des variables aux valeurs par défaut
         $valeur = 0;
@@ -234,32 +237,32 @@ class SuivisController extends AppController
                 //debug($listEvals->toArray());die;
                 //si PAS DEJA évaluée 4fois OU sommatif on recupère le type et la valeur de l'éval
                 if ($valeur !== 3) {
-                    $typeEval = $eval->types_eval->numero;//on stocke le type d'eval (formatif ou sommatif)
+                    $typeEval = $eval->types_eval->numero; //on stocke le type d'eval (formatif ou sommatif)
                     $note = $eval->valeurs_eval->numero;
-                    $nbEvalsFormatives ++;
+                    $nbEvalsFormatives++;
 
                     if ($typeEval == 2) { // si sommatif
-                        $valeur = 3;//évalué en sommatif
+                        $valeur = 3; //évalué en sommatif
                         //si acquis on met en vert sinon rouge
                         if ($note > 1) {
                             $maxlvl = $eval->objectifs_peda->niveaux_competence->numero; //on note le niveau d'aquisition pour plus tard
-                            $color = '#00B70B';//vert
-                        }else{
-                            $color = '#FF5E5E';//rouge
+                            $color = '#00B70B'; //vert
+                        } else {
+                            $color = '#FF5E5E'; //rouge
                         }
-                    }else{ //si eval formative
+                    } else { //si eval formative
                         if ($nbEvalsFormatives > 3) { //si + de 3 éval c'est du sommatif'
-                            $valeur = 2;//on met à évalué
+                            $valeur = 2; //on met à évalué
                             //si acquis on met en vert sinon rouge
                             if ($note > 1) {
                                 $maxlvl = $eval->objectifs_peda->niveaux_competence->numero;
-                                $color = '#00B70B';//vert
+                                $color = '#00B70B'; //vert
                             }
-                        }else{
+                        } else {
                             //il y a des eval au moins formatives donc valeurs de base
                             $maxlvl = 0;
-                            $valeur = 1;//formée
-                            $color = '#CCCCCC';//gris
+                            $valeur = 1; //formée
+                            $color = '#CCCCCC'; //gris
                         }
                     }
                 }
@@ -268,10 +271,10 @@ class SuivisController extends AppController
         $etat = ['type' => $valeur, 'color' => $color, 'maxLvl' => $maxlvl, $listEvals];
         //debug($etat);die;
         return $etat;
-
     }
 
-    private function genTabloClassesEleves($nameController, $nameAction, $options, $request){
+    private function genTabloClassesEleves($nameController, $nameAction, $options, $request)
+    {
 
         $selectedClasse = $this->request->getQuery('classe');
         $eleve_id = $this->request->getQuery('eleve');
@@ -279,8 +282,8 @@ class SuivisController extends AppController
         $tableClasses = TableRegistry::get('Classes');
 
         $classesList = $tableClasses->find()
-						->where(['Classes.archived' => 0])
-						->order(['Classes.nom' => 'ASC']);
+            ->where(['Classes.archived' => 0])
+            ->order(['Classes.nom' => 'ASC']);
 
         $elevesList = $tableEleves->find()
             ->order(['Eleves.nom' => 'ASC']);
@@ -290,12 +293,11 @@ class SuivisController extends AppController
         if ($selectedClasse != null) {
             //si on a sélectionné un élève récupère l'entity eleve'
             if ($eleve_id != null) {
-                $selectedEleve = $tableEleves->get($eleve_id,['contain' => [] ]);
+                $selectedEleve = $tableEleves->get($eleve_id, ['contain' => []]);
                 $elevesList = $tableEleves->find()
                     ->where(['classe_id' => $selectedClasse])
                     ->order(['Eleves.nom' => 'ASC']);
-
-            } else {//sinon on récupere la première entity élève de classe coresspondante
+            } else { //sinon on récupere la première entity élève de classe coresspondante
                 $elevesList = $tableEleves->find()
                     ->where(['classe_id' => $selectedClasse])
                     ->order(['Eleves.nom' => 'ASC']);
@@ -307,8 +309,8 @@ class SuivisController extends AppController
             }
         } else {
             $classe = $tableClasses->find()
-								->where(['Classes.archived' => 0])
-								->order(['Classes.nom'])
+                ->where(['Classes.archived' => 0])
+                ->order(['Classes.nom'])
                 ->first();
             $selectedClasse = $classe->id;
             $elevesList = $tableEleves->find()
@@ -321,163 +323,56 @@ class SuivisController extends AppController
                 ->first();
         }
         //passage des variables pour le layout
-        $this->set('titre', "Suivi de l'élève ".$selectedEleve->nom." ".$selectedEleve->prenom);
+        $this->set('titre', "Suivi de l'élève " . $selectedEleve->nom . " " . $selectedEleve->prenom);
 
         //passage des variables pour la vue "./tableauClasseur/classes_eleves.ctp
         $this->set(compact(
-            'classesList','elevesList','selectedClasse','selectedEleve','nameController',
-            'nameAction','options'
+            'classesList',
+            'elevesList',
+            'selectedClasse',
+            'selectedEleve',
+            'nameController',
+            'nameAction',
+            'options'
         ));
         return $selectedEleve;
     }
 
-    private function tabPeriodesRotations($nameController, $nameAction, $options, $request, $spe)
+
+    public function tp()
     {
-
-        $selectedPeriode = $this->request->getQuery('periode');
-        $rotation_id = $this->request->getQuery('rotation');
-        $tablePeriodes = TableRegistry::get('Periodes');
-        $tableRotations = TableRegistry::get('Rotations');
-
-        $periodesList = $tablePeriodes->find()
-						->order(['Periodes.numero' => 'ASC']);
-
-        $rotationsList = $tableRotations->find()
-            ->contain(['Periodes'])
-            ->order(['Rotations.nom' => 'ASC']);
-        //debug($classesList->toArray());die;
-
-        //si on a sélectionné une classe
-        if ($selectedPeriode != null) {
-            //si on a sélectionné un élève récupère l'entity eleve'
-            if ($rotation_id != null) {
-                $selectedRotation = $tableRotations->get($rotation_id,['contain' => [] ]);
-                $rotationsList = $tableRotations->find()
-                    ->contain(['Periodes'])
-                    ->where(['periode_id' => $selectedPeriode])
-                    ->order([
-                        'Periodes.numero' => 'ASC',
-                        'Rotations.numero' =>'ASC'
-                    ]);
-
-            } else {//sinon on récupere la première entity élève de classe coresspondante
-                $rotationsList = $tableRotations->find()
-                    ->contain(['Periodes'])
-                    ->where(['periode_id' => $selectedPeriode])
-                    ->order([
-                        'Periodes.numero' => 'ASC',
-                        'Rotations.numero' =>'ASC'
-                    ]);
-
-                $selectedRotation = $tableRotations->find()
-                    ->contain(['Periodes'])
-                    ->where(['periode_id' => $selectedPeriode])
-                    ->order([
-                        'Periodes.numero' => 'ASC',
-                        'Rotations.numero' =>'ASC'
-                    ])
-                    ->first();
-            }
-        } else {
-            $periode = $tablePeriodes->find()
-				->order(['Periodes.numero'])
-                ->first();
-            $selectedPeriode = $periode->id;
-            $rotationsList = $tableRotations->find()
-				->contain(['Periodes'])
-                ->where(['periode_id' => $selectedPeriode])
-                ->order(['Rotations.numero' => 'ASC']);
-
-            $selectedRotation = $tableRotations->find()
-				->contain(['Periodes'])
-                ->where(['periode_id' => $selectedPeriode])
-                ->order(['Rotations.numero' => 'ASC'])
-                ->first();
-        }
-
-        //modification d'un contenu des variables'
-        foreach ($periodesList as $periode) {
-            $periode->nom = 'P'.$periode->numero;
-        }
-
-        //modification d'un contenu des variables'
-        foreach ($rotationsList as $rotation) {
-            $rotation->nom = $rotation->fullName;
-        }
-
-        //passage des variables standardisées pour la vue tableauClasseur
-        $this->set(compact(
-            'rotationsList','periodesList','selectedPeriode','selectedRotation','nameController',
-            'nameAction','options', 'spe',
-        ));
-        return $selectedRotation;
-    }
-
-	public function tp()
-	{
         $request = $this->request;
         $query = $request->getQuery();
         //si pas de paramètres on lance l'initinilasiton des filtres et on récupère les données par défault
         if ($query == []) {
             $filter = $this->_initializeFilters();
-            $referential_id = $filter['referential_id'];
-            $classe_id = $filter['classe_id'];
-            $periode_id = $filter['periode_id'];
-            $rotation_id = $filter['rotation_id'];
-        }else { //sinon on prend les paramètres dans la requête
-            $referential_id = $request->getQuery('referential_id');
-            $classe_id = $request->getQuery('classe_id');
-            $periode_id = $request->getQuery('periode_id');
-            $rotation_id = $request->getQuery('rotation_id');
+        } else { //sinon on prend les paramètres dans la requête
+            $filter = $this->_setFilters($request);
         }
+        $referential_id = $filter['referential_id'];
+        $classe_id = $filter['classe_id'];
+        $periode_id = $filter['periode_id'];
+        $rotation_id = $filter['rotation_id'];
         unset($query);
 
-        $nameController = 'Suivis';
-        $nameAction = 'tp';
-        $options = '';
-        $spe = 0 ;
-        
-        /*
-        if ($request->getQuery('spe') !== null) {
-            spe = $request->getQuery('spe');
-            //$selectedClasseId = $filtre['classe_id'];
-            //$selectedRotationId = $filtre['rotation_id'];
+        $spe = 0;
 
-        } */
-		//récupere la première classe dans l'ordre
-        
-        $tableClasses = TableRegistry::get('Classes');
-        $selectedClasse = $tableClasses->find()
-						->where(['Classes.archived' => 0])
-						->order(['Classes.nom' => 'ASC'])
-                        ->first();
-        
-
-        //$this->genTabloClassesEleves($nameController, $nameAction, $options, $request, $spe);
-        //$selectedRotation = $this->tabPeriodesRotations($nameController, $nameAction, $options, $request, $spe);
-
-		// ***************************************************************************
-        //on récupère les info du tableauClasseur id de l'élève et id de la rotation
-        
-
-		if ($this->request->is('post')) {
-			$this->save($request);
+        if ($this->request->is('post')) {
+            $this->save($request);
         }
         $tableEleves = TableRegistry::get('Eleves');
         $listEleves = $tableEleves->find()
             ->where(['classe_id' => $classe_id])
             ->order(['Eleves.nom' => 'ASC']);
-
         $tableTpEleves = TableRegistry::get('TpEleves');
-		$tableTp = TableRegistry::get('TravauxPratiques');
-        
+        $tableTp = TableRegistry::get('TravauxPratiques');
+
         $listTpHead = $tableTp->find() //On récupère la liste de TP pour faire l'en-tête
             ->select(['TravauxPratiques.nom'])
-            //->distinct()
-            //->contain(['Eleves','TravauxPratiques'])
-            //->where(['classe_id' => $selectedClasseId])
-            ->where(['TravauxPratiques.rotation_id'=> $rotation_id,
-                'specifique' => $spe])
+            ->where([
+                'TravauxPratiques.rotation_id' => $rotation_id,
+                'specifique' => $spe
+            ])
             ->order(['TravauxPratiques.nom' => 'ASC']);
 
         $tableau = array();
@@ -486,9 +381,11 @@ class SuivisController extends AppController
             $listTpEleves = $tableTpEleves->find()
                 ->contain(['TravauxPratiques'])
                 ->where(['eleve_id' => $eleve->id])
-                ->where(['TravauxPratiques.rotation_id'=> $rotation_id,
-                        'specifique' => $spe])
-				->order(['TravauxPratiques.nom' => 'ASC']);
+                ->where([
+                    'TravauxPratiques.rotation_id' => $rotation_id,
+                    'specifique' => $spe
+                ])
+                ->order(['TravauxPratiques.nom' => 'ASC']);
             foreach ($listTpEleves as $tp) {
                 $tableau[$eleve->nom][$tp->id]['eleve_id'] = $eleve->id;
                 $tableau[$eleve->nom][$tp->id]['tp_id'] = $tp->id;
@@ -499,22 +396,20 @@ class SuivisController extends AppController
                 $tableau[$eleve->nom][$tp->id]['pronote'] = $tp->pronote;
                 $tableau[$eleve->nom][$tp->id]['base'] = $this->_evaluated($tp->travaux_pratique->id, $eleve->id);
                 $tableau[$eleve->nom][$tp->id]['note'] = $tp->note;
-				$tableau[$eleve->nom][$tp->id]['memo'] = $tp->memo;
-
+                $tableau[$eleve->nom][$tp->id]['memo'] = $tp->memo;
             }
         }
-        //debug($tableau);//die;
-        $this->set(compact('tableau','listTpHead','classe_id','referential_id','rotation_id','periode_id','spe'));
-
-	}
+        //debug($tableau);
+        $this->set(compact('tableau', 'listTpHead', 'classe_id', 'referential_id', 'rotation_id', 'periode_id', 'spe'));
+    }
 
     public function add()
     {
-		$tpTable = TableRegistry::get('TravauxPratiques');
-		$tpList = $tpTable->find();
+        $tpTable = TableRegistry::get('TravauxPratiques');
+        $tpList = $tpTable->find();
 
         $elevesTable = TableRegistry::get('Eleves');
-		$elevesList = $elevesTable->find();
+        $elevesList = $elevesTable->find();
 
         $tpElevesTable = TableRegistry::get('TpEleves');
 
@@ -542,13 +437,13 @@ class SuivisController extends AppController
 
         $classesTbl = TableRegistry::get('Classes');
         $classes = $classesTbl->find('list')
-			->where([
+            ->where([
                 'archived' => 0,
                 'referential_id' => $referential_id
             ])
-			->order(['nom' => 'ASC']);
+            ->order(['nom' => 'ASC']);
         $classe_id = $classesTbl->find()
-			->where([
+            ->where([
                 'archived' => 0,
                 'referential_id' => $referential_id
             ])
@@ -561,9 +456,9 @@ class SuivisController extends AppController
             ->order(['numero' => 'ASC']);
 
         $periode_id = $periodesTbl->find()
-        ->where(['referential_id' => $referential_id])
-        ->order(['numero' => 'ASC'])
-        ->first()->id;
+            ->where(['referential_id' => $referential_id])
+            ->order(['numero' => 'ASC'])
+            ->first()->id;
 
         $rotationsTbl = TableRegistry::get('Rotations');
         $rotations = $rotationsTbl->find('list')
@@ -572,11 +467,11 @@ class SuivisController extends AppController
             ->order(['Rotations.numero' => 'ASC']);
 
         $rotation_id = $rotationsTbl->find()
-        ->where(['periode_id' => $periode_id])
-        ->order(['numero' => 'ASC'])
-        ->first()->id;
+            ->where(['periode_id' => $periode_id])
+            ->order(['numero' => 'ASC'])
+            ->first()->id;
 
-        $this->set(compact('classes','classe_id','referential_id','referentials','rotations','rotation_id','periodes','periode_id'));
+        $this->set(compact('classes', 'classe_id', 'referential_id', 'referentials', 'rotations', 'rotation_id', 'periodes', 'periode_id'));
         $filter = array(
             'classes' => $classes,
             'classe_id' => $classe_id,
@@ -591,6 +486,53 @@ class SuivisController extends AppController
 
         return $filter;
     }
+
+    private function _setFilters($request = null)
+    {
+        $referential_id = $request->getQuery('referential_id');
+        $classe_id = $request->getQuery('classe_id');
+        $periode_id = $request->getQuery('periode_id');
+        $rotation_id = $request->getQuery('rotation_id');
+
+        $referentialsTbl = TableRegistry::get('Referentials');
+        $referentials = $referentialsTbl->find('list')
+            ->order(['id' => 'ASC']);
+
+        $classesTbl = TableRegistry::get('Classes');
+        $classes = $classesTbl->find('list')
+            ->where([
+                'archived' => 0,
+                'referential_id' => $referential_id
+            ])
+            ->order(['nom' => 'ASC']);
+
+        $periodesTbl = TableRegistry::get('Periodes');
+        $periodes = $periodesTbl->find('list')
+            ->where(['referential_id' => $referential_id])
+            ->order(['numero' => 'ASC']);
+
+
+        $rotationsTbl = TableRegistry::get('Rotations');
+        $rotations = $rotationsTbl->find('list')
+            ->contain(['Periodes'])
+            ->where(['periode_id' => $periode_id])
+            ->order(['Rotations.numero' => 'ASC']);
+
+        $this->set(compact('classes', 'classe_id', 'referential_id', 'referentials', 'rotations', 'rotation_id', 'periodes', 'periode_id'));
+        $filter = array(
+            'classes' => $classes,
+            'classe_id' => $classe_id,
+            'referential_id' => $referential_id,
+            'referentials' => $referentials,
+            'rotations' => $rotations,
+            'rotation_id' => $rotation_id,
+            'periodes' => $periodes,
+            'periode_id' => $periode_id
+
+        );
+        return $filter;
+    }
+
     public function reset()
     {
         /*
@@ -608,7 +550,7 @@ class SuivisController extends AppController
         return $this->redirect(['action' => 'tp']); */
     }
 
-	public function save()
+    public function save()
     {
         $eleve_id = $this->request->getData('eleve_id');
         $tp_id = $this->request->getData('tp_id');
@@ -619,44 +561,46 @@ class SuivisController extends AppController
 
         $tpElevesTable = TableRegistry::get('TpEleves');
         $tp = $tpElevesTable->get($tp_id);
-		if ($this->request->getData('date_debut') !== '') {
-			$tp->debut = $this->request->getData('date_debut');
-		}
-		if ($this->request->getData('note') !== '') {
-        	$tp->note = $this->request->getData('note');
-		}else {
-			$tp->note = null;
-		}
-		if ($this->request->getData('date_fin') !== null) {
-			if ($this->request->getData('date_fin') != '') {
-				$tp->fin = $this->request->getData('date_fin');
-			}else {
-				$tp->fin = null;
-			}
-		}
+        if ($this->request->getData('date_debut') !== '') {
+            $tp->debut = $this->request->getData('date_debut');
+        }
+        if ($this->request->getData('note') !== '') {
+            $tp->note = $this->request->getData('note');
+        } else {
+            $tp->note = null;
+        }
+        if ($this->request->getData('date_fin') !== null) {
+            if ($this->request->getData('date_fin') != '') {
+                $tp->fin = $this->request->getData('date_fin');
+            } else {
+                $tp->fin = null;
+            }
+        }
         if ($this->request->getData('pronote') !== null) {
-        	$tp->pronote = filter_var($this->request->getData('pronote'), FILTER_VALIDATE_BOOLEAN);
-		}else {
-			$tp->pronote = false;
-		}
+            $tp->pronote = filter_var($this->request->getData('pronote'), FILTER_VALIDATE_BOOLEAN);
+        } else {
+            $tp->pronote = false;
+        }
         if ($this->request->getData('base') !== null) {
-        	$tp->base = filter_var($this->request->getData('base'), FILTER_VALIDATE_BOOLEAN);
-		}else {
-			$tp->base = false;
-		}
-		if ($this->request->getData('memo') !== null) {
-			$tp->memo = $this->request->getData('memo');
-		}
+            $tp->base = filter_var($this->request->getData('base'), FILTER_VALIDATE_BOOLEAN);
+        } else {
+            $tp->base = false;
+        }
+        if ($this->request->getData('memo') !== null) {
+            $tp->memo = $this->request->getData('memo');
+        }
         $tpElevesTable->save($tp);
 
-        return $this->redirect([
-            'action' => 'tp',1,
-            '?' => [
-                'classe' => $selectedClasseId,
-                'rotation' => $selectedRotationId,
-                'periode' => $selectedPeriodeId,
-                'spe' => $spe
-                ]]
+        return $this->redirect(
+            [
+                'action' => 'tp', 1,
+                '?' => [
+                    'classe' => $selectedClasseId,
+                    'rotation' => $selectedRotationId,
+                    'periode' => $selectedPeriodeId,
+                    'spe' => $spe
+                ]
+            ]
         );
     }
 
@@ -672,21 +616,23 @@ class SuivisController extends AppController
         $tpElevesTable = TableRegistry::get('TpEleves');
         $tp = $tpElevesTable->get($tp_id);
 
-		$tp->debut = null;
+        $tp->debut = null;
         $tp->fin = null;
-		$tp->note = null;
+        $tp->note = null;
         $tp->pronote = false;
-		$tp->memo = '';
+        $tp->memo = '';
         //debug($tp);die;
         $tpElevesTable->save($tp);
-        return $this->redirect([
-            'action' => 'tp',1,
-            '?' => [
-                'classe' => $selectedClasseId,
-                'rotation' => $selectedRotationId,
-                'periode' => $selectedPeriodeId,
-                'spe' => $spe,
-                ]]
+        return $this->redirect(
+            [
+                'action' => 'tp', 1,
+                '?' => [
+                    'classe' => $selectedClasseId,
+                    'rotation' => $selectedRotationId,
+                    'periode' => $selectedPeriodeId,
+                    'spe' => $spe,
+                ]
+            ]
         );
     }
 
@@ -718,13 +664,15 @@ class SuivisController extends AppController
 
         $tpElevesTable->save($tp);
 
-        return $this->redirect([
-            'action' => 'tp',1,
-            '?' => [
-                'classe' => $selectedClasse,
-                'rotation' => $selectedRotation,
-                'periode' => $selectedPeriode,
-                ]]
+        return $this->redirect(
+            [
+                'action' => 'tp', 1,
+                '?' => [
+                    'classe' => $selectedClasse,
+                    'rotation' => $selectedRotation,
+                    'periode' => $selectedPeriode,
+                ]
+            ]
         );
     }
 
@@ -732,7 +680,7 @@ class SuivisController extends AppController
     {
         //on récupère la liste des entities lien tp<->objspedas
         $tableTps = TableRegistry::get('TravauxPratiques');
-        $tp = $tableTps->get($tp_id,['contain'=> 'TravauxPratiquesObjectifsPedas']);
+        $tp = $tableTps->get($tp_id, ['contain' => 'TravauxPratiquesObjectifsPedas']);
 
         //debug($tp_id);debug($eleve_id);die;
 
@@ -756,13 +704,11 @@ class SuivisController extends AppController
         //on renvoie l'état
         if ($compteur === 0) {
             $etat = ['value' => 'Non évalué', 'label_color' => 'label-default'];
-        }
-        elseif (($compteur > 0) and ($compteur < $nbObjsPedas)) {
+        } elseif (($compteur > 0) and ($compteur < $nbObjsPedas)) {
             $etat = ['value' => 'Incomplet', 'label_color' => 'label-warning'];
-        }
-        elseif ($compteur === $nbObjsPedas){
+        } elseif ($compteur === $nbObjsPedas) {
             $etat = ['value' => 'Évalué', 'label_color' => 'label-success'];
-        }else {
+        } else {
             $etat = ['value' => 'Erreur!', 'label_color' => 'label-danger'];
         }
         return $etat;
