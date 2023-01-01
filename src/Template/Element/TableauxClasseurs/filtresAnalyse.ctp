@@ -57,7 +57,7 @@
         var $progression_id = document.getElementById("progression-id").value;
         var $periode_id = document.getElementById("periode-id").value;
         var $rotation_id = document.getElementById("rotation-id").value;
-        var url = "<?php echo $this->Url->build(['controller' => 'TravauxPratiques', 'action' => 'index']) ?>" +
+        var url = "<?php echo $this->Url->build(['controller' => 'Analyses', 'action' => 'index']) ?>" +
             "/?progression_id=" + $progression_id +
             "&periode_id=" + $periode_id +
             "&rotation_id=" + $rotation_id;

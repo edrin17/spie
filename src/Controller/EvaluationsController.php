@@ -475,6 +475,118 @@ class EvaluationsController extends AppController
         } */
         return $existingData;
     }
+    private function _loadFilters($resquest = null)
+    {
+        $progressionsTbl = TableRegistry::get('Progressions');
+        $progressions = $progressionsTbl->find('list')
+            ->order(['id' => 'ASC']);
+
+        $progression_id = $this->request->getQuery('progression_id');
+
+        if ($progression_id == '') {
+            $progression_id = $progressionsTbl->find()
+                ->order(['id' => 'ASC'])
+                ->first()
+                ->id;
+        }
+
+        $classesTbl = TableRegistry::get('Classes');
+        $classes = $classesTbl->find('list')
+            ->where([
+                'archived' => 0,
+                'progression_id' => $progression_id
+            ])
+            ->order(['nom' => 'ASC']);
+        $classe_id = $this->request->getQuery('classe_id');
+        if ($classe_id == '') {
+            $classe_id = $classesTbl->find()
+                ->where([
+                    'archived' => 0,
+                    'progression_id' => $progression_id
+                ])
+                ->first()
+                ->id;
+        }
+        $elevesTbl = TableRegistry::get('eleves');
+        $eleves = $elevesTbl->find('list')
+            ->where([
+                'classe_id' => $classe_id
+            ])
+            ->order(['nom' => 'ASC', 'prenom' => 'ASC']);
+        $elevesObjs = $elevesTbl->find() //eleve sous forme d'objets
+            ->where([
+                'classe_id' => $classe_id
+            ])
+            ->order(['nom' => 'ASC', 'prenom' => 'ASC']);
+        $eleve_id = $this->request->getQuery('eleve_id');
+        if ($eleve_id == '') {
+            $eleve_id = $elevesTbl->find()
+                ->where([
+                    'classe_id' => $classe_id
+                ])
+                ->order(['nom' => 'ASC', 'prenom' => 'ASC'])
+                ->first()
+                ->id;
+        }
+
+        $periodesTbl = TableRegistry::get('Periodes');
+        $periodes = $periodesTbl->find('list')
+            ->where(['progression_id' => $progression_id])
+            ->order(['numero' => 'ASC']);
+        $periode_id = $this->request->getQuery('periode_id');
+        if ($periode_id == '') {
+            $periode_id = $periodesTbl->find()
+                ->where(['progression_id' => $progression_id])
+                ->order(['numero' => 'ASC'])
+                ->first()->id;
+        }
+
+        $rotationsTbl = TableRegistry::get('Rotations');
+        $rotations = $rotationsTbl->find('list')
+            ->contain(['Periodes'])
+            ->where(['periode_id' => $periode_id])
+            ->order(['Rotations.numero' => 'ASC']);
+        $rotation_id = $this->request->getQuery('rotation_id');
+        if ($rotation_id == '') {
+            $rotation_id = $rotationsTbl->find()
+                ->where(['periode_id' => $periode_id])
+                ->order(['numero' => 'ASC'])
+                ->first()->id;
+        }
+
+        $tachesTbl = TableRegistry::get('TachesPros');
+        $taches = $tachesTbl->find('list')
+            ->contain(['Activites'])
+            ->order([
+                'Activites.Numero' => 'ASC',
+                'TachesPros.Numero' => 'ASC'
+            ]);
+        $tache_id = $this->request->getQuery('tache_id');
+        if ($tache_id == '') {
+            $tache_id = $tachesTbl->find()
+                ->contain(['Activites'])
+                ->order([
+                    'Activites.Numero' => 'ASC',
+                    'TachesPros.Numero' => 'ASC'
+                ])
+                ->first()->id;
+        }
+        $this->set(compact( //passage des variables à la vue
+            'classes',
+            'classe_id',
+            'progression_id',
+            'progressions',
+            'rotations',
+            'rotation_id',
+            'periodes',
+            'periode_id',
+            'taches',
+            'tache_id',
+            'eleves',
+            'eleve_id',
+            'elevesObjs',
+        ));
+    }
     public function bilan()
     {
         $trimestre[1] = '2022-09-01';
@@ -482,13 +594,9 @@ class EvaluationsController extends AppController
         $trimestre[3] = '2023-03-10';
 
 
-        $nameController = 'Evaluations';
-        $nameAction = 'bilan';
-        $options = '';
         $request = $this->request;
-		$this->tabClassesEleves($nameController, $nameAction, $options, $request);
-        //$this->tabPeriodesRotations($nameController, $nameAction, $options, $request);
-        $eleve_id = $this->request->getQuery('eleve');
+        $this->_loadFilters($request);
+        $eleve_id = $this->viewVars['eleve_id'];
         $tableTpEleves = TableRegistry::get('TpEleves');
 
         foreach ($trimestre as $key => $value) {

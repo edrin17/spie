@@ -42,14 +42,14 @@ class TravauxPratiquesController extends AppController
 
     private function _loadFilters($resquest = null)
     {
-        $referentialsTbl = TableRegistry::get('Referentials');
-        $referentials = $referentialsTbl->find('list')
+        $progressionsTbl = TableRegistry::get('Progressions');
+        $progressions = $progressionsTbl->find('list')
             ->order(['id' => 'ASC']);
         
-        $referential_id = $this->request->getQuery('referential_id');
+        $progression_id = $this->request->getQuery('progression_id');
 
-        if ($referential_id =='') {
-            $referential_id = $referentialsTbl->find()
+        if ($progression_id =='') {
+            $progression_id = $progressionsTbl->find()
             ->order(['id' => 'ASC'])
             ->first()
             ->id;
@@ -59,7 +59,7 @@ class TravauxPratiquesController extends AppController
         $classes = $classesTbl->find('list')
             ->where([
                 'archived' => 0,
-                'referential_id' => $referential_id
+                'progression_id' => $progression_id
             ])
             ->order(['nom' => 'ASC']);
         $classe_id = $this->request->getQuery('classe_id');
@@ -67,7 +67,7 @@ class TravauxPratiquesController extends AppController
         $classe_id = $classesTbl->find()
             ->where([
                 'archived' => 0,
-                'referential_id' => $referential_id
+                'progression_id' => $progression_id
             ])
             ->first()
             ->id;
@@ -75,12 +75,12 @@ class TravauxPratiquesController extends AppController
  
         $periodesTbl = TableRegistry::get('Periodes');
         $periodes = $periodesTbl->find('list')
-            ->where(['referential_id' => $referential_id])
+            ->where(['progression_id' => $progression_id])
             ->order(['numero' => 'ASC']);
         $periode_id = $this->request->getQuery('periode_id');
         if ($periode_id =='') {
         $periode_id = $periodesTbl->find()
-            ->where(['referential_id' => $referential_id])
+            ->where(['progression_id' => $progression_id])
             ->order(['numero' => 'ASC'])
             ->first()->id;
         }
@@ -117,7 +117,7 @@ class TravauxPratiquesController extends AppController
         }
         $this->set(compact( //passage des variables à la vue
             'classes', 'classe_id',
-            'referential_id', 'referentials',
+            'progression_id', 'progressions',
             'rotations', 'rotation_id',
             'periodes', 'periode_id',
             'taches', 'tache_id'
@@ -137,7 +137,7 @@ class TravauxPratiquesController extends AppController
                 $this->Flash->success(__('Le matériel a été sauvegardé.'));
                 return $this->redirect(['action' => 'index',
                     '?' => [
-                        'referential_id'=> $this->viewVars['referential_id'],
+                        'progression_id'=> $this->viewVars['progression_id'],
                         'periode'=> $this->viewVars['periode_id'],
                         'rotation_id'=> $this->viewVars['rotation_id'],
                         'classe_id'=> $this->viewVars['classe_id']
@@ -171,7 +171,7 @@ class TravauxPratiquesController extends AppController
                 $this->Flash->success(__('Le matériel a été sauvegardé.'));      //Affiche une infobulle
                 return $this->redirect(['action' => 'index',
                 '?' => [
-                    'referential_id'=> $this->viewVars['referential_id'],
+                    'progression_id'=> $this->viewVars['progression_id'],
                     'periode'=> $this->viewVars['periode_id'],
                     'rotation_id'=> $this->viewVars['rotation_id'],
                     'classe_id'=> $this->viewVars['classe_id']
@@ -226,132 +226,5 @@ class TravauxPratiquesController extends AppController
             $this->Flash->error(__("Le TP n'a pas pu être supprimé ! Réessayer."));
         }
         return $this->redirect(['action' => 'index']);
-    }
-    /*
-     *Gestion du tableau classeur
-     */
-    protected function _tabs()
-    {
-
-        //TABLEAU CLASSEUR
-        function getPeriode()
-        {
-            if (isset($_GET['LVL1'])) {
-                $selectedPeriode = $_GET['LVL1'];
-            } else {
-                $selectedPeriode = null;
-            }
-            return $selectedPeriode;
-        }
-
-
-        //@returns $rotation_id
-        function getRotation()
-        {
-            if (isset($_GET['LVL2'])) {
-                $rotation_id = $_GET['LVL2'];
-            } else {
-                $rotation_id = null;
-            }
-            return $rotation_id;
-        }
-
-        $selectedPeriode = getPeriode();
-        $rotation_id = getRotation();
-
-        $tableTPs = $this->TravauxPratiques;
-        $tablePeriodes = TableRegistry::get('Periodes');
-        $tableRotations = TableRegistry::get('Rotations');
-
-        $listPeriodes = $tablePeriodes->find()
-            //->contain(['Classes'])
-            ->order([
-                //'Classes.nom' => 'ASC',
-                'Periodes.numero' => 'ASC'
-            ]);
-
-        $listRotations = $tableRotations->find()
-            //->contain(['Periodes'])
-            ->contain(['Periodes'])
-            ->order([
-                'Periodes.numero' => 'ASC',
-                'Rotations.numero' => 'ASC'
-            ]);
-        //si on a sélectionné une période
-        if ($selectedPeriode != null) {
-            //si on a sélectionné une période on récupère la liste des rotations correspondante'
-            $listRotations = $tableRotations->find()
-                ->contain(['Periodes'])
-                ->where(['periode_id' => $selectedPeriode])
-                ->order([
-                    'Periodes.numero' => 'ASC',
-                    'Rotations.numero' => 'ASC'
-                ]);
-
-            if ($rotation_id == null) { //si pas de rotation selectionnée on prend la première de la liste
-                $selectedRotation = $tableRotations->find()
-                    ->contain(['Periodes'])
-                    ->where(['periode_id' => $selectedPeriode])
-                    ->order([
-                        'Periodes.numero' => 'ASC',
-                        'Rotations.numero' => 'ASC'
-                    ])
-                    ->first();
-            } else {
-                $selectedRotation = $tableRotations->get($rotation_id, ['contain' => []]);
-            }
-        } else {
-            $periode = $tablePeriodes->find()
-                //->contain(['Classes'])
-                ->order([
-                    //'Classes.nom' => 'ASC',
-                    'Periodes.numero' => 'ASC'
-                ])
-                ->first();
-            $selectedPeriode = $periode->id;
-
-            $listRotations = $tableRotations->find()
-                ->contain(['Periodes'])
-                ->where(['periode_id' => $selectedPeriode])
-                ->order([
-                    'Periodes.numero' => 'ASC',
-                    'Rotations.numero' => 'ASC'
-                ]);
-
-            $selectedRotation = $tableRotations->find()
-                ->contain(['Periodes'])
-                ->where(['periode_id' => $selectedPeriode])
-                ->order([
-                    'Periodes.numero' => 'ASC',
-                    'Rotations.numero' => 'ASC'
-                ])
-                ->first();
-        }
-
-        //modification d'un contenu des variables'
-        foreach ($listPeriodes as $periode) {
-            $periode->nom = 'P' . $periode->numero;
-        }
-
-        //modification d'un contenu des variables'
-        foreach ($listRotations as $rotation) {
-            $rotation->nom = $rotation->fullName;
-        }
-
-
-        //changement de variable pour correspondre à la vue standard
-        $onglets = [
-            "listLVL1" => $listPeriodes,
-            "listLVL2" => $listRotations,
-
-            "selectedLVL1" => $selectedPeriode,
-            "selectedLVL2" => $selectedRotation,
-
-
-            "nameController" => 'TravauxPratiques',
-            "nameAction" => 'index',
-            "options" => '',
-        ];
-        return $onglets;
     }
 }

@@ -18,35 +18,35 @@ class RotationsController extends AppController
     public function index($periode_id = null)
     {
         //si periode_id en parmètre c'est un retour d'ajout ou d'edition
-        //donc on prend referential_id qui match
+        //donc on prend progression_id qui match
         if ($periode_id) {
-            $referential_id = $this->Rotations->Periodes->get($periode_id)
-                ->referential_id;
+            $progression_id = $this->Rotations->Periodes->get($periode_id)
+                ->progression_id;
         }else{
-            $referential_id = $this->request->getQuery('referential_id');
+            $progression_id = $this->request->getQuery('progression_id');
             $periode_id = $this->request->getQuery('periode_id');
         }
 
-        $referentialsTable = TableRegistry::get('Referentials');
-		$referentials = $referentialsTable->find('list')
+        $progressionsTable = TableRegistry::get('Progressions');
+		$progressions = $progressionsTable->find('list')
 			->order(['id' => 'ASC']);
-        if (is_null($referential_id)) { //si aucun referentiel choisi l'id du 1er
-            $referential_id = $referentialsTable->find()
+        if (is_null($progression_id)) { //si aucun referentiel choisi l'id du 1er
+            $progression_id = $progressionsTable->find()
                 ->first()
                 ->id;
 
             //on récupère la 1ere periode correpondantes au référentiel
     		$periode_id = $this->Rotations->Periodes->find()
-                ->where(['referential_id' => $referential_id])
+                ->where(['progression_id' => $progression_id])
                 ->order(['Periodes.numero' => 'ASC'])
                 ->first()
                 ->id;
         }else{
             $periode = $this->Rotations->Periodes->get($periode_id); //on regarde si periode_id match le référentiel
 
-            if ($periode->referential_id != $referential_id) {
+            if ($periode->progression_id != $progression_id) {
                 $periode_id = $this->Rotations->Periodes->find()
-                    ->where(['referential_id' => $referential_id])
+                    ->where(['progression_id' => $progression_id])
                     ->order(['Periodes.numero' => 'ASC'])
                     ->first()
                     ->id;
@@ -54,14 +54,14 @@ class RotationsController extends AppController
         }
 
         $periodes = $this->Rotations->Periodes->find('list')
-            ->where(['referential_id' => $referential_id])
+            ->where(['progression_id' => $progression_id])
             ->order(['Periodes.numero' => 'ASC']);
 
 		//on recupere de toutes les rotations
 		$rotations = $this->Rotations->find()
             ->contain(['Periodes','Themes'])
             ->where([
-                'Periodes.referential_id' => $referential_id,
+                'Periodes.progression_id' => $progression_id,
                 'periode_id' => $periode_id,
                 ])
 
@@ -70,7 +70,7 @@ class RotationsController extends AppController
             ]);
 
         //debug($periodes);
-        $this->set(compact('rotations','periodes','periode_id','referentials','referential_id'));
+        $this->set(compact('rotations','periodes','periode_id','progressions','progression_id'));
 
     }
 
@@ -80,17 +80,17 @@ class RotationsController extends AppController
     public function add($periode_id = null)
     {
         //on recupere la liste des référentiels
-        $referentialsTable = TableRegistry::get('Referentials');
-		$referentials = $referentialsTable->find('list')
+        $progressionsTable = TableRegistry::get('Progressions');
+		$progressions = $progressionsTable->find('list')
 			->order(['id' => 'ASC']);
 
-        //prend le referential_id correspondant à la période passée en paramètres
+        //prend le progression_id correspondant à la période passée en paramètres
         if ($periode_id) {
-            $referential_id = $this->Rotations->Periodes->get($periode_id)
-                ->referential_id;
+            $progression_id = $this->Rotations->Periodes->get($periode_id)
+                ->progression_id;
         }else{
-        //sino prend le 1ere referential_id de la table
-        $referential_id = $referentialsTable->find()
+        //sino prend le 1ere progression_id de la table
+        $progression_id = $progressionsTable->find()
             ->first()
             ->id;
         }
@@ -98,9 +98,9 @@ class RotationsController extends AppController
         $listThemes = $this->Rotations->Themes->find('list')
             ->order(['nom' => 'ASC']);
 
-		//on cherche la liste des periodes qui correpondent à referential_id
+		//on cherche la liste des periodes qui correpondent à progression_id
 		$periodes = $this->Rotations->Periodes->find('list')
-            ->where(['referential_id' => $referential_id])
+            ->where(['progression_id' => $progression_id])
             ->order(['Periodes.numero' => 'ASC']);
 
 
@@ -123,8 +123,8 @@ class RotationsController extends AppController
             'rotation',
             'periodes',
             'listThemes',
-            'referentials',
-            'referential_id'
+            'progressions',
+            'progression_id'
         ));
     }
 
@@ -134,20 +134,20 @@ class RotationsController extends AppController
         $rotation = $this->Rotations->get($rotation_id);
         $periode_id = $rotation->periode_id;
         //on recupere la liste des référentiels
-        $referentialsTable = TableRegistry::get('Referentials');
-		$referentials = $referentialsTable->find('list')
+        $progressionsTable = TableRegistry::get('Progressions');
+		$progressions = $progressionsTable->find('list')
 			->order(['id' => 'ASC']);
 
-        //prend le referential_id correspondant à la période passée en paramètres
-        $referential_id = $this->Rotations->Periodes->get($periode_id)
-            ->referential_id;
+        //prend le progression_id correspondant à la période passée en paramètres
+        $progression_id = $this->Rotations->Periodes->get($periode_id)
+            ->progression_id;
         //on recupere la liste des thèmes
         $listThemes = $this->Rotations->Themes->find('list')
             ->order(['nom' => 'ASC']);
 
-		//on cherche la liste des periodes qui correpondent à referential_id
+		//on cherche la liste des periodes qui correpondent à progression_id
 		$periodes = $this->Rotations->Periodes->find('list')
-            ->where(['referential_id' => $referential_id])
+            ->where(['progression_id' => $progression_id])
             ->order(['Periodes.numero' => 'ASC']);
 
 
@@ -167,8 +167,8 @@ class RotationsController extends AppController
             'rotation',
             'periodes',
             'listThemes',
-            'referentials',
-            'referential_id'
+            'progressions',
+            'progression_id'
         ));
     }
     /**

@@ -1,10 +1,10 @@
 <div class="container-fuild">
     <div class="row">
         <div class="col-lg-2">
-            <?php echo $this->Form->input('referential_id', [
+            <?php echo $this->Form->input('progression_id', [
                 'label' => 'Filtrer par référentiel:',
-                'onchange' => 'filterPeriodesByReferential()',
-                'default' => $referential_id
+                'onchange' => 'filterPeriodesByProgression()',
+                'default' => $progression_id
             ]); ?>
         </div>
         <div class="col-lg-2">
@@ -33,12 +33,12 @@
 
 <script type="text/javascript">
 
-function filterPeriodesByReferential()
+function filterPeriodesByProgression()
 {   
-    var $referential_id = document.getElementById("referential-id").value;
-    filterClassesByReferential($referential_id);
-    $.get("<?php echo $this->Url->build(['controller'=>'FiltresAjaxes','action'=>'chainedPeriodesByReferential']) ?>" +
-        "/?referential_id=" + $referential_id,
+    var $progression_id = document.getElementById("progression-id").value;
+    filterClassesByProgression($progression_id);
+    $.get("<?php echo $this->Url->build(['controller'=>'FiltresAjaxes','action'=>'chainedPeriodesByProgression']) ?>" +
+        "/?progression_id=" + $progression_id,
         function(resp) {
             $('#periode-id').html(resp);
             $('#periode-id').trigger("onchange");
@@ -57,10 +57,10 @@ function filterByClasse()
         }
     );
 }
-function filterClassesByReferential($referential_id)
+function filterClassesByProgression($progression_id)
 {   
-    $.get("<?php echo $this->Url->build(['controller'=>'FiltresAjaxes','action'=>'chainedClassesByReferential']) ?>" +
-        "/?referential_id=" + $referential_id,
+    $.get("<?php echo $this->Url->build(['controller'=>'FiltresAjaxes','action'=>'chainedClassesByProgression']) ?>" +
+        "/?progression_id=" + $progression_id,
         function(resp) {
             $('#classe-id').html(resp);
             $('#classe-id').trigger("onchange");
@@ -82,12 +82,12 @@ function filterRotationsByPeriode()
 
 function filterPage()
 {
-    var $referential_id = document.getElementById("referential-id").value;
+    var $progression_id = document.getElementById("progression-id").value;
     var $periode_id = document.getElementById("periode-id").value;
     var $classe_id = document.getElementById("classe-id").value;
     var $rotation_id = document.getElementById("rotation-id").value;
     var url = "<?php echo $this->Url->build(['controller'=>'Suivis','action'=>'tp']) ?>" +
-        "/?referential_id=" + $referential_id +
+        "/?progression_id=" + $progression_id +
         "&periode_id=" + $periode_id +
         "&classe_id=" + $classe_id +
         "&rotation_id=" + $rotation_id;

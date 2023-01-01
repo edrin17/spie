@@ -10,14 +10,14 @@
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($referentials as $referential): ?> <!--Affiche le contenu de 'referentials'  -->
+            <?php foreach ($progressions as $progression): ?> <!--Affiche le contenu de 'progressions'  -->
             <tr>
-                <td><?= h($referential->nom) ?></td>
+                <td><?= h($progression->nom) ?></td>
                 <td class="actions">
                 <p>
-                    <?= $this->Html->link(__('Editer'), ['action' => 'edit', $referential->id]); ?>
+                    <?= $this->Html->link(__('Editer'), ['action' => 'edit', $progression->id]); ?>
                     <?= $this->Form->postLink(__('Supprimer'),
-                        ['action' => 'delete', $referential->id],['confirm' => __('Etes vous sûr de vouloir supprimer "{0}" ?', $referential->nom)]); ?>
+                        ['action' => 'delete', $progression->id],['confirm' => __('Etes vous sûr de vouloir supprimer "{0}" ?', $progression->nom)]); ?>
                 </p>
                 </td>
             </tr>
@@ -25,5 +25,5 @@
         </tbody>
     </table>
 </div>
-<!-- Affiche le bouton ajouter un referential -->
+<!-- Affiche le bouton ajouter un progression -->
 <?= $this->Html->link(__('Ajouter un référentiel'), ['action' => 'add']); ?>

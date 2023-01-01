@@ -11,11 +11,11 @@
         ); ?>
     </div>
     <div class="col-lg-2 col-lg-offset-1">
-        <?php echo $this->Form->input('referential_id', [
+        <?php echo $this->Form->input('progression_id', [
             'label' => 'Filtrer par référentiel:',
-            'onchange' => 'filtreByReferential()',
-            'options' => $referentials,
-            'default' => $referential_id
+            'onchange' => 'filtreByProgression()',
+            'options' => $progressions,
+            'default' => $progression_id
         ]); ?>
     </div>
 </div>
@@ -35,7 +35,7 @@
                 <tr>
                     <td><?php echo"P.".h($periode->numero) ?></td>
                     <td><?php echo h($periode->classe->nom) ?></td>
-                    <td><?php echo h($periode->referential->nom) ?></td>
+                    <td><?php echo h($periode->progression->nom) ?></td>
                     <td class="actions">
                     <!-- Affiche des urls/boutons et de leurs actions -->
                     <p>
@@ -59,10 +59,10 @@ $(document).ready(function() {
     });
 } );
 
-function filtreByReferential()
+function filtreByProgression()
 {
-    var id = document.getElementById("referential-id").value;
-    var url = "<?php echo $this->Url->build(['controller'=>'Periodes','action'=>'index']) ?>" + "/?referential_id=" + id
+    var id = document.getElementById("progression-id").value;
+    var url = "<?php echo $this->Url->build(['controller'=>'Periodes','action'=>'index']) ?>" + "/?progression_id=" + id
 	window.location = url;
 }
 

@@ -26,6 +26,7 @@ class TravauxPratiquesTable extends Table
 				'Materiels' => ['trough' => 'MaterielTravauxPratiques']
 			]
         ]);
+        $this->setDisplayField('fullName');
     }
 
 

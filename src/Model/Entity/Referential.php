@@ -6,7 +6,7 @@ use Cake\ORM\Entity;
 /**
  * User Entity.
  */
-class Referential extends Entity
+class Progression extends Entity
 {
 
 }

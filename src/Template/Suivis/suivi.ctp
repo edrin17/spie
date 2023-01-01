@@ -1,7 +1,6 @@
 <?php
 $this->start('tableauClasseur');
-echo $this->element('TableauxClasseurs/classes_eleves');
-//echo $this->element('TableauxClasseurs/periodes_rotations');
+echo $this->element('TableauxClasseurs/filtresPositionnement');
 $this->end();
 echo $this->fetch('tableauClasseur');
 ?>

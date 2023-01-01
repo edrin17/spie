@@ -18,158 +18,105 @@ class AnalysesController extends AppController
      */
 	public function index()
 	{
-		//chargement des onglets du tableau classeur
-        $onglets = $this->_tabs(); //appel du tableau classeur
-
-        //récupération des onglets cliqués par l'utilisateur transmis par _tabs()
-        $listLVL1 = $onglets["listLVL1"];
-        $listLVL2 = $onglets["listLVL2"];
-        $selectedLVL1 = $onglets["selectedLVL1"];
-        $selectedLVL2 = $onglets["selectedLVL2"];
-        $nameController = 'Analyses';
-        $nameAction = 'index';
-        $options = '';
-
-        //passage des variables pour le layout
-        $this->set('titre', 'Progression des TP');
-
-
-        //passage des variables standardisées pour la vue tableauClasseur
-        $this->set(compact(
-            'selectedLVL2','selectedLVL1','listLVL1','listLVL2','nameController',
-            'nameAction','options'
-        ));
-
-        //FIN tableau classeur
-
+        $this->_loadFilters();
+        $rotation_id = $this->viewVars['rotation_id'];
         // on récupère les données qui matchent la rotation
         // sur la table TravauxPratiquesObjectifsPedas
-        $listMatch = $this->_getTPObjsPedas($selectedLVL2->id);
+        $listMatch = $this->_getTPObjsPedas($rotation_id);
         //On récupère les compétences de la rotation à partir de $listMatch
         $tableauComp = $this->_listMicroComps($listMatch);
         //On récupère la liste de Tp de la rotation
-        $listTP = $this->_getTPlist($selectedLVL2->id);
+        $tps = $this->_getTPlist($rotation_id);
         //crée le tableau objXTP
         $tableauMatch = $this->_makeMatchArray($listMatch);
+        //debug($tps->toArray());
 
-        $this->set(compact('tableauComp','listTP','tableauMatch'));
+        $this->set(compact('tableauComp','tps','tableauMatch'));
 	}
-    /*
-     *Gestion du tableau classeur
-     */
-    protected function _tabs()
+    private function _loadFilters($resquest = null)
     {
+        $progressionsTbl = TableRegistry::get('Progressions');
+        $progressions = $progressionsTbl->find('list')
+            ->order(['id' => 'ASC']);
+        
+        $progression_id = $this->request->getQuery('progression_id');
 
-        //TABLEAU CLASSEUR
-        function getPeriode()
-        {
-            if (isset($_GET['LVL1'])) {
-                $selectedPeriode = $_GET['LVL1'];
-            }else{
-                $selectedPeriode = null;
-            }
-            return $selectedPeriode;
+        if ($progression_id =='') {
+            $progression_id = $progressionsTbl->find()
+            ->order(['id' => 'ASC'])
+            ->first()
+            ->id;
         }
 
-
-        //@returns $rotation_id
-        function getRotation()
-        {
-            if (isset($_GET['LVL2'])) {
-                $rotation_id = $_GET['LVL2'];
-            }else{
-                $rotation_id = null;
-            }
-            return $rotation_id;
+        $classesTbl = TableRegistry::get('Classes');
+        $classes = $classesTbl->find('list')
+            ->where([
+                'archived' => 0,
+                'progression_id' => $progression_id
+            ])
+            ->order(['nom' => 'ASC']);
+        $classe_id = $this->request->getQuery('classe_id');
+        if ($classe_id =='') {
+        $classe_id = $classesTbl->find()
+            ->where([
+                'archived' => 0,
+                'progression_id' => $progression_id
+            ])
+            ->first()
+            ->id;
+        }
+ 
+        $periodesTbl = TableRegistry::get('Periodes');
+        $periodes = $periodesTbl->find('list')
+            ->where(['progression_id' => $progression_id])
+            ->order(['numero' => 'ASC']);
+        $periode_id = $this->request->getQuery('periode_id');
+        if ($periode_id =='') {
+        $periode_id = $periodesTbl->find()
+            ->where(['progression_id' => $progression_id])
+            ->order(['numero' => 'ASC'])
+            ->first()->id;
         }
 
-        $selectedPeriode = getPeriode();
-        $rotation_id = getRotation();
-
-        $tablePeriodes = TableRegistry::get('Periodes');
-        $tableRotations = TableRegistry::get('Rotations');
-
-        $listPeriodes = $tablePeriodes->find()
-            ->order([
-                'Periodes.numero' => 'ASC'
-            ]);
-
-        $listRotations = $tableRotations->find()
+        $rotationsTbl = TableRegistry::get('Rotations');
+        $rotations = $rotationsTbl->find('list')
             ->contain(['Periodes'])
+            ->where(['periode_id' => $periode_id])
+            ->order(['Rotations.numero' => 'ASC']);
+        $rotation_id = $this->request->getQuery('rotation_id');
+        if ($rotation_id =='') {
+        $rotation_id = $rotationsTbl->find()
+            ->where(['periode_id' => $periode_id])
+            ->order(['numero' => 'ASC'])
+            ->first()->id;
+        }
+
+        $tachesTbl = TableRegistry::get('TachesPros');
+        $taches = $tachesTbl->find('list')
+            ->contain(['Activites'])
             ->order([
-                'Periodes.numero' => 'ASC',
-                'Rotations.numero' =>'ASC',
+                'Activites.Numero' => 'ASC',
+                'TachesPros.Numero' => 'ASC'
             ]);
-        //si on a sélectionné une période
-        if ($selectedPeriode != null){
-            //si on a sélectionné une période on récupère la liste des rotations correspondante'
-            $listRotations = $tableRotations->find()
-                ->contain(['Periodes'])
-                ->where(['periode_id' => $selectedPeriode])
-                ->order([
-                  'Periodes.numero' => 'ASC',
-                  'Rotations.numero' =>'ASC',
-                ]);
-
-            if ($rotation_id == null) { //si pas de rotation selectionnée on prend la première de la liste
-                $selectedRotation = $tableRotations->find()
-                    ->contain(['Periodes'])
-                    ->where(['periode_id' => $selectedPeriode])
-                    ->order([
-                      'Periodes.numero' => 'ASC',
-                      'Rotations.numero' =>'ASC',
-                    ])
-                    ->first();
-            } else {
-                $selectedRotation = $tableRotations->get($rotation_id,['contain' => [] ]);
-            }
-        } else {
-            $periode = $tablePeriodes->find()
-                ->order([
-                    'Periodes.numero' => 'ASC'
-                ])
-                ->first();
-            $selectedPeriode = $periode->id;
-
-            $listRotations = $tableRotations->find()
-                ->contain(['Periodes'])
-                ->where(['periode_id' => $selectedPeriode])
-                ->order([
-                  'Periodes.numero' => 'ASC',
-                  'Rotations.numero' =>'ASC',
-                ]);
-
-            $selectedRotation = $tableRotations->find()
-                ->contain(['Periodes'])
-                ->where(['periode_id' => $selectedPeriode])
-                ->order([
-                  'Periodes.numero' => 'ASC',
-                  'Rotations.numero' =>'ASC',
-                ])
-                ->first();
+        $tache_id = $this->request->getQuery('tache_id');
+        if ($tache_id =='') {
+        $tache_id = $tachesTbl->find()
+        ->contain(['Activites'])
+        ->order([
+            'Activites.Numero' => 'ASC',
+            'TachesPros.Numero' => 'ASC'
+            ])
+            ->first()->id;
         }
-
-        //modification d'un contenu des variables'
-        foreach ($listPeriodes as $periode) {
-            $periode->nom = 'P'.$periode->numero;
-        }
-
-        //modification d'un contenu des variables'
-        foreach ($listRotations as $rotation) {
-            $rotation->nom = $rotation->fullName;
-        }
-
-
-        //changement de variable pour correspondre à la vue standard
-        $onglets = [
-            "listLVL1" => $listPeriodes,
-            "listLVL2" => $listRotations,
-
-            "selectedLVL1" => $selectedPeriode,
-            "selectedLVL2" => $selectedRotation,
-        ];
-        return $onglets;
+        $this->set(compact( //passage des variables à la vue
+            'classes', 'classe_id',
+            'progression_id', 'progressions',
+            'rotations', 'rotation_id',
+            'periodes', 'periode_id',
+            'taches', 'tache_id'
+        ));
     }
+
     /*
      * Récupère la liste des liens TravauxPratiquesObjectifsPedas
      */
@@ -197,6 +144,7 @@ class AnalysesController extends AppController
      */
     protected function _listMicroComps($listeMatch)
     {
+        $result = []; //defini le tableau pour ne pas avoir d'erreur si vide car pas de TP
         foreach ($listeMatch as $element)
         {
             $fullName = $element->objectifs_peda->fullName;
@@ -212,7 +160,7 @@ class AnalysesController extends AppController
     protected function _getTPlist($rotationId)
     {
         $tpTable = TableRegistry::get('TravauxPratiques');
-        $listTPs = $tpTable->find()
+        $tps = $tpTable->find('list')
             ->contain([
                 'Rotations.Periodes',
             ])
@@ -224,20 +172,14 @@ class AnalysesController extends AppController
                 'TravauxPratiques.nom',
             ]);
 
-        foreach ($listTPs as $element)
-        {
-            $fullName = $element->fullName;
-            $id = $element->id;
-            $listTP[$id] = $fullName;
-        }
-
-        return $listTP;
+        return $tps;
     }
     /*
      *Etabli la correspondance entre les TP et les objectifs pedas
      */
     protected function _makeMatchArray($listeMatch)
     {
+        $tableauMatch= [];
         foreach ($listeMatch as $element)
         {
             $idComp = $element-> objectifs_peda->id;

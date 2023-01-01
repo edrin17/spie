@@ -42,20 +42,12 @@ class SuivisController extends AppController
 
     public function suivi()
     {
-        //changement de variable pour correspondre à la vue standard
-        $nameController = 'Suivis';
-        $nameAction = 'suivi';
-        $options = '';
         $request = $this->request;
-        $selectedEleve = $this->genTabloClassesEleves($nameController, $nameAction, $options, $request);
-        $eleve = $this->request->getQuery('eleve');
-        //si pas d'élève sélectionné
-        if ($eleve == null) {
-            $eleve = $selectedEleve->id;
-        }
+        $this->_loadFilters($request);
+        $eleve_id = $this->viewVars['eleve_id'];
 
         //création du tableau
-        $table = $this->genTabloDeSuivi($eleve);
+        $table = $this->genTabloDeSuivi($eleve_id);
         $tableau = $table['tableau'];
         $tableHeader = $table['tableHeader'];
         $nbColonnes = $table['nbColonnes'];
@@ -273,97 +265,21 @@ class SuivisController extends AppController
         return $etat;
     }
 
-    private function genTabloClassesEleves($nameController, $nameAction, $options, $request)
-    {
-
-        $selectedClasse = $this->request->getQuery('classe');
-        $eleve_id = $this->request->getQuery('eleve');
-        $tableEleves = TableRegistry::get('Eleves');
-        $tableClasses = TableRegistry::get('Classes');
-
-        $classesList = $tableClasses->find()
-            ->where(['Classes.archived' => 0])
-            ->order(['Classes.nom' => 'ASC']);
-
-        $elevesList = $tableEleves->find()
-            ->order(['Eleves.nom' => 'ASC']);
-        //debug($classesList->toArray());die;
-
-        //si on a sélectionné une classe
-        if ($selectedClasse != null) {
-            //si on a sélectionné un élève récupère l'entity eleve'
-            if ($eleve_id != null) {
-                $selectedEleve = $tableEleves->get($eleve_id, ['contain' => []]);
-                $elevesList = $tableEleves->find()
-                    ->where(['classe_id' => $selectedClasse])
-                    ->order(['Eleves.nom' => 'ASC']);
-            } else { //sinon on récupere la première entity élève de classe coresspondante
-                $elevesList = $tableEleves->find()
-                    ->where(['classe_id' => $selectedClasse])
-                    ->order(['Eleves.nom' => 'ASC']);
-
-                $selectedEleve = $tableEleves->find()
-                    ->where(['classe_id' => $selectedClasse])
-                    ->order(['Eleves.nom' => 'ASC'])
-                    ->first();
-            }
-        } else {
-            $classe = $tableClasses->find()
-                ->where(['Classes.archived' => 0])
-                ->order(['Classes.nom'])
-                ->first();
-            $selectedClasse = $classe->id;
-            $elevesList = $tableEleves->find()
-                ->where(['classe_id' => $selectedClasse])
-                ->order(['Eleves.nom' => 'ASC']);
-
-            $selectedEleve = $tableEleves->find()
-                ->where(['classe_id' => $classe->id])
-                ->order(['Eleves.nom' => 'ASC'])
-                ->first();
-        }
-        //passage des variables pour le layout
-        $this->set('titre', "Suivi de l'élève " . $selectedEleve->nom . " " . $selectedEleve->prenom);
-
-        //passage des variables pour la vue "./tableauClasseur/classes_eleves.ctp
-        $this->set(compact(
-            'classesList',
-            'elevesList',
-            'selectedClasse',
-            'selectedEleve',
-            'nameController',
-            'nameAction',
-            'options'
-        ));
-        return $selectedEleve;
-    }
-
-
     public function tp()
     {
         $request = $this->request;
-        $query = $request->getQuery();
-        //si pas de paramètres on lance l'initinilasiton des filtres et on récupère les données par défault
-        if ($query == []) {
-            $filter = $this->_initializeFilters();
-        } else { //sinon on prend les paramètres dans la requête
-            $filter = $this->_setFilters($request);
-        }
-        $referential_id = $filter['referential_id'];
-        $classe_id = $filter['classe_id'];
-        $periode_id = $filter['periode_id'];
-        $rotation_id = $filter['rotation_id'];
-        unset($query);
+        $this->_loadFilters($request);
+        $progression_id = $this->viewVars['progression_id'];
+        $classe_id = $this->viewVars['classe_id'];
+        $periode_id = $this->viewVars['periode_id'];
+        $rotation_id = $this->viewVars['rotation_id'];
+        $eleves = $this->viewVars['elevesObjs']; //eleves sous forme d'objets
 
         $spe = 0;
 
         if ($this->request->is('post')) {
             $this->save($request);
         }
-        $tableEleves = TableRegistry::get('Eleves');
-        $listEleves = $tableEleves->find()
-            ->where(['classe_id' => $classe_id])
-            ->order(['Eleves.nom' => 'ASC']);
         $tableTpEleves = TableRegistry::get('TpEleves');
         $tableTp = TableRegistry::get('TravauxPratiques');
 
@@ -377,7 +293,7 @@ class SuivisController extends AppController
 
         $tableau = array();
 
-        foreach ($listEleves as $eleve) {
+        foreach ($eleves as $eleve) {
             $listTpEleves = $tableTpEleves->find()
                 ->contain(['TravauxPratiques'])
                 ->where(['eleve_id' => $eleve->id])
@@ -400,7 +316,7 @@ class SuivisController extends AppController
             }
         }
         //debug($tableau);
-        $this->set(compact('tableau', 'listTpHead', 'classe_id', 'referential_id', 'rotation_id', 'periode_id', 'spe'));
+        $this->set(compact('tableau', 'listTpHead', 'classe_id', 'progression_id', 'rotation_id', 'periode_id', 'spe'));
     }
 
     public function add()
@@ -424,115 +340,119 @@ class SuivisController extends AppController
         }
         return $this->redirect(['action' => 'suivi']);
     }
-
-    private function _initializeFilters()
+    
+    private function _loadFilters($resquest = null)
     {
-        $referentialsTbl = TableRegistry::get('Referentials');
-        $referentials = $referentialsTbl->find('list')
+        $progressionsTbl = TableRegistry::get('Progressions');
+        $progressions = $progressionsTbl->find('list')
             ->order(['id' => 'ASC']);
-        $referential_id = $referentialsTbl->find()
-            ->order(['id' => 'ASC'])
-            ->first()
-            ->id;
+
+        $progression_id = $this->request->getQuery('progression_id');
+
+        if ($progression_id == '') {
+            $progression_id = $progressionsTbl->find()
+                ->order(['id' => 'ASC'])
+                ->first()
+                ->id;
+        }
 
         $classesTbl = TableRegistry::get('Classes');
         $classes = $classesTbl->find('list')
             ->where([
                 'archived' => 0,
-                'referential_id' => $referential_id
+                'progression_id' => $progression_id
             ])
             ->order(['nom' => 'ASC']);
-        $classe_id = $classesTbl->find()
+        $classe_id = $this->request->getQuery('classe_id');
+        if ($classe_id == '') {
+            $classe_id = $classesTbl->find()
+                ->where([
+                    'archived' => 0,
+                    'progression_id' => $progression_id
+                ])
+                ->first()
+                ->id;
+        }
+        $elevesTbl = TableRegistry::get('eleves');
+        $eleves = $elevesTbl->find('list')
             ->where([
-                'archived' => 0,
-                'referential_id' => $referential_id
+                'classe_id' => $classe_id
             ])
-            ->first()
-            ->id;
+            ->order(['nom' => 'ASC', 'prenom' => 'ASC']);
+        $elevesObjs = $elevesTbl->find() //eleve sous forme d'objets
+            ->where([
+                'classe_id' => $classe_id
+            ])
+            ->order(['nom' => 'ASC', 'prenom' => 'ASC']);
+        $eleve_id = $this->request->getQuery('eleve_id');
+        if ($eleve_id == '') {
+            $eleve_id = $elevesTbl->find()
+                ->where([
+                    'classe_id' => $classe_id
+                ])
+                ->order(['nom' => 'ASC', 'prenom' => 'ASC'])
+                ->first()
+                ->id;
+        }
 
         $periodesTbl = TableRegistry::get('Periodes');
         $periodes = $periodesTbl->find('list')
-            ->where(['referential_id' => $referential_id])
+            ->where(['progression_id' => $progression_id])
             ->order(['numero' => 'ASC']);
-
-        $periode_id = $periodesTbl->find()
-            ->where(['referential_id' => $referential_id])
-            ->order(['numero' => 'ASC'])
-            ->first()->id;
+        $periode_id = $this->request->getQuery('periode_id');
+        if ($periode_id == '') {
+            $periode_id = $periodesTbl->find()
+                ->where(['progression_id' => $progression_id])
+                ->order(['numero' => 'ASC'])
+                ->first()->id;
+        }
 
         $rotationsTbl = TableRegistry::get('Rotations');
         $rotations = $rotationsTbl->find('list')
             ->contain(['Periodes'])
             ->where(['periode_id' => $periode_id])
             ->order(['Rotations.numero' => 'ASC']);
+        $rotation_id = $this->request->getQuery('rotation_id');
+        if ($rotation_id == '') {
+            $rotation_id = $rotationsTbl->find()
+                ->where(['periode_id' => $periode_id])
+                ->order(['numero' => 'ASC'])
+                ->first()->id;
+        }
 
-        $rotation_id = $rotationsTbl->find()
-            ->where(['periode_id' => $periode_id])
-            ->order(['numero' => 'ASC'])
-            ->first()->id;
-
-        $this->set(compact('classes', 'classe_id', 'referential_id', 'referentials', 'rotations', 'rotation_id', 'periodes', 'periode_id'));
-        $filter = array(
-            'classes' => $classes,
-            'classe_id' => $classe_id,
-            'referential_id' => $referential_id,
-            'referentials' => $referentials,
-            'rotations' => $rotations,
-            'rotation_id' => $rotation_id,
-            'periodes' => $periodes,
-            'periode_id' => $periode_id
-
-        );
-
-        return $filter;
+        $tachesTbl = TableRegistry::get('TachesPros');
+        $taches = $tachesTbl->find('list')
+            ->contain(['Activites'])
+            ->order([
+                'Activites.Numero' => 'ASC',
+                'TachesPros.Numero' => 'ASC'
+            ]);
+        $tache_id = $this->request->getQuery('tache_id');
+        if ($tache_id == '') {
+            $tache_id = $tachesTbl->find()
+                ->contain(['Activites'])
+                ->order([
+                    'Activites.Numero' => 'ASC',
+                    'TachesPros.Numero' => 'ASC'
+                ])
+                ->first()->id;
+        }
+        $this->set(compact( //passage des variables à la vue
+            'classes',
+            'classe_id',
+            'progression_id',
+            'progressions',
+            'rotations',
+            'rotation_id',
+            'periodes',
+            'periode_id',
+            'taches',
+            'tache_id',
+            'eleves',
+            'eleve_id',
+            'elevesObjs',
+        ));
     }
-
-    private function _setFilters($request = null)
-    {
-        $referential_id = $request->getQuery('referential_id');
-        $classe_id = $request->getQuery('classe_id');
-        $periode_id = $request->getQuery('periode_id');
-        $rotation_id = $request->getQuery('rotation_id');
-
-        $referentialsTbl = TableRegistry::get('Referentials');
-        $referentials = $referentialsTbl->find('list')
-            ->order(['id' => 'ASC']);
-
-        $classesTbl = TableRegistry::get('Classes');
-        $classes = $classesTbl->find('list')
-            ->where([
-                'archived' => 0,
-                'referential_id' => $referential_id
-            ])
-            ->order(['nom' => 'ASC']);
-
-        $periodesTbl = TableRegistry::get('Periodes');
-        $periodes = $periodesTbl->find('list')
-            ->where(['referential_id' => $referential_id])
-            ->order(['numero' => 'ASC']);
-
-
-        $rotationsTbl = TableRegistry::get('Rotations');
-        $rotations = $rotationsTbl->find('list')
-            ->contain(['Periodes'])
-            ->where(['periode_id' => $periode_id])
-            ->order(['Rotations.numero' => 'ASC']);
-
-        $this->set(compact('classes', 'classe_id', 'referential_id', 'referentials', 'rotations', 'rotation_id', 'periodes', 'periode_id'));
-        $filter = array(
-            'classes' => $classes,
-            'classe_id' => $classe_id,
-            'referential_id' => $referential_id,
-            'referentials' => $referentials,
-            'rotations' => $rotations,
-            'rotation_id' => $rotation_id,
-            'periodes' => $periodes,
-            'periode_id' => $periode_id
-
-        );
-        return $filter;
-    }
-
     public function reset()
     {
         /*

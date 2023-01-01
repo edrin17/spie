@@ -1,6 +1,6 @@
 <?php
 
-use App\Model\Entity\Referential;
+use App\Model\Entity\Progression;
 
 $this->start('tableauClasseur');
 echo $this->element('TableauxClasseurs/filtres');
@@ -42,7 +42,7 @@ function machines($tp)
             ['action' => 'add', '?' => [
                 'rotation_id' => $rotation_id,
                 'periode_id' => $periode_id,
-                'referential_id' => $referential_id,
+                'progression_id' => $progression_id,
                 'classe_id'=> $classe_id,
                 'spe' => $spe]],
             ['class' => "btn btn-info", 'role' => 'button']
@@ -68,7 +68,7 @@ function machines($tp)
                         ['action' => 'edit', $tp->id, '?' => [
                             'rotation_id' => $rotation_id,
                             'periode_id' => $periode_id,
-                            'referential_id' => $referential_id,
+                            'progression_id' => $progression_id,
                             'classe_id'=> $classe_id,
                             'spe' => $spe]]
                     ); ?></td>
@@ -102,7 +102,7 @@ function machines($tp)
                             ['controller' => 'TravauxPratiques', 'action' => 'delete', $tp->id, '?' => [
                                 'rotation_id' => $rotation_id,
                                 'periode_id' => $periode_id,
-                                'referential_id' => $referential_id,
+                                'progression_id' => $progression_id,
                                 'classe_id'=> $classe_id,
                                 'spe' => $spe]],
                             ['confirm' => 'Etes-vous sûr de voulour supprimer le TP: ' . $tp->nom . '?', 'escape' => false]

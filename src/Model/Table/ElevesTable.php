@@ -24,6 +24,7 @@ class ElevesTable extends Table
             'foreignKey' => 'eleve_id'
         ]);
         $this->hasMany('TpEleves');
+        $this->setDisplayField('fullName');
     }
 
 

@@ -36,8 +36,8 @@ class PeriodesTable extends Table
         'joinType' => 'INNER'
         ]);
 
-        $this->belongsTo('Referentials',[
-        'foreignKey' => 'referential_id'
+        $this->belongsTo('Progressions',[
+        'foreignKey' => 'progression_id'
         ]);
     }
 

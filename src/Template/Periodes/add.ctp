@@ -6,8 +6,8 @@
         <?php echo $this->Form->input('classe_id',['label' => 'Choix de la classe',
 			'options' => $listeClasses
 		]);?>
-        <?php echo $this->Form->input('referential_id',['label' => 'Choix du référentiel',
-			'options' => $referentials
+        <?php echo $this->Form->input('progression_id',['label' => 'Choix du référentiel',
+			'options' => $progressions
 		]);?>
 		<?= $this->Form->input('color',[
 				'label' => 'Couleur de la période',

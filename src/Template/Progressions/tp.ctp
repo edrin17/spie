@@ -1,9 +1,9 @@
 <?php $this->assign('title', "Tp en fonction du temps"); ?>
-<?php echo $this->Form->input('referential_id', [
+<?php echo $this->Form->input('progression_id', [
     'label' => 'Référentiels:',
-    'onchange' => 'select_referential()',
-    'options' => $referentials,
-    'default' => $referential_id
+    'onchange' => 'select_progression()',
+    'options' => $progressions,
+    'default' => $progression_id
 ]); ?>
 <span class="badge"><?php echo $nbTpTotal;  ?> TP</span>
 <?php foreach ($listPeriodes as $periode): ?>
@@ -49,10 +49,10 @@
 <?php endforeach; ?>
 
 <script>
-function select_referential()
+function select_progression()
 {
-    var id = document.getElementById("referential-id").value;
-    var url = "<?php echo $this->Url->build(['controller'=>'Progressions','action'=>'tp']) ?>" + "/?referential_id=" + id
+    var id = document.getElementById("progression-id").value;
+    var url = "<?php echo $this->Url->build(['controller'=>'Progressions','action'=>'tp']) ?>" + "/?progression_id=" + id
 	window.location = url;
 }
 </script>

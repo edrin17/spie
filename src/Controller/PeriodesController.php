@@ -16,13 +16,13 @@ class PeriodesController extends AppController
 
     public function index()
     {
-        $referential_id = $this->request->getQuery('referential_id');
-        $referentialsTable = TableRegistry::get('Referentials');
-		$referentials = $referentialsTable->find('list')
+        $progression_id = $this->request->getQuery('progression_id');
+        $progressionsTable = TableRegistry::get('Progressions');
+		$progressions = $progressionsTable->find('list')
 			->order(['id' => 'ASC']);
 
-        if (is_null($referential_id)) {
-            $referential_id = $referentialsTable->find()
+        if (is_null($progression_id)) {
+            $progression_id = $progressionsTable->find()
                 ->first()
                 ->id;
         }
@@ -30,18 +30,18 @@ class PeriodesController extends AppController
 		if ($this->request->is('post'))
 		{
 			$periodes = $this->Periodes->find()
-				->contain(['Classes','Referentials'])
-                ->where(['Referentials.id' => $referential_id])
+				->contain(['Classes','Progressions'])
+                ->where(['Progressions.id' => $progression_id])
 				->order(['Periodes.numero' => 'ASC']);
 		}else
 		{
 			$periodes = $this->Periodes->find()
-                ->contain(['Classes','Referentials'])
-                ->where(['Referentials.id' => $referential_id])
+                ->contain(['Classes','Progressions'])
+                ->where(['Progressions.id' => $progression_id])
 				->order(['Periodes.numero' => 'ASC']);
 		}
         //debug($periodes->toArray());
-    	$this->set(compact('periodes','referentials','referential_id'));
+    	$this->set(compact('periodes','progressions','progression_id'));
     }
 
 	/**
@@ -69,9 +69,9 @@ class PeriodesController extends AppController
 		{
 			$listeClasses[$classe->id] = $classe->nom;
 		}
-        $referentialTbl = TableRegistry::get('Referentials');
+        $progressionTbl = TableRegistry::get('Progressions');
 
-        $referentials = $referentialTbl->find('list')
+        $progressions = $progressionTbl->find('list')
 						->order(['nom' => 'ASC']);
 
         $periode = $this->Periodes->newEntity();                                   // crée une nouvelle entité dans $periode
@@ -88,7 +88,7 @@ class PeriodesController extends AppController
 
         $this->set(compact('periode',
             'listeClasses','colors',
-            'referentials'
+            'progressions'
         ));
     }
 
@@ -113,9 +113,9 @@ class PeriodesController extends AppController
                         ->where(['archived' => false])
 						->order(['nom' => 'ASC']);
 
-        $referentialTbl = TableRegistry::get('Referentials');
+        $progressionTbl = TableRegistry::get('Progressions');
 
-        $referentials = $referentialTbl->find('list')
+        $progressions = $progressionTbl->find('list')
 						->order(['nom' => 'ASC']);
 
 		foreach ($classes as $classe)
@@ -134,7 +134,7 @@ class PeriodesController extends AppController
         }
         $this->set(compact('periode',
             'listeClasses','colors',
-            'referentials'
+            'progressions'
         ));
     }
 

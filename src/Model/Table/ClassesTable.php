@@ -33,8 +33,8 @@ class ClassesTable extends Table
             'foreignKey' => 'classe_id'
         ]);
 
-        $this->belongsTo('Referentials', [
-            'foreignKey' => 'referential_id',
+        $this->belongsTo('Progressions', [
+            'foreignKey' => 'progression_id',
             'joinType' => 'INNER'
         ]);
 

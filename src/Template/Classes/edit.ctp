@@ -5,7 +5,7 @@
         <?= $this->Form->input('nom',['label' => 'Nom']); ?>
         Archivage:
         <?= $this->Form->radio('archived', ['Non', 'Oui']); ?>
-        <?= $this->Form->input('referential_id', [
+        <?= $this->Form->input('progression_id', [
           'label' => 'Reférentiel:'
         ]); ?>
 

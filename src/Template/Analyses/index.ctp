@@ -1,20 +1,22 @@
 <?php
-    $this->extend('/Common/tableauClasseur');
+$this->start('tableauClasseur');
+echo $this->element('TableauxClasseurs/filtresAnalyse');
+$this->end();
+echo $this->fetch('tableauClasseur');
 ?>
-<?php $this->assign('title', "Chronologie de l'acquisition des compétences"); ?>
 
 <table class = 'table table-bordered table-hover'>
 	<thead>
         <th></th>
-        <?php foreach ($listTP as $value): ?>
-            <th><?= $value ?></th>
+        <?php foreach ($tps as $tp): ?>
+            <th><?= $tp ?></th>
         <?php endforeach; ?>
 	</thead>
 	<tbody>
         <?php foreach ($tableauComp as $idComp => $valueComp): ?>
             <tr>
                 <td><?= $valueComp?></td>
-                <?php foreach ($listTP as $idTP => $valueTP)
+                <?php foreach ($tps as $idTP => $valueTP)
                 {
                     $exist = isset($tableauMatch[$idComp][$idTP]);
                     if ($exist) {

@@ -2,9 +2,9 @@
     <?php echo $this->Form->create($rotation); ?>
     <fieldset>
         <legend><?php echo __('Editer une rotation') ?></legend>
-        <?php echo $this->Form->input('referential_id', [
+        <?php echo $this->Form->input('progression_id', [
             'label' => 'Référentiel',
-            'default' => $referential_id,
+            'default' => $progression_id,
             'onchange' => 'chainedPeriodes()'
         ]); ?>
         <?php echo $this->Form->input('periode_id', [
@@ -36,9 +36,9 @@
 <script>
 function chainedPeriodes()
 {
-    var $referential_id = document.getElementById("referential-id").value;
+    var $progression_id = document.getElementById("progression-id").value;
     $.get("<?php echo $this->Url->build(['controller'=>'FiltresAjaxes','action'=>'chainedPeriodes']) ?>" +
-        "/?referential_id=" + $referential_id,
+        "/?progression_id=" + $progression_id,
         function(resp) {
             $('#periode-id').html(resp);
             //$('#competences-terminale-id').trigger("onchange")
