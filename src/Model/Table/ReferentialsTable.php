@@ -12,7 +12,7 @@ use Cake\Validation\Validator;
  *
  * @property \Cake\ORM\Association\HasMany $Bookmarks
  */
-class ProgressionsTable extends Table
+class ReferentialsTable extends Table
 {
 
     /**
@@ -27,11 +27,6 @@ class ProgressionsTable extends Table
 
         $this->setDisplayField('nom');
 
-        $this->hasMany('Classes', [
-            'foreignKey' => 'progression_id'
-        ]);
-        $this->hasMany('Periodes', [
-            'foreignKey' => 'progression_id'
-        ]);
+        $this->hasMany('Progressions');
     }
 }

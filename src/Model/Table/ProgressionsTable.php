@@ -33,5 +33,7 @@ class ProgressionsTable extends Table
         $this->hasMany('Periodes', [
             'foreignKey' => 'progression_id'
         ]);
+
+        $this->belongsTo('Referentials');
     }
 }

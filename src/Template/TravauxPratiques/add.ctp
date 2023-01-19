@@ -3,7 +3,7 @@
 	<div class="row">
 		<div class="col-lg-2">
 			<?php echo $this->Form->input('progression_id', [
-				'label' => 'Filtrer par référentiel:',
+				'label' => 'Filtrer par progression:',
 				'onchange' => 'filterPeriodesByProgression()',
 				'default' => $progression_id
 			]); ?>
@@ -18,7 +18,7 @@
 		<div class="col-lg-4">
 			<?php echo $this->Form->input('rotation_id', [
 				'label' => 'Filtrer par rotation',
-				'onchange' => 'filterPage()', //car c'est le référentiel qui indique la classe
+				'onchange' => 'filterPage()', //car c'est la progression qui indique la classe
 				'default' => $rotation_id
 			]); ?>
 		</div>

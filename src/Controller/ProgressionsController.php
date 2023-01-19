@@ -73,8 +73,12 @@ class ProgressionsController extends AppController
 	}
     public function index()
     {
-      $progressions = $this->Progressions->find()->order(['nom' => 'ASC']);
-      $this->set(compact('progressions'));
+        $this->_loadFilters();
+        $progressions = $this->Progressions->find()
+            ->contain(['Referentials'])
+            ->order(['nom' => 'ASC']);
+        $this->set(compact('progressions'));
+        //debug($progressions->toArray());
     }
 
     public function add()
@@ -118,5 +122,27 @@ class ProgressionsController extends AppController
             $this->Flash->error(__("Le référentiel n'a pas pu être supprimé ! Réessayer."));
         }
         return $this->redirect(['action' => 'index']);
+    }
+    private function _loadFilters($resquest = null)
+    {
+        //chargement de la liste des référentiels
+        $referentialsTbl = TableRegistry::get('Referentials');
+        $referentials = $referentialsTbl->find('list')
+            ->order(['name' => 'ASC']);
+        
+        //récup du filtre existant dans la requête
+        $referential_id = $this->request->getQuery('referential_id');
+
+        //si requête vide slection du premier de la liste
+        if ($referential_id =='') {
+            $referential_id = $referentialsTbl->find()
+            ->order(['name' => 'ASC'])
+            ->first()
+            ->id;
+        }
+
+        $this->set(compact( //passage des variables à la vue
+            'referentials', 'referential_id'
+        ));
     }
 }

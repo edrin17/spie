@@ -1,10 +1,11 @@
-<?php $this->assign('title', 'Référentiels'); ?>  <!-- Customise le titre de la page -->
-<h1>Liste des Référentiels</h1>
+<?php $this->assign('title', 'Progressions'); ?>  <!-- Customise le titre de la page -->
+<h1>Liste des Progressions</h1>
 <div class="row">
     <div class="col-md-3">
         <?php echo $this->Html->link(
-            'Ajouter un référential',
-            ['action' => 'add'],
+            'Ajouter une progression',
+            ['action' => 'add', '?' => [
+                'referential_id' => $referential_id]],
             ['class' => "btn btn-info", 'role' => 'button']
         ); ?>
     </div>
@@ -14,26 +15,28 @@
     <table id ="tableau" class="table table-hover">
         <thead>
             <tr>
-                <th> Nom </th>
+                <th> Progression </th>
+                <th> Référentiel</th>
                 <th class="actions">Actions</th>
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($referentials as $referential): ?> <!--Affiche le contenu de 'referentials'  -->
+            <?php foreach ($progressions as $progression): ?> <!--Affiche le contenu de 'progressions'  -->
             <tr>
-                <td><?php echo h($referential->name) ?></td>
+                <td><?php echo h($progression->nom) ?></td>
+                <td><?php echo h($progression->Referential->name) ?></td>
                 <td class="actions">
                     <div class="btn-group" role="group">
                         <?php echo $this->Html->link('<i class="fa-solid fa-cog btn btn-default" aria-hidden="true"></i>', [
-                            'controller' => 'Referentials',
+                            'controller' => 'Progressions',
                             'action' => 'edit',
-                            $referential->id,
+                            $progression->id,
                         ],['role'=>'button', 'escape' => false]) ?>
                         <?php echo $this->Form->postButton(
                             '<i class="fa-solid fa-trash" aria-hidden="true"></i>',
-                            ['controller' => 'referentials', 'action' => 'delete', $referential->id, '?' => [
-                                'Referential' => $referential->referential_id]],
-                            ['confirm' => 'Etes-vous sûr de voulour supprimer le TP: ' . $referential->name . '?', 'escape' => false]
+                            ['controller' => 'progressions', 'action' => 'delete', $progression->id, '?' => [
+                                'progression' => $progression->progression_id]],
+                            ['confirm' => 'Etes-vous sûr de voulour supprimer le TP: ' . $progression->name . '?', 'escape' => false]
                         ); ?>
                     </div>
                 </td>
