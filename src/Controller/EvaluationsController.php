@@ -48,6 +48,7 @@ class EvaluationsController extends AppController
 	public function evaluate($rotation_id = null, $selectedEleve = null){
 
         $tableRotations = TableRegistry::get('Rotations');
+        $tableProgressions = TableRegistry::get('Progressions');
 		$tableValeurs = TableRegistry::get('ValeursEvals');
         $tableTypesEval = TableRegistry::get('TypesEvals');
         $tableClasses = TableRegistry::get('Classes');
@@ -56,9 +57,10 @@ class EvaluationsController extends AppController
         $tableTpEleves = TableRegistry::get('Tp_Eleves');
 
         //debug($this->request->getQuery());
-        $rotation_id = $this->request->getQuery('rotation');
-        $periode_id = $this->request->getQuery('periode');
-        $classe_id = $this->request->getQuery('classe');
+        $rotation_id = $this->request->getQuery('rotation_id');
+        $progression_id = $this->request->getQuery('progression_id');
+        $periode_id = $this->request->getQuery('periode_id');
+        $classe_id = $this->request->getQuery('classe_id');
         $eleve_id = $this->request->getQuery('eleve_id');
         $tpEleve_id = $this->request->getQuery('tp_id');
         //debug($tpEleve_id);
@@ -88,9 +90,10 @@ class EvaluationsController extends AppController
             return $this->redirect([
                 'controller' =>'Suivis', 'action' => 'tp',1,
                 '?' => [
-                    'classe' => $this->request->getData('selectedClasseId'),
-                    'rotation' => $this->request->getData('selectedRotationId'),
-                    'periode' => $this->request->getData('selectedPeriodeId'),
+                    'classe_id' => $this->request->getData('classe_id'),
+                    'rotation_id' => $this->request->getData('rotation_id'),
+                    'periode_id' => $this->request->getData('periode_id'),
+                    'progression_id' => $this->request->getData('progression_id'),
                     ]]
             );
         }
@@ -131,35 +134,30 @@ class EvaluationsController extends AppController
         $tp_id = $tp->id;
         //debug($tp_eleve);
         //debug($tp);die;
-        //foreach ($listTps as $tp) {
 
 
-            if (!empty($tp->objectifs_pedas)) {//si aucune compétence dans le TP
+        if (!empty($tp->objectifs_pedas)) {//si aucune compétence dans le TP
 
-                foreach ($tp->objectifs_pedas as $objPeda) {
-                    $objPeda->set('join_tableized', str_replace("-","_",$objPeda->_joinData->id));
-                    $numberedObjPeda[$objPeda->code] = $objPeda;
-                }
-
-                ksort($numberedObjPeda);
-                $tp->objectifs_pedas = $numberedObjPeda;
-                $tp->set('tableized', str_replace("-","_",$tp->id));
-                $numberedObjPeda = [];
+            foreach ($tp->objectifs_pedas as $objPeda) {
+                $objPeda->set('join_tableized', str_replace("-","_",$objPeda->_joinData->id));
+                $numberedObjPeda[$objPeda->code] = $objPeda;
             }
-		//}
+
+            ksort($numberedObjPeda);
+            $tp->objectifs_pedas = $numberedObjPeda;
+            $tp->set('tableized', str_replace("-","_",$tp->id));
+            $numberedObjPeda = [];
+        }
+
 
         //on regarde si les TP on été évalués précédemment
-        //foreach ($listTps as $tp){
-            //$tp_id = $tp->id;
-            //$evaluated = $this->_evaluated($tp_id, $eleve_id);
-            //$tp->set('evaluated', $evaluated);
-            $existingData[$tp_id] = $this->_getExistingData($tp_id, $eleve_id);
-        //}
+        $existingData[$tp_id] = $this->_getExistingData($tp_id, $eleve_id);
+
         //debug($listTps);die;
         //debug($existingData);die;
 		$this->set(compact(
-            'tp','existingData','listValeursEvals','selectedEleve','tpEleve_id',
-            'listTypesEvals','selectedEleve','periode_id','rotation_id', 'classe_id',
+            'tp','existingData','listValeursEvals','eleve_id','tpEleve_id','selectedEleve',
+            'listTypesEvals','periode_id','rotation_id','classe_id','progression_id',
         ));
 
 	}

@@ -474,9 +474,10 @@ class SuivisController extends AppController
     {
         $eleve_id = $this->request->getData('eleve_id');
         $tp_id = $this->request->getData('tp_id');
-        $selectedPeriodeId = $this->request->getData('selectedPeriodeId');
-        $selectedClasseId = $this->request->getData('selectedClasseId');
-        $selectedRotationId = $this->request->getData('selectedRotationId');
+        $periode_id = $this->request->getQuery('periode_id');
+        $classe_id = $this->request->getQuery('classe_id');
+        $rotation_id = $this->request->getQuery('rotation_id');
+        $progression_id = $this->request->getQuery('progression_id');
         $spe = $this->request->getData('spe');
 
         $tpElevesTable = TableRegistry::get('TpEleves');
@@ -515,10 +516,11 @@ class SuivisController extends AppController
             [
                 'action' => 'tp', 1,
                 '?' => [
-                    'classe' => $selectedClasseId,
-                    'rotation' => $selectedRotationId,
-                    'periode' => $selectedPeriodeId,
-                    'spe' => $spe
+                    'classe_id' => $classe_id,
+                    'rotation_id' => $rotation_id,
+                    'periode_id' => $periode_id,
+                    'progression_id' => $progression_id,
+                    'spe' => $spe,
                 ]
             ]
         );
@@ -528,9 +530,10 @@ class SuivisController extends AppController
     {
         $eleve_id = $this->request->getQuery('eleve_id');
         $tp_id = $this->request->getQuery('tp_id');
-        $selectedPeriodeId = $this->request->getQuery('periode');
-        $selectedClasseId = $this->request->getQuery('classe');
-        $selectedRotationId = $this->request->getQuery('rotation');
+        $periode_id = $this->request->getQuery('periode_id');
+        $classe_id = $this->request->getQuery('classe_id');
+        $rotation_id = $this->request->getQuery('rotation_id');
+        $progression_id = $this->request->getQuery('progression_id');
         $spe = $this->request->getQuery('spe');
 
         $tpElevesTable = TableRegistry::get('TpEleves');
@@ -547,9 +550,10 @@ class SuivisController extends AppController
             [
                 'action' => 'tp', 1,
                 '?' => [
-                    'classe' => $selectedClasseId,
-                    'rotation' => $selectedRotationId,
-                    'periode' => $selectedPeriodeId,
+                    'classe_id' => $classe_id,
+                    'rotation_id' => $rotation_id,
+                    'periode_id' => $periode_id,
+                    'progression_id' => $progression_id,
                     'spe' => $spe,
                 ]
             ]

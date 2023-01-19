@@ -1,11 +1,12 @@
 <?php echo($this->Form->create()) ?>
 <br>
-<?php echo($this->Form->hidden('eleve_id',['value' =>$selectedEleve->id])) ?>
+<?php echo($this->Form->hidden('eleve_id',['value' =>$eleve_id])) ?>
 <?php echo($this->Form->hidden('tp_id',['value' =>$tp->id])) ?>
 <?php echo($this->Form->hidden('tpEleve_id',['value' =>$tpEleve_id])) ?>
-<?php echo($this->Form->hidden('selectedClasseId',['value' =>$classe_id])) ?>
-<?php echo($this->Form->hidden('selectedRotationId',['value' =>$rotation_id])) ?>
-<?php echo($this->Form->hidden('selectedPeriodeId',['value' =>$periode_id])) ?>
+<?php echo($this->Form->hidden('classe_id',['value' =>$classe_id])) ?>
+<?php echo($this->Form->hidden('rotation_id',['value' =>$rotation_id])) ?>
+<?php echo($this->Form->hidden('periode_id',['value' =>$periode_id])) ?>
+<?php echo($this->Form->hidden('progression_id',['value' =>$progression_id])) ?>
 <h2 class=page-header><?php echo(h($selectedEleve->fullName).' - TP: '.h($tp->fullName)); ?> </h2>
 <table class="table table-bordered">
     <thead>
