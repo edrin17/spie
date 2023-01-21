@@ -5,7 +5,7 @@ use Cake\ORM\Entity;
 /**
  * User Entity.
  */
-class Savoirs extends Entity
+class Savoir extends Entity
 {
 	/**
 	 * Conctatène les numéros des entities parentes pour les retourner sous forme d'une propriétée
@@ -15,9 +15,9 @@ class Savoirs extends Entity
 	 */
 
 	protected function _getFullName()
-	{ /*
-		$fullName = 'S.'. $this->chapitre->numero. '.'. $this->_properties['numero']. ' - '.
-			$this->_properties['nom'];
-		return $fullName;*/
+	{ 
+		$fullName = 'S.'. $this->_properties['num']. ' - '.
+			$this->_properties['name'];
+		return $fullName;
 	}
 }

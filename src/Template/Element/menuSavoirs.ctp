@@ -4,8 +4,8 @@
 			<span class="caret"></span></a>
 			<ul class="dropdown-menu">
                 <li>
-                    <?= $this->Html->link(__('Chapitres'),[
-                        'controller' => 'Chapitres',
+                    <?= $this->Html->link(__('Savoirs'),[
+                        'controller' => 'Savoirs',
                         'action' => 'index'
                     ]); ?>
                 </li>
@@ -33,7 +33,7 @@
                 
                 <li>
                     <?= $this->Html->link(__('Niveaux Taxonomiques'), [
-                        'controller' => 'NiveauxTaxos',
+                        'controller' => 'Taxos',
                         'action' => 'index'
                     ]); ?>
                 </li>	

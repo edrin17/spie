@@ -12,7 +12,7 @@ use Cake\Validation\Validator;
  *
  * @property \Cake\ORM\Association\HasMany $Bookmarks
  */
-class NiveauxTaxosTable extends Table
+class TaxosTable extends Table
 {
 
     /**
@@ -24,13 +24,9 @@ class NiveauxTaxosTable extends Table
     public function initialize(array $config)
     {
         parent::initialize($config);
-	        
-	        
-	    $this->hasMany('ContenusChapitres', [
-            'foreignKey' => 'niveaux_taxo_id'
-        ]);
-        
-        $this->setDisplayField('NumeNom');
+	        	        
+	    $this->hasMany('Savoirs');
+        $this->setDisplayField('fullName');
     }
 
 }

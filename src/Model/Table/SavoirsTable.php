@@ -24,9 +24,9 @@ class SavoirsTable extends Table
     public function initialize(array $config)
     {
         parent::initialize($config);
-
-         $this->addBehavior('Tree');
-
+        $this->belongsTo('Referentials');
+        $this->belongsTo('Taxos');
+        $this->setDisplayField('fullName');
     }
 
 

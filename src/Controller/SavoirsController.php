@@ -1,86 +1,100 @@
 <?php
+
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\ORM\TableRegistry;
 
 /**
- * Users Controller
+ * Savoirs Controller
  */
-class MarquesController extends AppController
+class SavoirsController extends AppController
 {
-	public function initialize()
-	{
-		parent::initialize();
-		$this->viewBuilder()->setLayout('default');
-	}
-	
-     public function index()
+    public function initialize()
     {
-        // Utilise le helper paginate
-        $this->set('marques', $this->paginate($this->Marques)); //'marques' est l'alias de la variable globale pour la vue'index.ctp'
-        $this->set('_serialize', ['marques']);
+        parent::initialize();
+        $this->viewBuilder()->setLayout('default');
     }
 
-    /**
-     * Affiche toutes les données d'un utilisateur
-     */
-    public function view($id = null)                                //Met le paramètre id à null pour éviter un paramètre restant ou hack
+    public function index()
     {
-        $marque = $this->Marques->get($id, ['contain' => [] ]);
-        $this->set('marque', $marque);                                  // Passe le paramètre 'marque' à la vue.
-        $this->set('_serialize', ['marque']);                         // Sérialize 'marque'
-    }
+        $this->_loadFilters();
+        $referential_id = $this->viewVars['referential_id'];
 
-    /**
-     * Ajoute un utilisateur
-     */
+        $savoirs = $this->Savoirs->find()
+            ->contain(['Referentials'])
+            ->where(['referential_id' => $referential_id])
+            ->order(['num' => 'ASC','Savoirs.name' => 'ASC']);
+        $this->set(compact('savoirs'));
+    }
     public function add()
     {
-        $marque = $this->Marques->newEntity();                                   // crée une nouvelle entité dans $marque
-        if ($this->request->is('post')) {                                           //si requête de type post
-            $marque = $this->Marques->patchEntity($marque, $this->request->getData());  //??
-            if ($this->Marques->save($marque)) {                                 //Met le champ 'id' de la base avec UUID CHAR(36)
-                $this->Flash->success(__("La marque a été sauvegardée."));      //Affiche une infobulle
-                return $this->redirect(['action' => 'index']);                      //Déclenche la fonction 'index' du controlleur
+        $this->_loadFilters();
+        $savoir = $this->Savoirs->newEntity();
+        if ($this->request->is('post')) {
+            $savoir = $this->Savoirs->patchEntity($savoir, $this->request->getData());
+            if ($this->Savoirs->save($savoir)) {
+                $this->Flash->success(__("Le savoir a été sauvegardé."));
+                return $this->redirect(['action' => 'index']);
             } else {
-                $this->Flash->error(__("La marque n'a pas pu être sauvegardée ! Réessayer.")); //Affiche une infobulle
+                $this->Flash->error(__("Le savoir n'a pas pu être sauvegardé ! Réessayer.")); //Affiche une infobulle
             }
         }
-        $this->set(compact('marque')); 
-        $this->set('_serialize', ['marque']);
+        $this->set(compact('savoir'));
     }
 
-    /**
-     * Édite un utilisateur
-     */
-    public function edit($id = null)                                        //Met le paramètre id à null pour éviter un paramètre restant ou hack
+    public function edit($id = null)
     {
-        $marque = $this->Marques->get($id, ['contain' => [] ]);                  //récupère l'id de l'utilisateur
-        if ($this->request->is(['patch', 'post', 'put'])) {                         // Vérifie le type de requête
-            $marque = $this->Marques->patchEntity($marque, $this->request->getData());
-            if ($this->Marques->save($marque)) {                                 //Sauvegarde les données dans la BDD
-                $this->Flash->success(__("La marque a été sauvegardée."));      //Affiche une infobulle
+        $this->_loadFilters();
+        $savoir = $this->Savoirs->get($id);
+
+        if ($this->request->is(['patch', 'post', 'put'])) {
+            $data = $this->request->getData();
+            $savoir = $this->Savoirs->patchEntity($savoir, $data);
+            //debug($savoir);die;
+            if ($this->Savoirs->save($savoir)) {                  //Sauvegarde les données dans la BDD
+                $this->Flash->success(__('Le savoir a été sauvegardé.'));      //Affiche une infobulle
                 return $this->redirect(['action' => 'index']);                      //Déclenche la fonction 'index' du controlleur
             } else {
-                $this->Flash->error(__("La marque n'a pas pu être sauvegardée ! Réessayer."));
+                $this->Flash->error(__('Le savoir n\'a pas pu être sauvegardé ! Réessayer.')); //Sinon affiche une erreur
             }
         }
-        $this->set(compact('marque'));
-        $this->set('_serialize', ['marque']);
+
+        $this->set(compact('savoir'));
     }
 
-    /**
-     * Efface un utilisateur
-     */
     public function delete($id = null)      //Met le paramètre id à null pour éviter un paramètre restant ou hack
     {
         $this->request->allowMethod(['post', 'delete']); // Autoriste que certains types de requête
-        $marque = $this->Marques->get($id);
-        if ($this->Marques->delete($marque)) {
-            $this->Flash->success(__("L'marque a été supprimée."));
+        $savoir = $this->Savoirs->get($id);
+        if ($this->Savoirs->delete($savoir)) {
+            $this->Flash->success(__("Le savoir a été supprimé."));
         } else {
-            $this->Flash->error(__("L'marque n' pas pu être supprimée ! Réessayer."));
+            $this->Flash->error(__("Le savoir n'a pas pu être supprimé ! Réessayer."));
         }
         return $this->redirect(['action' => 'index']);
+    }
+
+    private function _loadFilters($resquest = null)
+    {
+        //chargement de la liste des référentiels
+        $referentialsTbl = TableRegistry::get('Referentials');
+        $referentials = $referentialsTbl->find('list')
+            ->order(['name' => 'ASC']);
+        
+        //récup du filtre existant dans la requête
+        $referential_id = $this->request->getQuery('referential_id');
+
+        //si requête vide slection du premier de la liste
+        if ($referential_id =='') {
+            $referential_id = $referentialsTbl->find()
+            ->order(['name' => 'ASC'])
+            ->first()
+            ->id;
+        }
+
+        $this->set(compact( //passage des variables à la vue
+            'referentials', 'referential_id'
+        ));
     }
 }

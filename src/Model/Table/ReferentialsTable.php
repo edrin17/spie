@@ -26,5 +26,6 @@ class ReferentialsTable extends Table
         parent::initialize($config);
 
         $this->hasMany('Progressions');
+        $this->hasMany('Savoirs');
     }
 }

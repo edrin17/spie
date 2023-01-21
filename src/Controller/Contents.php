@@ -6,7 +6,7 @@ use Cake\ORM\TableRegistry;
 /**
  * Users Controller
  */
-class ControlesController extends AppController
+class ContentsController extends AppController
 {
 	public function initialize()
 	{

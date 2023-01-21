@@ -1,20 +1,36 @@
-<div class="users form large-9 medium-8 columns content">
-    <?= $this->Form->create($sousChapitre) ?>                       <!-- Crée un formulaire qui sera stocké d'un $capacité' -->
-    <fieldset>
-        <legend><?= __("Édition d'un sous chapitre") ?></legend>
-            <?= $this->Form->input('nom',['label' => 'Nom']); ?>
-            <!-- echo $this->Form->input('Chapitre_id',['label' => 'Capacité correspondante dans le référentiel','option' => 'select']); -->        
-            <?= $this->Form->input('numero',[
-                'label' => 'Numéro du sous-chapitre',
-                'option' => 'number', 
-                'min' => '1',
-                'max' => '10'
+<?php echo $this->Form->create($savoir); ?>
+<div class="container-fuild">
+    <div class="row">
+        <div class="col-lg-3">
+            <?php echo $this->Form->input('referential_id', [
+                'label' => 'Filtrer par référentiel:',
+                'default' => $referential_id
             ]); ?>
-            <?= $this->Form->input('chapitre_id', [
-                'label' => 'Chapitre correspondante dans le référentiel',
-                'options' => $listeChapitres
-            ]);?>
-    </fieldset>
-    <?= $this->Form->button(__('Valider')) ?> <!-- Affiche le bouton submit -->
-    <?= $this->Form->end() ?> <!-- Ferme le formulaire -->
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <label for="name">Nom du savoir</label>
+            <?php echo $this->Form->text('name', [
+                'id' => 'name',
+                'class' => 'form-control',
+            ]); ?>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <label for="num">Numéro</label>
+            <?php echo $this->Form->text('num', [
+                'id' => 'num',
+                'class' => 'form-control',
+            ]); ?>
+        </div>
+    </div>
+    <div class='row'>
+        <div class="col-lg-12">
+            <?php echo $this->Form->button('Enregistrer', ['type' => 'submit', 'class' => 'btn btn-primary']); ?>
+        </div>
+    </div>
 </div>
+
+<?php echo $this->Form->end(); ?>

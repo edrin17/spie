@@ -1,41 +1,66 @@
-<?php $this->assign('title', 'Liste des Savoirs'); ?>  <!-- Customise le titre de la page -->
+<?php $this->assign('title', 'Savoirs'); ?>  <!-- Customise le titre de la page -->
+<div class="row">
+    <div class="col-lg-2">
+        <h1>Savoirs</h1>
+    </div>
+    <div class="col-lg-3 col-lg-offset-2">
+        <?php echo $this->Html->link(
+            'Ajouter un savoir',
+            ['action' => 'add', '?' => ['referential_id' => $referential_id]],
+            ['class' => "btn btn-info", 'role' => 'button']
+        ); ?>
+    </div>
+    <div class="col-lg-3 ">
+        <?php echo $this->Form->input('referential_id', [
+            'label' => 'Filtrer par référentiel:',
+            'onchange' => 'filtreSavoirsByReferentials()',
+            'options' => $referentials,
+            'default' => $referential_id
+        ]); ?>
+    </div>
+</div>
 <div class="row">
     <div class="col-lg-12">
-          <table class="table">
-    <h1>Liste des Sous-Chapitres</h1>
-    <!-- Affiche le bouton ajouter un utilisateur -->
-    <?php echo $this->Html->link(__('Ajouter un sous-chapitre'), ['action' => 'add']); ?>
-    <?php echo $this->Form->create(); ?>
-    <?php echo $this->Form->input('chapitre_id', [
-        'label' => 'Filtrer par chapitre',
-        'options' => $listeChapitres,
-        'default' => $chapitre_id
-    ]); ?>
-    <?php echo $this->Form->button(__('Filtrer')); ?>
-    <?php echo $this->Form->end(); ?>
+    <table id ="tableau" class="table table-hover">
         <thead>
             <tr>
-                <th> Chapitres </th>
-                <th> Sous-Chapitres </th>
-                <th class="actions"><h3><?php echo __('Actions'); ?></th>
+                <th> Nom </th>
+                <th> Référentiel</th>
+                <th class="actions">Actions</th>
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($sousChapitres as $sousChapitre): ?> <!--Affiche le contenu de 'chapitress'  -->
+            <?php foreach ($savoirs as $savoir): ?> <!--Affiche le contenu de 'savoirs'  -->
             <tr>
-                <td><?php echo h("S." .$sousChapitre->chapitre->numero .": " .$sousChapitre->chapitre->nom); ?></td>
-                <td><?php echo h("S." .$sousChapitre->chapitre->numero ."." .$sousChapitre->numero .": ".$sousChapitre->nom); ?></td> <!-- Ici on ajoute C. pour avoir une compétence de la forme C.3.2.1 -->
-				<td class="actions">
-                <!-- Affiche des urls/boutons et de leurs actions -->
-                <p>
-                    <?php echo $this->Html->link(__('Voir'), ['action' => 'view', $sousChapitre->id]); ?>
-                    <?php echo $this->Html->link(__('Editer'), ['action' => 'edit', $sousChapitre->id]); ?>
-                    <?php echo $this->Form->postLink(__('Supprimer'),
-                        ['action' => 'delete', $sousChapitre->id],['confirm' => __('Etes vous sur de vouloirs supprimer # {0}?', $sousChapitre->id)]); ?>
-                </p>
+                <td><?php echo h($savoir->fullName) ?></td>
+                <td><?php echo h($savoir->referential->name) ?></td>
+                <td class="actions">
+                    <div class="btn-group" role="group">
+                        <?php echo $this->Html->link('<i class="fa-solid fa-cog btn btn-default" aria-hidden="true"></i>', [
+                            'controller' => 'Savoirs',
+                            'action' => 'edit',
+                            $savoir->id,
+                        ],['role'=>'button', 'escape' => false]) ?>
+                        <?php echo $this->Form->postButton(
+                            '<i class="fa-solid fa-trash" aria-hidden="true"></i>',
+                            ['controller' => 'savoirs', 'action' => 'delete', $savoir->id, '?' => [
+                                'savoir' => $savoir->savoir_id]],
+                            ['confirm' => 'Etes-vous sûr de voulour supprimer le TP: ' . $savoir->name . '?', 'escape' => false]
+                        ); ?>
+                    </div>
                 </td>
             </tr>
             <?php endforeach; ?>
         </tbody>
     </table>
 </div>
+<script>
+
+function filtreSavoirsByReferentials()
+{
+    var id = document.getElementById("referential-id").value;
+    var url = "<?php echo $this->Url->build(['controller'=>'Savoirs','action'=>'index']) ?>" + "/?referential_id=" + id
+	window.location = url;
+}
+
+</script>
