@@ -74,23 +74,26 @@ class ProgressionsController extends AppController
     public function index()
     {
         $this->_loadFilters();
+        $referential_id = $this->viewVars['referential_id'];
+
         $progressions = $this->Progressions->find()
             ->contain(['Referentials'])
+            ->where(['referential_id' => $referential_id])
             ->order(['nom' => 'ASC']);
         $this->set(compact('progressions'));
-        //debug($progressions->toArray());
     }
 
     public function add()
     {
+        $this->_loadFilters();
         $progression = $this->Progressions->newEntity();
         if ($this->request->is('post')) {
             $progression = $this->Progressions->patchEntity($progression, $this->request->getData());
             if ($this->Progressions->save($progression)) {
-                $this->Flash->success(__("Le référentiel a été sauvegardé."));
+                $this->Flash->success(__("La progression a été sauvegardé."));
                 return $this->redirect(['action' => 'index']);
             } else {
-                $this->Flash->error(__("Le référentiel n'a pas pu être sauvegardé ! Réessayer.")); //Affiche une infobulle
+                $this->Flash->error(__("La progression n'a pas pu être sauvegardé ! Réessayer.")); //Affiche une infobulle
             }
         }
         $this->set(compact('progression'));
@@ -98,14 +101,15 @@ class ProgressionsController extends AppController
 
     public function edit($id = null)                                        //Met le paramètre id à null pour éviter un paramètre restant ou hack
     {
+        $this->_loadFilters();
         $progression = $this->Progressions->get($id, ['contain' => [] ]);                  //récupère l'id de l'utilisateur
         if ($this->request->is(['patch', 'post', 'put'])) {                         // Vérifie le type de requête
             $progression = $this->Progressions->patchEntity($progression, $this->request->getData());
             if ($this->Progressions->save($progression)) {                                 //Sauvegarde les données dans la BDD
-                $this->Flash->success(__("L'activité a été sauvegardée."));      //Affiche une infobulle
+                $this->Flash->success(__("La progression a été sauvegardée."));      //Affiche une infobulle
                 return $this->redirect(['action' => 'index']);                      //Déclenche la fonction 'index' du controlleur
             } else {
-                $this->Flash->error(__("L'activité n'a pas pu être sauvegardée ! Réessayer."));
+                $this->Flash->error(__("La progression n'a pas pu être sauvegardée ! Réessayer."));
             }
         }
         $this->set(compact('progression'));
@@ -114,15 +118,17 @@ class ProgressionsController extends AppController
 
     public function delete($id = null)      //Met le paramètre id à null pour éviter un paramètre restant ou hack
     {
+        $this->_loadFilters();
         $this->request->allowMethod(['post', 'delete']); // Autoriste que certains types de requête
         $progression = $this->Progressions->get($id);
         if ($this->Progressions->delete($progression)) {
-            $this->Flash->success(__("Le référentiel a été supprimé."));
+            $this->Flash->success(__("La progression a été supprimé."));
         } else {
-            $this->Flash->error(__("Le référentiel n'a pas pu être supprimé ! Réessayer."));
+            $this->Flash->error(__("La progression n'a pas pu être supprimé ! Réessayer."));
         }
         return $this->redirect(['action' => 'index']);
     }
+
     private function _loadFilters($resquest = null)
     {
         //chargement de la liste des référentiels

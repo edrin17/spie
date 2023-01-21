@@ -10,9 +10,9 @@
             ['class' => "btn btn-success",'type' => 'button' ]
         ); ?>
     </div>
-    <div class="col-lg-2 col-lg-offset-1">
+    <div class="col-lg-3 col-lg-offset-1">
         <?php echo $this->Form->input('progression_id', [
-            'label' => 'Filtrer par référentiel:',
+            'label' => 'Filtrer par progression:',
             'onchange' => 'filtreByProgression()',
             'options' => $progressions,
             'default' => $progression_id
@@ -26,7 +26,7 @@
                 <tr>
                     <th>Numéros</th>
                     <th>Classes</th>
-                    <th>Référentiels</th>
+                    <th>Progressions</th>
                     <th class="actions"><h3><?php echo __('Actions'); ?></h3></th>
                 </tr>
             </thead>
@@ -51,14 +51,6 @@
     </div>
 </div>
 <script>
-$(document).ready(function() {
-    $('#tableau').DataTable({
-        "language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.19/i18n/French.json"
-        }
-    });
-} );
-
 function filtreByProgression()
 {
     var id = document.getElementById("progression-id").value;

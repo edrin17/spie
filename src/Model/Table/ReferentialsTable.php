@@ -25,8 +25,6 @@ class ReferentialsTable extends Table
     {
         parent::initialize($config);
 
-        $this->setDisplayField('nom');
-
         $this->hasMany('Progressions');
     }
 }

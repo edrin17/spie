@@ -3,7 +3,7 @@
     <fieldset>
         <legend><?php echo __('Ajouter une rotation') ?></legend>
         <?php echo $this->Form->input('progression_id', [
-            'label' => 'Référentiel',
+            'label' => 'Progression',
             'default' => $progression_id,
             'onchange' => 'chainedPeriodes()'
         ]); ?>

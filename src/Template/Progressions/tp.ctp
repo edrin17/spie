@@ -1,6 +1,6 @@
 <?php $this->assign('title', "Tp en fonction du temps"); ?>
 <?php echo $this->Form->input('progression_id', [
-    'label' => 'Référentiels:',
+    'label' => 'Filtrer par Progression:',
     'onchange' => 'select_progression()',
     'options' => $progressions,
     'default' => $progression_id

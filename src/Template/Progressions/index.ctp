@@ -1,13 +1,22 @@
 <?php $this->assign('title', 'Progressions'); ?>  <!-- Customise le titre de la page -->
 <h1>Liste des Progressions</h1>
 <div class="row">
-    <div class="col-md-3">
-        <?php echo $this->Html->link(
-            'Ajouter une progression',
-            ['action' => 'add', '?' => [
-                'referential_id' => $referential_id]],
-            ['class' => "btn btn-info", 'role' => 'button']
+    <div class="col-lg-2">
+        <h1>Progressions</h1>
+    </div>
+    <div class="col-lg-1 col-lg-offset-5">
+        <br>
+        <?php echo $this->Html->link('Ajouter une progression', ['action' => 'add'],
+            ['class' => "btn btn-info",'type' => 'button' ]
         ); ?>
+    </div>
+    <div class="col-lg-2 col-lg-offset-1">
+        <?php echo $this->Form->input('referential_id', [
+            'label' => 'Filtrer par référentiel:',
+            'onchange' => 'filtreProgressionsByReferentials()',
+            'options' => $referentials,
+            'default' => $referential_id
+        ]); ?>
     </div>
 </div>
 <div class="row">
@@ -24,7 +33,7 @@
             <?php foreach ($progressions as $progression): ?> <!--Affiche le contenu de 'progressions'  -->
             <tr>
                 <td><?php echo h($progression->nom) ?></td>
-                <td><?php echo h($progression->Referential->name) ?></td>
+                <td><?php echo h($progression->referential->name) ?></td>
                 <td class="actions">
                     <div class="btn-group" role="group">
                         <?php echo $this->Html->link('<i class="fa-solid fa-cog btn btn-default" aria-hidden="true"></i>', [
@@ -45,3 +54,13 @@
         </tbody>
     </table>
 </div>
+<script>
+
+function filtreProgressionsByReferentials()
+{
+    var id = document.getElementById("referential-id").value;
+    var url = "<?php echo $this->Url->build(['controller'=>'Progressions','action'=>'index']) ?>" + "/?referential_id=" + id
+	window.location = url;
+}
+
+</script>

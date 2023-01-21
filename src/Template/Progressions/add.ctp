@@ -4,7 +4,6 @@
         <div class="col-lg-2">
             <?php echo $this->Form->input('referential_id', [
                 'label' => 'Filtrer par référentiel:',
-                'onchange' => 'filterProgressionsByReferential()',
                 'default' => $referential_id
             ]); ?>
         </div>
@@ -26,12 +25,3 @@
 </div>
 
 <?php echo $this->Form->end(); ?>
-
-<script type="text/javascript">
-    function filterProgressionsByReferential() {
-        var $referential_id = document.getElementById("referential-id").value;
-        $.get("<?php echo $this->Url->build(['controller' => 'FiltresAjaxes', 'action' => 'chainedProgressionsByReferential']) ?>" +
-            "/?referential_id=" + $referential_id
-        );
-    }
-</script>

@@ -153,8 +153,7 @@ class FiltresAjaxesController extends AppController
 	{
 		$rotationsTbl = TableRegistry::get('Rotations');
         $periode_id = $this->request->getQuery('periode_id');
-		$rotations = $rotationsTbl = TableRegistry::get('Rotations')
-			->find('list')
+		$rotations = $rotationsTbl->find('list')
 			->contain(['Periodes'])
 			->where(['periode_id' => $periode_id])
 			->order(['Rotations.numero' => 'ASC']);
@@ -164,12 +163,23 @@ class FiltresAjaxesController extends AppController
 
 	public function chainedElevesByClasse()
 	{
-		$ElevesTbl = TableRegistry::get('Eleves');
+		$elevesTbl = TableRegistry::get('Eleves');
         $classe_id = $this->request->getQuery('classe_id');
-		$eleves = $ElevesTbl->find('list')
+		$eleves = $elevesTbl->find('list')
 			->where(['classe_id' => $classe_id])
 			->order(['nom' => 'ASC','prenom' => 'ASC']);
         $this->set('ajaxContent', $eleves);
+		$this->render('filtres_ajaxes');
+	}
+
+	public function chainedProgressionsByReferential()
+	{
+		$progressionsTbl = TableRegistry::get('Progressions');
+        $referential_id = $this->request->getQuery('referential_id');
+		$progression = $progressionsTbl->find('list')
+			->where(['referential_id' => $referential_id])
+			->order(['name' => 'ASC']);
+        $this->set('ajaxContent', $progression);
 		$this->render('filtres_ajaxes');
 	}
 }

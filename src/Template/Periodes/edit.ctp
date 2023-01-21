@@ -6,7 +6,7 @@
         <?php echo $this->Form->input('classe_id',['label' => 'Choix de la classe',
 			'options' => $listeClasses
 		]);?>
-        <?php echo $this->Form->input('progression_id',['label' => 'Choix du référentiel',
+        <?php echo $this->Form->input('progression_id',['label' => 'Choix de la progression',
 			'options' => $progressions
 		]);?>
 		<?= $this->Form->input('color',[

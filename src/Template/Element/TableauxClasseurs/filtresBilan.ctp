@@ -2,7 +2,7 @@
     <div class="row">
         <div class="col-lg-2">
             <?php echo $this->Form->input('progression_id', [
-                'label' => 'Filtrer par référentiel:',
+                'label' => 'Filtrer par progression:',
                 'onchange' => 'filterClassesByProgression()',
                 'default' => $progression_id
             ]); ?>
