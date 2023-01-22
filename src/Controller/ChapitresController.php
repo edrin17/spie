@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\ORM\TableRegistry;
 
 /**
  * Users Controller
@@ -16,71 +17,82 @@ class ChapitresController extends AppController
 
      public function index()
     {
-		$chapitres = $this->Chapitres->find()->order(['numero' => 'ASC']);
-        $this->set('chapitres', $this->paginate($chapitres)); //'chapitres' est l'alias de la variable globale pour la vue'index.ctp'
-        $this->set('_serialize', ['chapitres']);
+		$this->_loadFilters();
+        $savoir_id = $this->viewVars['savoir_id'];
+        $chapitres = $this->Chapitres->find()
+            ->where(['parent_id' => $savoir_id])
+            ->order(['Chapitres.num' => 'ASC']);
+        $this->set(compact('chapitres'));
     }
 
-    /**
-     * Affiche toutes les données d'un utilisateur
-     */
-    public function view($id = null)                                //Met le paramètre id à null pour éviter un paramètre restant ou hack
+    public function add($savoir_id = null)
     {
-        $chapitre = $this->Chapitres->get($id, ['contain' => [] ]);
-        $this->set('chapitre', $chapitre);                                  // Passe le paramètre 'chapitre' à la vue.
-        $this->set('_serialize', ['chapitre']);                         // Sérialize 'chapitre'
-    }
-
-    /**
-     * Ajoute un utilisateur
-     */
-    public function add()
-    {
-        $chapitre = $this->Chapitres->newEntity();                                   // crée une nouvelle entité dans $chapitre
-        if ($this->request->is('post')) {                                           //si requête de type post
-            $chapitre = $this->Chapitres->patchEntity($chapitre, $this->request->getData());  //??
-            if ($this->Chapitres->save($chapitre)) {                                 //Met le champ 'id' de la base avec UUID CHAR(36)
-                $this->Flash->success(__('Le chapitre a été sauvegardé.'));      //Affiche une infobulle
-                return $this->redirect(['action' => 'index']);                      //Déclenche la fonction 'index' du controlleur
-            } else {
-                $this->Flash->error(__('Le chapitre n\'a pas pu être sauvegardé ! Réessayer.')); //Affiche une infobulle
-            }
-        }
-        $this->set(compact('chapitre'));
-        $this->set('_serialize', ['chapitre']);
-    }
-
-    /**
-     * Édite un utilisateur
-     */
-    public function edit($id = null)                                        //Met le paramètre id à null pour éviter un paramètre restant ou hack
-    {
-        $chapitre = $this->Chapitres->get($id, ['contain' => [] ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {                         // Vérifie le type de requête
+		$this->_loadFilters();
+        $chapitre = $this->Chapitres->newEntity();
+        if ($this->request->is('post')) {
             $chapitre = $this->Chapitres->patchEntity($chapitre, $this->request->getData());
-            if ($this->Chapitres->save($chapitre)) {                                 //Sauvegarde les données dans la BDD
-                $this->Flash->success(__('Le chapitre a été sauvegardé.'));      //Affiche une infobulle
-                return $this->redirect(['action' => 'index']);                      //Déclenche la fonction 'index' du controlleur
+            if ($this->Chapitres->save($chapitre)) {
+                $this->Flash->success(__("Le chapitre a été sauvegardé."));
+                return $this->redirect(['action' => 'index']);
             } else {
-                $this->Flash->error(__('Le chapitre n\' pas pu être sauvegardé ! Réessayer.'));
+                $this->Flash->error(__("Le chapitre n'a pas pu être sauvegardé ! Réessayer.")); //Affiche une infobulle
             }
         }
         $this->set(compact('chapitre'));
-        $this->set('_serialize', ['chapitre']);
     }
-
-    /**
-     * Efface un utilisateur
-     */
+    
+    private function _loadParents($id = null)
+    {
+        # code...
+    }
     public function delete($id = null)      //Met le paramètre id à null pour éviter un paramètre restant ou hack
     {
+        $this->_loadFilters();
         $this->request->allowMethod(['post', 'delete']); // Autoriste que certains types de requête
         $chapitre = $this->Chapitres->get($id);
         if ($this->Chapitres->delete($chapitre)) {
-            $this->Flash->success(__('Le chapitre a été supprimé.'));
+            $this->Flash->success(__("Le chapitre a été supprimé."));
         } else {
-            $this->Flash->error(__('Le chapitre n\' pas pu être supprimé ! Réessayer.'));
+            $this->Flash->error(__("Le chapitre n'a pas pu être supprimé ! Réessayer."));
         }
         return $this->redirect(['action' => 'index']);
     }
+    private function _loadFilters($resquest = null)
+    {
+        //chargement de la liste des référentiels
+        $savoirsTbl = TableRegistry::get('Savoirs');
+        $savoirs = $savoirsTbl->find('list')
+            ->order(['num' => 'ASC']);
+        
+        //récup du filtre existant dans la requête
+        $savoir_id = $this->request->getQuery('savoir_id');
+
+        //si requête vide selection du premier de la liste
+        if ($savoir_id =='') {
+            $savoir_id = $savoirsTbl->find()
+            ->order(['name' => 'ASC'])
+            ->first()
+            ->id;
+        }
+        //chargement de la liste des référentiels
+        $taxosTbl = TableRegistry::get('Taxos');
+        $taxos = $taxosTbl->find('list')
+            ->order(['num' => 'ASC']);
+        
+        //récup du filtre existant dans la requête
+        $taxo_id = $this->request->getQuery('taxo_id');
+
+        //si requête vide selection du premier de la liste
+        if ($taxo_id =='') {
+            $taxo_id = $taxosTbl->find()
+            ->order(['name' => 'ASC'])
+            ->first()
+            ->id;
+        }
+
+        $this->set(compact( //passage des variables à la vue
+            'savoirs', 'savoir_id', 'taxos', 'taxo_id'
+        ));
+    }
+   
 }

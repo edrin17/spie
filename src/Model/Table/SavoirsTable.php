@@ -25,7 +25,6 @@ class SavoirsTable extends Table
     {
         parent::initialize($config);
         $this->belongsTo('Referentials');
-        $this->belongsTo('Taxos');
         $this->setDisplayField('fullName');
     }
 

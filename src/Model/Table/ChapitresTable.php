@@ -25,30 +25,8 @@ class ChapitresTable extends Table
     {
         parent::initialize($config);
 
-        $this->hasMany('SousChapitres', [
-            'foreignKey' => 'chapitre_id'
-        ]);
-        
-        $this->setDisplayField('NumeNom');
+        $this->addBehavior('Tree');
+
+        $this->belongsTo('Taxos');
     }
-
-    /**
-     * Default validation rules.
-     *
-     * @param \Cake\Validation\Validator $validator Validator instance.
-     * @return \Cake\Validation\Validator
-     */
-
-    /**
-     * Returns a rules checker object that will be used for validating
-     * application integrity.
-     *
-     * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
-     * @return \Cake\ORM\RulesChecker
-     */
-    /*public function buildRules(RulesChecker $rules)
-    {
-        $rules->add($rules->isUnique(['email']));
-        return $rules;
-    }*/
 }

@@ -25,8 +25,7 @@ class TaxosTable extends Table
     {
         parent::initialize($config);
 	        	        
-	    $this->hasMany('Savoirs');
-        $this->setDisplayField('fullName');
+	    $this->hasMany('Chapitres');
     }
 
 }

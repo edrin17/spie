@@ -1,43 +1,68 @@
-
-<?php $this->assign('title', 'Liste des Chapitres'); ?>  <!-- Customise le titre de la page -->
-
+<?php $this->assign('title', 'Chapitres'); ?>  <!-- Customise le titre de la page -->
+<div class="row">
+    <div class="col-lg-2">
+        <h1>Chapitres</h1>
+    </div>
+    <div class="col-lg-1 col-lg-offset-3">
+        <br>
+        <?php echo $this->Html->link('Ajouter un chapitre', ['action' => 'add',$savoir_id],
+            ['class' => "btn btn-info",'type' => 'button' ]
+        ); ?>
+    </div>
+    <div class="col-lg-5 col-lg-offset-1">
+        <?php echo $this->Form->input('savoir_id', [
+            'label' => 'Filtrer par savoir:',
+            'onchange' => 'filtreChapitresBySavoirs()',
+            'options' => $savoirs,
+            'default' => $savoir_id
+        ]); ?>
+    </div>
+</div>
 <div class="row">
     <div class="col-lg-12">
-          <table class="table">
-    <h1>Liste des Chapitres</h1>
-    <?php echo $this->Html->link(__('Ajouter un chapitre'), ['action' => 'add']); ?>
+    <table id ="tableau" class="table table-hover">
         <thead>
             <tr>
-                <th><?php echo $this->Paginator->sort('numero','Numéro'); ?> </th> <!-- Utilise Helper::Paginator pour crée un hyper lien qui classe si on clique dessus -->
-                <th><?php echo $this->Paginator->sort('nom','Nom du chapitre'); ?></th>
-                <th class="actions"><h3><?php echo __('Actions'); ?></th>
+                <th> Chapitre </th>
+                <th class="actions">Actions</th>
             </tr>
         </thead>
         <tbody>
             <?php foreach ($chapitres as $chapitre): ?> <!--Affiche le contenu de 'chapitres'  -->
             <tr>
-                <td><?php echo "S.".h($chapitre->numero) ?></td>
-                <td><?php echo h($chapitre->nom) ?></td>
+                <td><?php echo $chapitre->num. '.'. h($chapitre->name) ?></td>
                 <td class="actions">
-                <!-- Affiche des urls/boutons et de leurs actions -->
-                <p>
-                    <?php echo $this->Html->link(__('Voir'), ['action' => 'view', $chapitre->id]); ?>
-                    <?php echo $this->Html->link(__('Editer'), ['action' => 'edit', $chapitre->id]); ?>
-                    <?php echo $this->Form->postLink(__('Supprimer'),
-                        ['action' => 'delete', $chapitre->id],['confirm' => __('Etes vous sûr de vouloir supprimer # {0}?', $chapitre->id)]); ?>
-                </p>
+                    <div class="btn-group" role="group">
+                        <?php echo $this->Html->link('<i class="fa-solid fa-cog btn btn-default" aria-hidden="true"></i>', [
+                            'controller' => 'Chapitres',
+                            'action' => 'edit',
+                            $chapitre->id,
+                        ],['role'=>'button', 'escape' => false]) ?>
+                        <div class="btn-group" role="group">
+                        <?php echo $this->Html->link('<i class="fa-solid fa-plus btn btn-default" aria-hidden="true"></i>', [
+                            'controller' => 'Chapitres',
+                            'action' => 'addChild',
+                            '?' =>['chapitre_id' => $chapitre->id,'savoir_id' => $savoir_id]
+                        ],['role'=>'button', 'escape' => false]) ?>
+                        <?php echo $this->Form->postButton('<i class="fa-solid fa-trash" aria-hidden="true"></i>',[
+                            'controller' => 'chapitres', 'action' => 'delete', $chapitre->id, '?' => [
+                                'chapitre' => $chapitre->chapitre_id]],
+                            ['confirm' => 'Etes-vous sûr de voulour supprimer le chapitre: ' . $chapitre->name . '?', 'escape' => false]
+                        ); ?>
+                    </div>
                 </td>
             </tr>
             <?php endforeach; ?>
         </tbody>
     </table>
-    <!-- Affiche le paginator -->
-    <div class="paginator">
-        <ul class="pagination">
-            <?php echo $this->Paginator->prev('< ' . __('précedent')); ?>
-            <?php echo $this->Paginator->numbers(); ?>
-            <?php echo $this->Paginator->next(__('suivant') . ' >'); ?>
-        </ul>
-        <p><?php echo $this->Paginator->counter(); ?></p>
-    </div>
 </div>
+<script>
+
+function filtreChapitresBySavoirs()
+{
+    var id = document.getElementById("savoir-id").value;
+    var url = "<?php echo $this->Url->build(['controller'=>'Chapitres','action'=>'index']) ?>" + "/?savoir_id=" + id
+	window.location = url;
+}
+
+</script>

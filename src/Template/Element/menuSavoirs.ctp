@@ -10,25 +10,11 @@
                     ]); ?>
                 </li>
                 <li>
-                    <?= $this->Html->link(__('Sous-chapitres'),[
-                        'controller' => 'SousChapitres',
+                    <?= $this->Html->link(__('Chapitres'),[
+                        'controller' => 'Chapitres',
                         'action' => 'index'
                     ]); ?>
-                </li>
-                <li>
-                    <?= $this->Html->link(__('Sous-sous-chapitres'), [
-                        'controller' => 'SousSousChapitres',
-                        'action' => 'index'
-                    ]); ?>
-                </li>
-                
-                <li>
-                    <?= $this->Html->link(__('Contenus Chapitres'), [
-                        'controller' => 'ContenusChapitres',
-                        'action' => 'index'
-                    ]); ?>
-                </li>
-                
+                </li>               
                 <li role="separator" class="divider"></li>
                 
                 <li>
