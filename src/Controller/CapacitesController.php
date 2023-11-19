@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\ORM\TableRegistry;
 
 /**
  * Capacites Controller
@@ -15,13 +16,17 @@ class CapacitesController extends AppController
 		$this->viewBuilder()->setLayout('default');
 	}
     /**
-     Liste les Capacites
+     * Liste les Capacites
      */
     public function index()
     {
-        $capacite = $this->Capacites->find()->order(['numero' => 'ASC']);
-        $this->set('capacites', $this->paginate($capacite)); //'capacites' est l'alias de la variable globale pour la vue'index.ctp'
-        $this->set('_serialize', ['Capacites']);
+        $this->_loadFilters();
+        $referential_id = $this->viewVars['referential_id'];
+
+        $capacites = $this->Capacites->find()
+            ->where(['referential_id' => $referential_id])
+            ->order(['numero' => 'ASC']);
+        $this->set(compact('capacites','referential_id'));
     }
 
     /**
@@ -39,6 +44,7 @@ class CapacitesController extends AppController
      */
     public function add()
     {
+        $this->_loadFilters(); // load filter list with "Référentiels"
         $capacite = $this->Capacites->newEntity();                                   // crée une nouvelle entité dans $capacite
         if ($this->request->is('post')) {                                           //si requête de type post
             $capacite = $this->Capacites->patchEntity($capacite, $this->request->getData());  //??
@@ -58,6 +64,7 @@ class CapacitesController extends AppController
      */
     public function edit($id = null)                                        //Met le paramètre id à null pour éviter un paramètre restant ou hack
     {
+        $this->_loadFilters(); // load filter list with "Référentiels"
         $capacite = $this->Capacites->get($id, ['contain' => [] ]);                  //récupère l'id de l'utilisateur
         if ($this->request->is(['patch', 'post', 'put'])) {                         // Vérifie le type de requête
             $capacite = $this->Capacites->patchEntity($capacite, $this->request->getData());
@@ -68,8 +75,7 @@ class CapacitesController extends AppController
                 $this->Flash->error(__('La capacité n\' pas pu être sauvegarder ! Réessayer.'));
             }
         }
-        $this->set(compact('capacite'));
-        $this->set('_serialize', ['capacite']);
+        $this->set(compact('capacite','referential_id'));
     }
 
     /**
@@ -77,6 +83,7 @@ class CapacitesController extends AppController
      */
     public function delete($id = null)      //Met le paramètre id à null pour éviter un paramètre restant ou hack
     {
+        $this->_loadFilters(); // load filter list with "Référentiels"
         $this->request->allowMethod(['post', 'delete']); // Autoriste que certains types de requête
         $capacite = $this->Capacites->get($id);
         if ($this->Capacites->delete($capacite)) {
@@ -86,5 +93,28 @@ class CapacitesController extends AppController
         }
         return $this->redirect(['action' => 'index']);
     }
+ 
 
+    private function _loadFilters($resquest = null)
+    {
+        //chargement de la liste des référentiels
+        $referentialsTbl = TableRegistry::get('Referentials');
+        $referentials = $referentialsTbl->find('list')
+            ->order(['name' => 'ASC']);
+        
+        //récup du filtre existant dans la requête
+        $referential_id = $this->request->getQuery('referential_id');
+
+        //si requête vide slection du premier de la liste
+        if ($referential_id =='') {
+            $referential_id = $referentialsTbl->find()
+            ->order(['name' => 'ASC'])
+            ->first()
+            ->id;
+        }
+
+        $this->set(compact( //passage des variables à la vue
+            'referentials', 'referential_id'
+        ));
+    }
 }

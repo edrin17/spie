@@ -341,7 +341,7 @@ class SuivisController extends AppController
         return $this->redirect(['action' => 'suivi']);
     }
     
-    private function _loadFilters($resquest = null)
+    private function _loadFilters($request = null)
     {
         $progressionsTbl = TableRegistry::get('Progressions');
         $progressions = $progressionsTbl->find('list')

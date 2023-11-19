@@ -1,9 +1,9 @@
 <?php echo $this->Form->create($progression); ?>
 <div class="container-fuild">
     <div class="row">
-        <div class="col-lg-2">
+        <div class="col-lg-3">
             <?php echo $this->Form->input('referential_id', [
-                'label' => 'Filtrer par référentiel:',
+                'label' => 'Référentiel cible de la progression',
                 'default' => $referential_id
             ]); ?>
         </div>

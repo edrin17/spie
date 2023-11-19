@@ -3,12 +3,25 @@
     <div class="col-lg-12">
           <table class="table">
     <h1>Capacités</h1>
-    <?php echo $this->Html->link(__('Ajouter une capacité'), ['action' => 'add']); ?>
+    <div class="col-lg-1 col-lg">
+        <br>
+        <?php echo $this->Html->link('Ajouter une capacité', ['action' => 'add'],
+            ['class' => "btn btn-info",'type' => 'button' ]
+        ); ?>
+    </div>
+    <div class="col-lg-3 col-lg-offset-8">
+        <?php echo $this->Form->input('referential_id', [
+            'label' => 'Filtrer par référentiel:',
+            'onchange' => 'filtreCapacitesByReferentials()',
+            'options' => $referentials,
+            'default' => $referential_id
+        ]); ?>
+    </div>
     <!-- Affiche le paginator -->
         <thead>
             <tr>
-                <th><?php echo $this->Paginator->sort('numero','Numéro'); ?> </th> <!-- Utilise Helper::Paginator pour crée un hyper lien qui classe si on clique dessus -->
-                <th><?php echo $this->Paginator->sort('nom','Nom de la capacité'); ?></th>
+                <th>Numéro</th> <!-- Utilise Helper::Paginator pour crée un hyper lien qui classe si on clique dessus -->
+                <th>Nom de la capacité</th>
                 <th class="actions"><h3><?php echo __('Actions'); ?></th>
             </tr>
         </thead>
@@ -20,7 +33,6 @@
                 <td class="actions">
                 <!-- Affiche des urls/boutons et de leurs actions -->
                 <p>
-                    <?php echo $this->Html->link(__('Voir'), ['action' => 'view', $capacite->id]); ?>
                     <?php echo $this->Html->link(__('Editer'), ['action' => 'edit', $capacite->id]); ?>
                     <?php echo $this->Form->postLink(__('Supprimer'),
                         ['action' => 'delete', $capacite->id],['confirm' => __('Etes vous sur de vouloirs supprimer # {0}?', $capacite->id)]); ?>
@@ -30,14 +42,14 @@
             <?php endforeach; ?>
         </tbody>       
     </table>
-    <!-- Affiche le bouton ajouter un utilisateur -->
-    <div class="paginator">
-        <ul class="pagination">
-            <?php echo $this->Paginator->prev('< ' . __('précedent')); ?>
-            <?php echo $this->Paginator->numbers(); ?>
-            <?php echo $this->Paginator->next(__('suivant') . ' >'); ?>
-        </ul>
-        <p><?php echo $this->Paginator->counter(); ?></p>
-    </div>
 </div>
+<script>
 
+function filtreCapacitesByReferentials()
+{
+    var id = document.getElementById("referential-id").value;
+    var url = "<?php echo $this->Url->build(['controller'=>'Capacites','action'=>'index']) ?>" + "/?referential_id=" + id
+	window.location = url;
+}
+
+</script>
