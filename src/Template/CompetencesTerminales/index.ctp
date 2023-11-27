@@ -1,18 +1,14 @@
 <?php $this->assign('title', 'Liste des compétences terminales'); ?>  <!-- Customise le titre de la page -->
-<?= $this->Form->create() ?>
 <div class="row">
     <div class="col-lg-12">
-          <table class="table">
-    <h1>Liste des compétences terminales</h1>
-    <!-- Affiche le bouton ajouter un utilisateur -->
-    <?= $this->Html->link(__('Ajouter une compétence'), ['action' => 'add', 'filtrCapa' => $filtrCapa]) ?>
-
-    <?= $this->Form->input('filtrCapa', [
-        'label' => 'Filtrer par capacité',
-        'options' => $listCapa
-    ]); ?>
-    <?= $this->Form->button(__('Filtrer')) ?>
-
+        <table class="table">
+    <h1>Compétences terminales</h1>
+    <div class="col-lg-1 col-lg">
+        <br>
+        <?php echo $this->Html->link('Ajouter une compétence', ['action' => 'add'],
+            ['class' => "btn btn-info",'type' => 'button' ]
+        ); ?>
+    </div>
 		<thead>
             <tr>
                 <th> Capacités </th>
@@ -50,5 +46,3 @@
     </table>
     
 </div>
-
-<?= $this->Form->end() ?>

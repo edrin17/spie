@@ -1,7 +1,7 @@
 <?php $this->assign('title', 'Capacités'); ?>  <!-- Customise le titre de la page -->
 <div class="row">
     <div class="col-lg-12">
-          <table class="table">
+        <table class="table">
     <h1>Capacités</h1>
     <div class="col-lg-1 col-lg">
         <br>

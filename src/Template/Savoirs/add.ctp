@@ -1,3 +1,6 @@
+<!--  
+   TODO: #1 List all tree items plus "<Racine>" and add dynamically sublists
+-->
 <?php echo $this->Form->create($savoir); ?>
 <div class="container-fuild">
     <div class="row">
@@ -10,9 +13,9 @@
     </div>
     <div class="row">
         <div class="col-lg-12">
-            <label for="name">Nom du savoir</label>
-            <?php echo $this->Form->text('name', [
-                'id' => 'name',
+            <label for="nom">Nom du savoir</label>
+            <?php echo $this->Form->text('nom', [
+                'id' => 'nom',
                 'class' => 'form-control',
             ]); ?>
         </div>

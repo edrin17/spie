@@ -24,7 +24,7 @@ class SavoirsController extends AppController
         $savoirs = $this->Savoirs->find()
             ->contain(['Referentials'])
             ->where(['referential_id' => $referential_id])
-            ->order(['num' => 'ASC','Savoirs.name' => 'ASC']);
+            ->order(['num' => 'ASC','Savoirs.nom' => 'ASC']);
         $this->set(compact('savoirs'));
     }
     public function add()

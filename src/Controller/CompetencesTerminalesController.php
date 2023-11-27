@@ -22,9 +22,7 @@ class CompetencesTerminalesController extends AppController
      */
     public function index($filtrCapa = null)
     {
-		$capacites = TableRegistry::get('Capacites');
-		$listCapa = $capacites->find('list')
-			->order(['numero' => 'ASC']);
+		$this->_loadFilters();
 		
 		$compsTerms = $this->CompetencesTerminales;
 		$query = $compsTerms->find()
@@ -64,7 +62,7 @@ class CompetencesTerminalesController extends AppController
      */
     public function add()
     {
-        //$filtrCapa = $_GET['filtrCapa'];
+        $this->_loadFilters(); // load filter list with "Référentiels"
         $capacites = TableRegistry::get('Capacites');
 		$listCapa = $capacites->find('list')
 			->order(['numero' => 'ASC']);
@@ -96,6 +94,7 @@ class CompetencesTerminalesController extends AppController
     public function edit($id = null)   //Met le paramètre id à null pour éviter un paramètre restant ou hack
     {
         
+        $this->_loadFilters(); // load filter list with "Référentiels"
         //récupère le contenu de la table competences_terminales en fonction de l'id'
         $compsTerm = $compsTerms->get($id, [
             'contain' => []
@@ -124,6 +123,7 @@ class CompetencesTerminalesController extends AppController
      */
     public function delete($id = null)      //Met le paramètre id à null pour éviter un paramètre restant ou hack
     {
+        $this->_loadFilters(); // load filter list with "Référentiels"
         $compsTerms = $this->CompetencesTerminales;
         $this->request->allowMethod(['post', 'delete']); // Autoriste que certains types de requête
         $compTerm = $compsTerms->get($id);
@@ -134,5 +134,49 @@ class CompetencesTerminalesController extends AppController
         }
         return $this->redirect(['action' => 'index']);
     }
-    
+
+    private function _loadFilters($resquest = null)
+    {
+        //chargement de la liste des référentiels
+        $referentialsTbl = TableRegistry::get('Referentials');
+        $referentials = $referentialsTbl->find('list')
+            ->order(['name' => 'ASC']);
+        
+        //récup du filtre existant dans la requête
+        $referential_id = $this->request->getQuery('referential_id');
+
+        //si requête vide selection du premier de la liste
+        if ($referential_id =='') {
+            $referential_id = $referentialsTbl->find()
+            ->order(['name' => 'ASC'])
+            ->first()
+            ->id;
+        }
+
+        //send  referential + id 
+        $this->set(compact( 
+            'referentials', 'referential_id'
+        ));
+
+        //chargement de la liste des capacités selon le référentiel
+        $capaTbl = TableRegistry::get('Capacites');
+        $capacites = $capaTbl->find('list')
+            ->where(['referential_id' => $referential_id])
+            ->order(['numero' => 'ASC']);
+        
+        //get id from request
+        $capa_id = $this->request->getQuery('capa_id');
+
+        //if request empty get first in the list
+        if ($capa_id =='') {
+            $capa_id = $capaTbl->find()
+            ->order(['numero' => 'ASC'])
+            ->first()
+            ->id;
+        }
+
+        $this->set(compact( //passage des variables à la vue
+            'capacites', 'capa_id'
+        ));
+    }
 }
