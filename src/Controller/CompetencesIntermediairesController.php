@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\ORM\TableRegistry;
 
 /**
  * CompetencesIntermediaires Controller
@@ -21,89 +22,20 @@ class CompetencesIntermediairesController extends AppController
      */
     public function index($competences_terminale_id = null)
     {
-        //changement de nom de la variable
-        $competencesTerminale_id = $competences_terminale_id;
-		
-		// chargement des capacites dans listeCapacites pour le select du filtre
-        //On récupère la liste des Capacités avec NumeNom
-        $listeCapacites = $this->CompetencesIntermediaires->CompetencesTerminales->Capacites
-								->find('list')
-								->order(['numero' => 'ASC']);
-        
-        
-        if ( $this->request->is('POST') ) 
-		{
-			$capacite_id = $this->request->getData()['capacite_id'];
-			$competencesTerminale_id = $this->request->getData()['competences_terminale_id'];
-		}
-        
-        if ($competencesTerminale_id !== null) 
-		{
-						
-			$CompetencesTerminales = $this->CompetencesIntermediaires->CompetencesTerminales->find()
-									->contain(['Capacites'])
-									->where(['capacite_id' => $capacite_id ])
-									->order(['CompetencesTerminales.numero' => 'ASC']);
-		
-			$listeCompetencesTerminales['tout'] = "Tout voir";
-			
-			foreach ($CompetencesTerminales as $CompetencesTerminale) 
-			{
-				$listeCompetencesTerminales[$CompetencesTerminale->id] = "C." .$CompetencesTerminale->capacite->numero
-														."." .$CompetencesTerminale->numero
-														." - " .$CompetencesTerminale->nom;
-			}
-			
-			if ($competencesTerminale_id == 'tout') 
-			{
-				$competencesIntermediaires = $this->CompetencesIntermediaires->find()
-										->contain(['CompetencesTerminales.Capacites'])
-										->where(['CompetencesTerminales.capacite_id' => $capacite_id])
-										->order(['Capacites.numero' => 'ASC',
-											'CompetencesTerminales.numero' => 'ASC',
-											'CompetencesIntermediaires.numero' => 'ASC']);
-			}else 
-			{
-				$competencesIntermediaires = $this->CompetencesIntermediaires->find()
-										->contain(['CompetencesTerminales.Capacites'])
-										->where(['competences_terminale_id' => $competencesTerminale_id ])
-										->order(['Capacites.numero' => 'ASC',
-											'CompetencesTerminales.numero' => 'ASC',
-											'CompetencesIntermediaires.numero' => 'ASC']);
-			}						
-        
-		}else 
-		{						
-        $CompetencesTerminales = $this->CompetencesIntermediaires->CompetencesTerminales->find()
-								->contain(['Capacites'])
-								->where(['capacite_id' => $this->CompetencesIntermediaires
-																->CompetencesTerminales
-																->Capacites->find()
-																->order(['numero' => 'ASC'])
-																->first()->id ])
-								->order(['CompetencesTerminales.numero' => 'ASC']);
-		
-		$listeCompetencesTerminales['tout'] = "Tout voir";
-		foreach ($CompetencesTerminales as $CompetencesTerminale) 
-		{
-			$listeCompetencesTerminales[$CompetencesTerminale->id] = "C." .$CompetencesTerminale->capacite->numero
-													."." .$CompetencesTerminale->numero
-													." - " .$CompetencesTerminale->nom;
-		}
-								
+        $this->_loadFilters();
+		$referential_id = $this->viewVars['referential_id'];
+        $capacite_id = $this->viewVars['capacite_id'];
+        $competences_terminale_id = $this->viewVars['competences_terminale_id'];
+        //$tableau = ['ref'=> $referential_id, 'capa' => $capacite_id, 'Term' => $competences_terminale_id ];
+        //debug($tableau);
         $competencesIntermediaires = $this->CompetencesIntermediaires->find()
-									->contain(['CompetencesTerminales.Capacites'])
+									->contain(['CompetencesTerminales.Capacites.Referentials'])
+                                    ->where(['competences_terminale_id' => $competences_terminale_id])
 									->order(['Capacites.numero' => 'ASC',
 										'CompetencesTerminales.numero' => 'ASC',
 										'CompetencesIntermediaires.numero' => 'ASC']);
-		}
 
-        $this->set(compact(
-			'competencesIntermediaires','listeCompetencesTerminales',
-			'listeCapacites','capacite_id','competencesTerminale_id'
-		));
-        $this->set('_serialize', ['competencesIntermediaires']);
-		//debug($competencesTerminale); die();
+        $this->set(compact('competencesIntermediaires'));
     }
 
     /**
@@ -206,6 +138,80 @@ class CompetencesIntermediairesController extends AppController
             $this->Flash->error(__('La compétence n\' pas pu être supprimer ! Réessayer.'));
         }
         return $this->redirect(['action' => 'index']);
+    }
+
+    private function _loadFilters($resquest = null)
+    {
+        //chargement de la liste des référentiels
+        $referentialsTbl = TableRegistry::get('Referentials');
+        $referentials = $referentialsTbl->find('list')
+            ->order(['name' => 'ASC']);
+        
+        //récup du filtre existant dans la requête
+        $referential_id = $this->request->getQuery('referential_id');
+
+        //si requête vide selection du premier de la liste
+        if ($referential_id =='') {
+            $referential_id = $referentialsTbl->find()
+            ->order(['name' => 'ASC'])
+            ->first()
+            ->id;
+        }
+        $this->set(compact( 
+            'referentials', 'referential_id'
+        ));
+
+        //chargement de la liste des capacités selon le référentiel
+        $capacitesTbl = TableRegistry::get('Capacites');
+        $capacites = $capacitesTbl->find('list')
+            ->where(['referential_id' => $referential_id])
+            ->order(['numero' => 'ASC']);
+        
+        //get id from request
+        $capacite_id = $this->request->getQuery('capacite_id');
+
+        //if request empty get first in the list
+        if ($capacite_id =='') {
+            $capacite_id = $capacitesTbl->find()
+            ->where(['referential_id' => $referential_id])
+            ->order(['numero' => 'ASC'])
+            ->first()
+            ->id;
+        }
+
+        $this->set(compact( //passage des variables à la vue
+            'capacites', 'capacite_id'
+        ));
+
+        //chargement de la liste des compétences inter selon la compétence Terminale
+        $compTermTbl = TableRegistry::get('CompetencesTerminales');
+        $competencesTerminales = $compTermTbl->find('list')
+            ->contain(['Capacites'])
+            ->where(['capacite_id' => $capacite_id])
+            ->order([
+                'Capacites.numero' => 'ASC',
+                'CompetencesTerminales.numero' => ''
+            ]);
+        
+        //get id from request
+        $competences_terminale_id = $this->request->getQuery('competences_terminale_id');
+
+        //if request empty get first in the list
+        if ($competences_terminale_id =='') {
+            $competences_terminale_id = $compTermTbl->find()
+            ->contain(['Capacites'])
+            ->where(['capacite_id' => $capacite_id])
+            ->order([
+                'Capacites.numero' => 'ASC',
+                'CompetencesTerminales.numero' => ''
+            ])
+            ->first()
+            ->id;
+        }
+
+        $this->set(compact( //passage des variables à la vue
+            'competencesTerminales', 'competences_terminale_id'
+        ));
     }
 
 }

@@ -25,26 +25,19 @@ class CompetencesTerminalesController extends AppController
 		$this->_loadFilters();
 		
 		$compsTerms = $this->CompetencesTerminales;
-		$query = $compsTerms->find()
+        $referential_id = $this->viewVars['referential_id'];
+        $capacite_id = $this->viewVars['capacite_id'];
+		$listeCompsTerms = $compsTerms->find()
 			->contain(['Capacites'])
+            ->where([
+                'referential_id' => $referential_id,
+                'capacite_id' => $capacite_id,
+                ])
 			->order([
 				'Capacites.numero' => 'ASC',
 				'CompetencesTerminales.numero' => 'ASC'
 			]);
-		
-	
-		$filtrPost = $this->request->is('POST');
-		
-		if ($filtrPost) { //Si un filtr à été appliqué request de type POST
-			$filtrCapa = $this->request->getData()['filtrCapa'];
-		}
-		
-		if ($filtrCapa !== null) { //Si affichage avec filtr on applique une requete avec le filtr
-			$listeCompsTerms = $query->where(['capacite_id' => $filtrCapa]);					
-		} else { //Si pas de filtr on applique une récupère toutes les données
-			$listeCompsTerms = $query;
-		}     
-	    $this->set(compact('listeCompsTerms','listCapa','filtrCapa'));      
+	    $this->set(compact('listeCompsTerms'));      
 		
     }
 
@@ -62,21 +55,23 @@ class CompetencesTerminalesController extends AppController
      */
     public function add()
     {
-        $this->_loadFilters(); // load filter list with "Référentiels"
-        $capacites = TableRegistry::get('Capacites');
-		$listCapa = $capacites->find('list')
-			->order(['numero' => 'ASC']);
-								
+        $this->_loadFilters(); // load filter list with "Référentiels"						
         $compsTerms = $this->CompetencesTerminales;
-        $compTerm = $compsTerms->newEntity();
+        $competenceTerminale = $this->CompetencesTerminales->newEntity();
         
         if ($this->request->is('post')) {  //si on a cliqué sur "Ajouter".
-            $compTerm = $compsTerms->patchEntity($compTerm, $this->request->getData());
-            if ($compsTerms->save($compTerm)) { // si pas d'erreur remontée.
+            $competenceTerminale = $compsTerms->patchEntity($competenceTerminale, $this->request->getData());
+            $referential_id = $this->request->getData('referential_id');
+            $capacite_id = $this->request->getData('capacite_id');
+            if ($compsTerms->save($competenceTerminale)) { // si pas d'erreur remontée.
                 $this->Flash->success(__(
 					"La compétence terminale a été sauvegardéé."
                 ));
-                return $this->redirect(['action' => 'index']);
+                return $this->redirect([
+                    'action' => 'index',
+                    'referential_id' => $referential_id,
+                    'capacite_id' => $capacite_id,
+                ]);
             } else {
                 $this->Flash->error(__(
 					"La compétence terminale n'a pas pu être sauvegardée ! Réessayer."
@@ -85,7 +80,7 @@ class CompetencesTerminalesController extends AppController
         }
         
         
-        $this->set(compact('compTerm','listCapa','filtrCapa')); 
+        $this->set(compact('competenceTerminale')); 
     }
 
     /**
@@ -95,27 +90,29 @@ class CompetencesTerminalesController extends AppController
     {
         
         $this->_loadFilters(); // load filter list with "Référentiels"
-        //récupère le contenu de la table competences_terminales en fonction de l'id'
-        $compsTerm = $compsTerms->get($id, [
-            'contain' => []
-        ]);
+        $compsTerms = $this->CompetencesTerminales;
+        $competenceTerminale = $compsTerms->get($id);
 
         //récupère le contenu de la table capacites en fonction de l'id = a capaciteId
         //$capacites = $compsTerms->Capacites->get($capacites->id, ['contain' => [] ]);
         if ($this->request->is(['patch', 'post', 'put'])) {                        // Vérifie le type de requête
-            $$compsTerm = $compsTerms->patchEntity($$compsTerm, $this->request->getData());
-            if ($compsTerms->save($$compsTerm)) {                  //Sauvegarde les données dans la BDD
+            $competenceTerminale = $compsTerms->patchEntity($competenceTerminale, $this->request->getData());
+            $referential_id = $this->request->getData('referential_id');
+            $capacite_id = $this->request->getData('capacite_id');
+            if ($compsTerms->save($$competenceTerminale)) {                  //Sauvegarde les données dans la BDD
                 $this->Flash->success(__('La compétence a été sauvegardé.'));      //Affiche une infobulle
-                return $this->redirect(['action' => 'index']);                      //Déclenche la fonction 'index' du controlleur
+                return $this->redirect([
+                    'action' => 'index',
+                    'referential_id' => $referential_id,
+                    'capacite_id' => $capacite_id,
+                ]);                      //Déclenche la fonction 'index' du controlleur
             } else {
                 $this->Flash->error(__('La compétence n\' pas pu être sauvegarder ! Réessayer.')); //Sinon affiche une erreur
             }
         }
         
-        // Récupère les données de la table capacites et les classe par ASC
-        $listeSelect = $compsTerms->Capacites->find('list')->order(['numero' => 'ASC']);
-        $this->set(compact('$compsTerm', 'listeSelect'));
-        $this->set('_serialize', ['$compsTerm']);
+
+        $this->set(compact('competenceTerminale'));
     }
 
     /**
@@ -126,13 +123,21 @@ class CompetencesTerminalesController extends AppController
         $this->_loadFilters(); // load filter list with "Référentiels"
         $compsTerms = $this->CompetencesTerminales;
         $this->request->allowMethod(['post', 'delete']); // Autoriste que certains types de requête
+        $referential_id = $this->viewVars['referential_id'];
+        $capacite_id = $this->viewVars['capacite_id'];
         $compTerm = $compsTerms->get($id);
+        //debug($capacite_id);
+        //die;
         if ($compsTerms->delete($compTerm)) {
             $this->Flash->success(__('La compétence a été supprimé.'));
         } else {
             $this->Flash->error(__('La compétence n\' pas pu être supprimée ! Réessayer.'));
         }
-        return $this->redirect(['action' => 'index']);
+        return $this->redirect([
+            'action' => 'index',
+            'referential_id' => $referential_id,
+            'capacite_id' => $capacite_id
+        ]);
     }
 
     private function _loadFilters($resquest = null)
@@ -159,24 +164,24 @@ class CompetencesTerminalesController extends AppController
         ));
 
         //chargement de la liste des capacités selon le référentiel
-        $capaTbl = TableRegistry::get('Capacites');
-        $capacites = $capaTbl->find('list')
+        $capacitesTbl = TableRegistry::get('Capacites');
+        $capacites = $capacitesTbl->find('list')
             ->where(['referential_id' => $referential_id])
             ->order(['numero' => 'ASC']);
         
         //get id from request
-        $capa_id = $this->request->getQuery('capa_id');
+        $capacite_id = $this->request->getQuery('capacite_id');
 
         //if request empty get first in the list
-        if ($capa_id =='') {
-            $capa_id = $capaTbl->find()
+        if ($capacite_id =='') {
+            $capacite_id = $capacitesTbl->find()
             ->order(['numero' => 'ASC'])
             ->first()
             ->id;
         }
 
         $this->set(compact( //passage des variables à la vue
-            'capacites', 'capa_id'
+            'capacites', 'capacite_id'
         ));
     }
 }

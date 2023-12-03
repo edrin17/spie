@@ -5,8 +5,9 @@
     <h1>Capacités</h1>
     <div class="col-lg-1 col-lg">
         <br>
-        <?php echo $this->Html->link('Ajouter une capacité', ['action' => 'add'],
-            ['class' => "btn btn-info",'type' => 'button' ]
+        <?php echo $this->Html->link('Ajouter une capacité',
+            ['action' => 'add', "referential_id" => $referential_id],
+            ['class' => "btn btn-info",'type' => 'button']          
         ); ?>
     </div>
     <div class="col-lg-3 col-lg-offset-8">
@@ -20,7 +21,6 @@
     <!-- Affiche le paginator -->
         <thead>
             <tr>
-                <th>Numéro</th> <!-- Utilise Helper::Paginator pour crée un hyper lien qui classe si on clique dessus -->
                 <th>Nom de la capacité</th>
                 <th class="actions"><h3><?php echo __('Actions'); ?></th>
             </tr>
@@ -28,14 +28,13 @@
         <tbody>
             <?php foreach ($capacites as $capacite): ?> <!--Affiche le contenu de 'capacites'  -->
             <tr> 
-                <td><?php echo 'C.', h($capacite->numero) ?></td>
-                <td><?php echo h($capacite->nom) ?></td>
+                <td><?php echo h($capacite->fullName) ?></td>
                 <td class="actions">
                 <!-- Affiche des urls/boutons et de leurs actions -->
                 <p>
                     <?php echo $this->Html->link(__('Editer'), ['action' => 'edit', $capacite->id]); ?>
                     <?php echo $this->Form->postLink(__('Supprimer'),
-                        ['action' => 'delete', $capacite->id],['confirm' => __('Etes vous sur de vouloirs supprimer # {0}?', $capacite->id)]); ?>
+                        ['action' => 'delete', $capacite->id],['confirm' => __('Etes vous sur de vouloirs supprimer: {0}?', $capacite->nom)]); ?>
                 </p>
                 </td>
             </tr>
@@ -48,7 +47,9 @@
 function filtreCapacitesByReferentials()
 {
     var id = document.getElementById("referential-id").value;
-    var url = "<?php echo $this->Url->build(['controller'=>'Capacites','action'=>'index']) ?>" + "/?referential_id=" + id
+    var url = "<?php echo $this->Url->build([
+        'controller'=>'Capacites','action'=>'index']) ?>" 
+        + "/?referential_id=" + id
 	window.location = url;
 }
 

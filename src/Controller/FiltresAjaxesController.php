@@ -13,6 +13,49 @@ class FiltresAjaxesController extends AppController
 		$this->viewBuilder()->setLayout('ajax');
 	}
 
+	public function chainedCapacites()
+	{
+		$capacites = TableRegistry::get('Capacites');
+
+		$referential_id = $_GET['referential_id'];
+
+
+		$query = $capacites->find()
+			->contain(['Referentials'])
+			->where(['referential_id' => $referential_id])
+			->order(['Capacites.numero' => 'ASC']);
+
+		foreach ($query as $capacites)
+		{
+			$chainedCapacites[$capacites->id] = $capacites->fullName;
+		}
+		$ajaxContent = $chainedCapacites;
+		$this->set('ajaxContent',$ajaxContent);
+		$this->render('filtres_ajaxes');
+	}
+
+	public function chainedCompetencesTerminales()
+	{
+		$compsTerms = TableRegistry::get('CompetencesTerminales');
+
+		$parentId = $_GET['capacite_id'];
+
+
+		$query = $compsTerms->find()
+			->contain(['Capacites'])
+			->where(['capacite_id' => $parentId])
+			->order(['Capacites.numero' => 'ASC',
+			'CompetencesTerminales.numero' => 'ASC']);
+
+		foreach ($query as $competence)
+		{
+			$chainedCompsTerms[$competence->id] = $competence->fullName;
+		}
+		$ajaxContent = $chainedCompsTerms;
+		$this->set('ajaxContent',$ajaxContent);
+		$this->render('filtres_ajaxes');
+	}
+
 	public function chainedCompsTerms()
 	{
 		$compsTerms = TableRegistry::get('CompetencesTerminales');

@@ -30,5 +30,7 @@ class CapacitesTable extends Table
         $this->hasMany('CompetencesTerminales', [
             'foreignKey' => 'capacite_id'
         ]);
+
+        $this->belongsTo('Referentials');
     }
 }
