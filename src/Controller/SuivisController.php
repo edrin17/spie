@@ -267,13 +267,13 @@ class SuivisController extends AppController
 
     public function tp()
     {
-        $request = $this->request;
+        $request = $this->request;// TODO #2 Is it usefull since it's not used in the function ?
         $this->_loadFilters($request);
         $progression_id = $this->viewVars['progression_id'];
         $classe_id = $this->viewVars['classe_id'];
         $periode_id = $this->viewVars['periode_id'];
         $rotation_id = $this->viewVars['rotation_id'];
-        $eleves = $this->viewVars['elevesObjs']; //eleves sous forme d'objets
+        $eleves = $this->viewVars['elevesObjs']; // dans la vue POST eleves sous forme d'objets
 
         $spe = 0;
 
