@@ -1,18 +1,13 @@
-<?php $this->assign('title', 'Liste des compétences intermediaires'); ?>  <!-- Customise le titre de la page -->
+<?php 
+    $this->assign('title', 'Liste des compétences intermédiaires');
+    $this->set('modalTitle','Ajouter une nouvelle compétence intermédiaire');
+?> 
+
 <div class="row">
     <div class="col-lg-12">       
         <h1>Compétences intermédiaires</h1>
         <div class="col-lg-1 col-lg">
-            <br>
-            <?php echo $this->Html->link('Ajouter une compétence intermédiaire', 
-                [
-                    'action' => 'add',
-                    'referential_id' => $referential_id,
-                    'capacite_id' => $capacite_id,
-                    'competence_terminale_id' => $competences_terminale_id
-                ],
-                ['class' => "btn btn-info",'type' => 'button' ]
-            ); ?>
+            <?php echo $this->element('/Modals/NewEntry'); ?>
         </div>
         <div class="col-lg-3 col-lg-offset-8">
             <?php echo $this->Form->input('referential_id', [
@@ -73,6 +68,9 @@
         </table>
     </div>
 </div>
+
+
+
 <script type="text/javascript">
 
     function filtreCompetencesInterByCompTerm() {
@@ -87,30 +85,58 @@
     }
 
     function filtreCompetencesTermByCapacites() {
-        var referential_id = document.getElementById("referential-id").value;
-        var capacite_id = document.getElementById("capacite-id").value;
-        $.when(
-            $.get("<?php echo $this->Url->build([
-                'controller'=>'FiltresAjaxes',
-                'action'=>'chainedCompetencesTerminales'])
-                ."/?referential_id="; ?>"
-                + referential_id + "&capacite_id=" + capacite_id, function(resp) {
-                    $('#competences-terminale-id').html(resp);
-                }
-            )
-        ).then (filtreCompetencesInterByCompTerm());
+    var referential_id = document.getElementById("referential-id").value;
+    var capacite_id = document.getElementById("capacite-id").value;
+
+    // Generate the URL using a script block
+    var url = "<?php echo $this->Url->build([
+            'controller' => 'FiltresAjaxes',
+            'action' => 'chainedCompetencesTerminales'
+        ]); ?>/?referential_id=" + referential_id + "&capacite_id=" + capacite_id;
+
+    // Perform synchronous AJAX request using $.ajax
+    var response;
+    $.ajax({
+        url: url,
+        async: false, // Make the request synchronous
+        type: "GET",
+        success: function(data) {
+            response = data;
+        }
+    });
+
+    // Update the dropdown with the response
+    $('#competences-terminale-id').html(response);
+
+    // Call the next function in the sequence
+    filtreCompetencesInterByCompTerm();
     }
 
     function filterCapacitesByReferential() {
-        var referential_id = document.getElementById("referential-id").value;
-        $.when(
-            $.get("<?php echo $this->Url->build([
-            'controller'=>'FiltresAjaxes',
-            'action'=>'chainedCapacites'])
-            ."/?referential_id="; ?>"
-            + referential_id, function(resp) {
-                $('#capacite-id').html(resp);
-            })
-        ).then (filtreCompetencesTermByCapacites());
+    var referential_id = document.getElementById("referential-id").value;
+
+    // Generate the URL using a script block
+    var url = "<?php echo $this->Url->build([
+            'controller' => 'FiltresAjaxes',
+            'action' => 'chainedCapacites'
+        ]); ?>/?referential_id=" + referential_id;
+    
+    // Perform synchronous AJAX request using $.ajax
+    var response;
+    $.ajax({
+        url: url,
+        async: false, // Make the request synchronous
+        type: "GET",
+        success: function(data) {
+            response = data;
+        }
+    });
+
+    // Update the dropdown with the response
+    $('#capacite-id').html(response);
+
+    // Call the next function in the sequence
+    filtreCompetencesTermByCapacites();
     }
+
 </script>
