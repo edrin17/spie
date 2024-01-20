@@ -36,51 +36,55 @@ class CompetencesIntermediairesController extends AppController
 										'CompetencesIntermediaires.numero' => 'ASC']);
 
         $this->set(compact('competencesIntermediaires'));
-    }
+        
+        //build a new entity to send go params pattern to the create helper in the view
+        $competenceInter = $this->CompetencesIntermediaires->newEntity();
+        $this->set(compact('competenceInter'));
+        
+        //choose action if POST
+        $requestType = $this->request->is('post');
+        $action = $this->request->getData('action');
 
-    /**
-     * Affiche toutes les données d'un utilisateur
-     */
-    public function view($id = null)                                //Met le paramètre id à null pour éviter un paramètre restant ou hack
-    {
-        $competencesIntermediaire = $this->CompetencesIntermediaires->get($id, [
-            'contain' => ['CompetencesIntermediaires','Capacites']
-        ]);
-
-        $this->set(compact('competencesIntermediaire'));                                  // Passe le paramètre 'competence' à la vue.
-        $this->set('_serialize', ['competencesIntermediaire']);
-        //debug($listeCompetencesTerminales); die();
+        if ($requestType) {
+           if ($action === 'add') {
+            $this->_add($this->request);
+           }
+           if ($action === 'edit') {
+            $this->_edit($this->request);
+           }
+        }
     }
 
     /**
      * Ajoute un utilisateur
      */
-    public function add()
+    private function _add()
     {
-        //On récupère la liste des Capacité avec NumeNom sous la forme (C.1 gfdsgdf)
-        $listeCapacites = $this->CompetencesIntermediaires->CompetencesTerminales->Capacites
-								->find('list')
-								->order(['numero' => 'ASC']);
-									
-        //debug($listeCompetences);die;
-        $competenceInter = $this->CompetencesIntermediaires->newEntity();                                   // crée une nouvelle entité dans $competence
+        $competenceInter = $this->CompetencesIntermediaires->newEntity();
         if ($this->request->is('post')) {                                           //si requête de type post
-            $competenceInter = $this->CompetencesIntermediaires->patchEntity($competenceInter, $this->request->getData());  //??
+            $competenceInter = $this->CompetencesIntermediaires->patchEntity($competenceInter, $this->request->getData());
+            $referential_id = $this->request->getData('referential_id');
+            $capacite_id = $this->request->getData('capacite_id');
+            $competences_terminale_id = $this->request->getData('competences_terminale_id');
             if ($this->CompetencesIntermediaires->save($competenceInter)) {                                 //Met le champ 'id' de la base avec UUID CHAR(36)
                 $this->Flash->success(__('La compétence a été sauvegardé.'));      //Affiche une infobulle
-                return $this->redirect(['action' => 'index']);                      //Déclenche la fonction 'index' du controlleur
+                return $this->redirect([
+                    'action' => 'index',
+                    'referential_id' => $referential_id,
+                    'capacite_id' => $capacite_id,
+                    'competences_terminale_id' => $competences_terminale_id,
+                    
+            ]);                      //Déclenche la fonction 'index' du controlleur
             } else {
                 $this->Flash->error(__('La compétence n\'a pas pu être sauvegardé ! Réessayer.')); //Affiche une infobulle
             }
         }
-        $this->set(compact('listeCapacites'));     
-        $this->set(compact('competenceInter')); 
     }
 
     /**
      * Édite un utilisateur
      */
-    public function edit($id = null)   //Met le paramètre id à null pour éviter un paramètre restant ou hack
+    private function _edit()   //Met le paramètre id à null pour éviter un paramètre restant ou hack
     {
         
         //récupère le contenu de la table competences_terminales en fonction de l'id'
@@ -140,6 +144,8 @@ class CompetencesIntermediairesController extends AppController
         return $this->redirect(['action' => 'index']);
     }
 
+    // Load list and selected filters for each dropdown menus from $_GET
+    // params: 'referential_id' ; 'capacite_id' ; 'competences_terminale_id'
     private function _loadFilters($resquest = null)
     {
         //chargement de la liste des référentiels

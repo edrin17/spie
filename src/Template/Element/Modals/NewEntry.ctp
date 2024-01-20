@@ -13,49 +13,54 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
-                <!-- Form inside the modal -->
-                <form id="addCompetenceForm">
+                <div class="modal-body">
                     <div class="form-group">
-                        <label for="competenceName">Nom de la compétence intermédiaire:</label>
-                        <input type="text" class="form-control" id="competenceName" required>
+                    <?php echo $this->Form->input('nom',['label' => 'Nom']); ?>
+                    <?php echo $this->Form->input('numero',[
+                        'label' => 'Numéro de la compétence',
+                        'option' => 'number'
+                    ]); ?>
+                    <?php echo $this->Form->input('action',['type' => 'hidden' , 'value' => 'add']); ?>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer"><!-- modal-footer -->
-                <button type="button" class="btn btn-default ml-auto" data-dismiss="modal">Fermer</button>
-                <button type="sumbit" class="btn btn-primary">Sauvegarder</button>
-            </div><!-- /modal-footer -->
+                </div>
+                <div class="modal-footer"><!-- modal-footer -->
+                    <button type="button" class="btn btn-default ml-auto" data-dismiss="modal">Fermer</button>
+                    <button type="submit" class="btn btn-primary">Sauvegarder</button>       
+                </div><!-- /modal-footer -->
+            </form>
         </div>
     </div>
 </div>
 
-<table class="table">
-    <!-- Table content... -->
-</table>
-
-<script type="text/javascript">
-    // ... Your existing functions ...
-
-    // Function to handle form submission inside the modal
-    $('#addCompetenceForm').submit(function (event) {
-        event.preventDefault(); // Prevent the default form submission
-
+<script>
+    /* Generate the URL using a script block
+    var url = "";
+   
+   $('#addCompetenceForm').submit(function (event) {
+        console.log("Form submitted!");  // Add this line
         // Get the entered name
         var competenceName = $('#competenceName').val();
 
         // Check if the user entered a name
         if (competenceName !== "") {
             // Perform any additional logic you need with the entered name
-            console.log("Compétence intermédiaire ajoutée:", competenceName);
-
-            // You can choose to send the entered name to the server or update the UI accordingly
+            console.log(url);
+            
+            //Send data to controller
+            //$.ajax({
+            //url: url,
+            //async: false, // Make the request synchronous
+            //type: "POST",
+            //});
 
             // Close the modal
             $('#addCompetenceModal').modal('hide');
+
+            //refresh the page
+            
         } else {
             // Handle the case where the user entered an empty name
             console.log("Nom vide. Veuillez entrer un nom.");
         }
-    });
+    });  */  
 </script>
