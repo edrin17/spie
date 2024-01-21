@@ -29,6 +29,9 @@ class ActivitesTable extends Table
             'foreignKey' => 'activite_id'
         ]);
 
+        $this->belongsTo('Referentials');
+
+
         $this->setDisplayField('NumeNom');
     }
 }

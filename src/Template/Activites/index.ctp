@@ -1,41 +1,70 @@
-<?php $this->assign('title', 'Activités'); ?>  <!-- Customise le titre de la page -->
-
-<h1>Activités</h1>
-<table id ="tableau" class="display">
+<?php
+    $this->assign('title', 'Activité');
+    $this->set('modalTitle','Ajouter une nouvelle activité');
+?> 
+<?php echo $this->Form->create($activite); ?>
+<div class="row">
+    <div class="col-lg-12">
+        <table class="table">
+    <h1>Activités</h1>
+    <div class="col-lg-1 col-lg">
+        <br>
+        <div class="col-lg-1 col-lg">
+            <?php echo $this->element('/Modals/NewEntry'); ?>
+        </div>
+    </div>
+    <div class="col-lg-3 col-lg-offset-8">
+        <?php echo $this->Form->input('referential_id', [
+            'label' => 'Filtrer par référentiel:',
+            'onchange' => 'filtreActivitesByReferentials()',
+            'options' => $referentials,
+            'default' => $referential_id
+        ]); ?>
+    </div>
+    <!-- Affiche le paginator -->
         <thead>
             <tr>
-                <th> Numéro </th> <!-- Utilise Helper::Paginator pour crée un hyper lien qui classe si on clique dessus -->
-                <th> Nom de l'activité </th>
-                <th class="actions"><h3><?= __('Actions'); ?></th>
+                <th>Nom de l'activité</th>
+                <th class="actions"><h3><?php echo __('Actions'); ?></th>
             </tr>
         </thead>
         <tbody>
             <?php foreach ($activites as $activite): ?> <!--Affiche le contenu de 'activites'  -->
-            <tr> 
-                <td><?= "A.".h($activite->numero) ?></td>
-                <td><?= h($activite->nom) ?></td>
-                <td class="actions">
-                <!-- Affiche des urls/boutons et de leurs actions -->
-                <p>
-                    <?= $this->Html->link(__('Voir'), ['action' => 'view', $activite->id]); ?>
-                    <?= $this->Html->link(__('Editer'), ['action' => 'edit', $activite->id]); ?>
-                    <?= $this->Form->postLink(__('Supprimer'),
-                        ['action' => 'delete', $activite->id],['confirm' => __('Etes vous sûr de vouloir supprimer # {0}?', $activite->id)]); ?>
-                </p>
-                </td>
-            </tr>
-            <?php endforeach; ?>
+                <tr> 
+                    <td><?= h($activite->fullName) ?></td> <!-- Ici on ajoute C. pour avoir une compétence de la forme C.3.2.1 -->
+                    <td class="actions">
+                    <!-- Affiche des urls/boutons et de leurs actions -->
+                    <!-- Modal edit -->
+                    <?php $this->set('object',$activite); ?>
+                    <?php $this->set('action','edit'); ?>
+                    <?php $this->set('button','Editer'); ?>
+                    <?php $this->set('buttonColor','primary'); ?>
+                    <?php $this->set('icon','<i class="fa-solid fa-cog" aria-hidden="true">'); ?>
+                    <?php echo $this->element('/Modals/Edit'); ?>
+                    <!-- /Modal edit -->
+                    <!-- Button delete -->
+                    <?php $this->set('object',$activite); ?>
+                    <?php $this->set('action','delete'); ?>
+                    <?php $this->set('icon','<i class="fa-solid fa-trash" aria-hidden="true">'); ?>
+                    <?php $this->set('button','Supprimer'); ?>
+                    <?php $this->set('buttonColor','danger'); ?>
+                    <?php echo $this->element('/Modals/Delete'); ?>
+                    <!-- /Button delete -->
+                    </td>
+                </tr>
+                <?php endforeach ?>
         </tbody>       
-</table>
-<!-- Affiche le bouton ajouter un activite -->
-<?= $this->Html->link(__('Ajouter une activité'), ['action' => 'add']); ?>
-
+    </table>
+</div>
 <script>
-$(document).ready(function() {
-    $('#tableau').DataTable({
-        "language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.12/i18n/French.json"
-        }
-    });
-} );
+
+function filtreActivitesByReferentials()
+{
+    var id = document.getElementById("referential-id").value;
+    var url = "<?php echo $this->Url->build([
+        'controller'=>'Activites','action'=>'index']) ?>" 
+        + "/?referential_id=" + id
+	window.location = url;
+}
+
 </script>

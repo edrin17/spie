@@ -13,4 +13,9 @@ class Activite extends Entity
 		return 'A.' .$this->_properties['numero'].' - '.
 			$this->_properties['nom'];
 	}
+	protected function _getFullName()
+	{
+		$fullName = 'A.'. $this->_properties['numero']. ' - '. $this->_properties['nom'];
+		return $fullName;
+	}
 }

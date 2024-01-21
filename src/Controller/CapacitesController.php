@@ -94,7 +94,6 @@ class CapacitesController extends AppController
         $referential_id = $capacite->referential_id;
         if ($this->request->is(['patch', 'post', 'put'])) {                         // Vérifie le type de requête
             $capacite = $this->Capacites->patchEntity($capacite, $this->request->getData());
-            $referential_id = $this->request->getData('referential_id');
             if ($this->Capacites->save($capacite)) {                                 //Sauvegarde les données dans la BDD
                 $this->Flash->success(__('La capacité a été sauvegardé.'));      //Affiche une infobulle
                 return $this->redirect([

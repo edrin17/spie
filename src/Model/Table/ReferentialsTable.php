@@ -28,5 +28,6 @@ class ReferentialsTable extends Table
         $this->hasMany('Progressions');
         $this->hasMany('Savoirs');
         $this->hasMany('Capacites');
+        $this->hasMany('Activites');
     }
 }
