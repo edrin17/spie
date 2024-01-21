@@ -1,5 +1,5 @@
 <!-- Button to trigger the modal -->
-<button class="btn btn-info" type="button" data-toggle="modal" data-target="#addCompetenceModal">Ajouter une compétence intermédiaire</button>
+<button class="btn btn-info" type="button" data-toggle="modal" data-target="#addCompetenceModal">Ajouter une entrée</button>
 
 <!-- Rest of your code ... -->
 

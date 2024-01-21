@@ -42,15 +42,17 @@ class CompetencesIntermediairesController extends AppController
         $this->set(compact('competenceInter'));
         
         //choose action if POST
-        $requestType = $this->request->is('post');
+        $requestType = $this->request->is(['patch', 'post', 'put', 'delete']);
         $action = $this->request->getData('action');
-
         if ($requestType) {
            if ($action === 'add') {
             $this->_add($this->request);
            }
            if ($action === 'edit') {
             $this->_edit($this->request);
+           }
+           if ($action === 'delete') {
+            $this->_delete($this->request);
            }
         }
     }
@@ -84,64 +86,58 @@ class CompetencesIntermediairesController extends AppController
     /**
      * Édite un utilisateur
      */
-    private function _edit()   //Met le paramètre id à null pour éviter un paramètre restant ou hack
+    private function _edit()
     {
-        
-        //récupère le contenu de la table competences_terminales en fonction de l'id'
-        $competencesIntermediaire = $this->CompetencesIntermediaires->get($id, [
-            'contain' => []
+        //get entity form 'id' param
+        $id = $this->request->getData('entityId');
+        $competencesIntermediaire = $this->CompetencesIntermediaires->get($id,[
+            'contain'=>['CompetencesTerminales.Capacites']
         ]);
+        $referential_id = $competencesIntermediaire->competences_terminale->capacite->referential_id;
+        $capacite_id = $competencesIntermediaire->competences_terminale->capacite_id;
+        $competences_terminale_id = $competencesIntermediaire->competences_terminale_id;
         
-        //On récupère la liste des Capacité avec NumeNom sous la forme (C.1 gfdsgdf)
-        $listeCapacites = $this->CompetencesIntermediaires->CompetencesTerminales->Capacites
-								->find('list')
-								->order(['numero' => 'ASC']);
-								
-		//On récupère la liste des compétences Terminales
-        $listeCompTerms = $this->CompetencesIntermediaires->CompetencesTerminales
-								->find('all')
-								->contain(['Capacites'])
-								->order(['Capacites.numero' => 'ASC', 'CompetencesTerminales.numero' => 'ASC']);
-		
-		//debug($listeCompTerm->id);die;
-		
-		foreach ($listeCompTerms as $listeCompTerm) 
-		{
-			//debug($listeCompTerm->capacite->numero);die;
-			$selectCompTerms[$listeCompTerm->id] = 'C' .'.' .$listeCompTerm->capacite->numero.'.'.
-													$listeCompTerm->numero. ' - '.$listeCompTerm->nom;
-		}
-
-        //récupère le contenu de la table capacites en fonction de l'id = a capacite_id
-        //$capacite = $this->CompetencesIntermediaires->Capacites->get($capacite->id, ['contain' => [] ]);
         if ($this->request->is(['patch', 'post', 'put'])) {                        // Vérifie le type de requête
             $competencesIntermediaire = $this->CompetencesIntermediaires->patchEntity($competencesIntermediaire, $this->request->getData());
             if ($this->CompetencesIntermediaires->save($competencesIntermediaire)) {                  //Sauvegarde les données dans la BDD
                 $this->Flash->success(__('La compétence a été sauvegardé.'));      //Affiche une infobulle
-                return $this->redirect(['action' => 'index']);                      //Déclenche la fonction 'index' du controlleur
+                return $this->redirect([
+                    'action' => 'index',
+                    'referential_id' => $referential_id,
+                    'capacite_id' => $capacite_id,
+                    'competences_terminale_id' => $competences_terminale_id,
+                ]);                      //Déclenche la fonction 'index' du controlleur
             } else {
                 $this->Flash->error(__('La compétence n\' pas pu être sauvegarder ! Réessayer.')); //Sinon affiche une erreur
             }
         }
-        
-        // Récupère les données de la table capacites et les classe par ASC
-        $this->set(compact('listeCapacites','selectCompTerms'));
-        $this->set(compact('competencesIntermediaire'));
     }
 
     /**
      * Efface un utilisateur
      */
-    public function delete($id = null)      //Met le paramètre id à null pour éviter un paramètre restant ou hack
+    public function _delete($id = null)      //Met le paramètre id à null pour éviter un paramètre restant ou hack
     {
-        $this->request->allowMethod(['post', 'delete']); // Autoriste que certains types de requête
-        $competence = $this->CompetencesIntermediaires->get($id);
-        if ($this->CompetencesIntermediaires->delete($competence)) {
+        //get entity form 'id' param
+        $id = $this->request->getData('entityId');
+        $competencesIntermediaire = $this->CompetencesIntermediaires->get($id,[
+            'contain'=>['CompetencesTerminales.Capacites']
+        ]);
+        $referential_id = $competencesIntermediaire->competences_terminale->capacite->referential_id;
+        $capacite_id = $competencesIntermediaire->competences_terminale->capacite_id;
+        $competences_terminale_id = $competencesIntermediaire->competences_terminale_id;
+
+        if ($this->CompetencesIntermediaires->delete($competencesIntermediaire)) {
             $this->Flash->success(__('La compétence a été supprimé.'));
         } else {
             $this->Flash->error(__('La compétence n\' pas pu être supprimer ! Réessayer.'));
         }
-        return $this->redirect(['action' => 'index']);
+        return $this->redirect([
+            'action' => 'index',
+            'referential_id' => $referential_id,
+            'capacite_id' => $capacite_id,
+            'competences_terminale_id' => $competences_terminale_id,
+        ]);
     }
 
     // Load list and selected filters for each dropdown menus from $_GET

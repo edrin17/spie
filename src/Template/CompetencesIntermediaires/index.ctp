@@ -1,12 +1,6 @@
 <?php 
     $this->assign('title', 'Liste des compétences intermédiaires');
     $this->set('modalTitle','Ajouter une nouvelle compétence intermédiaire');
-    $this->set('url', $this->Url->build(
-        [
-            'controller' => 'CompetencesIntermediaires',
-            'action' => 'add',
-        ]
-        ));
 ?> 
 <?php echo $this->Form->create($competenceInter); ?>
 <div class="row">
@@ -49,24 +43,27 @@
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($competencesIntermediaires as $competenceIntermediaire): ?> <!--Affiche le contenu de 'capacitess'  -->
+                <?php foreach ($competencesIntermediaires as $competencesIntermediaire): ?> <!--Affiche le contenu de 'capacitess'  -->
                 <tr> 
-                    <td><?= h($competenceIntermediaire->fullName) ?></td> <!-- Ici on ajoute C. pour avoir une compétence de la forme C.3.2.1 -->
+                    <td><?= h($competencesIntermediaire->fullName) ?></td> <!-- Ici on ajoute C. pour avoir une compétence de la forme C.3.2.1 -->
                     <td class="actions">
                     <!-- Affiche des urls/boutons et de leurs actions -->
-                    <p>
-                        <?= $this->Html->link(
-                            __('Editer'),['action' => 'edit', $competenceIntermediaire->id, "referential_id" => $referential_id,
-                            "capacite_id" => $capacite_id]
-                        )?>
-                        <?= $this->Form->postLink(
-                            __('Supprimer'),['action' => 'delete', $competenceIntermediaire->id, "referential_id" => $referential_id,
-                            "capacite_id" => $capacite_id],
-                            ['confirm' => __(
-                                'Etes vous sur de vouloirs supprimer: {0}?', $competenceIntermediaire->fullName
-                            )]
-                        )?>
-                    </p>
+                    <!-- Modal edit -->
+                    <?php $this->set('competencesIntermediaire',$competencesIntermediaire); ?>
+                    <?php $this->set('action','edit'); ?>
+                    <?php $this->set('button','Editer'); ?>
+                    <?php $this->set('buttonColor','primary'); ?>
+                    <?php $this->set('icon','<i class="fa-solid fa-cog" aria-hidden="true">'); ?>
+                    <?php echo $this->element('/Modals/Edit'); ?>
+                    <!-- /Modal edit -->
+                    <!-- Button delete -->
+                    <?php $this->set('competencesIntermediaire',$competencesIntermediaire); ?>
+                    <?php $this->set('action','delete'); ?>
+                    <?php $this->set('icon','<i class="fa-solid fa-trash" aria-hidden="true">'); ?>
+                    <?php $this->set('button','Supprimer'); ?>
+                    <?php $this->set('buttonColor','danger'); ?>
+                    <?php echo $this->element('/Modals/Edit'); ?>
+                    <!-- /Button delete -->
                     </td>
                 </tr>
                 <?php endforeach ?>
