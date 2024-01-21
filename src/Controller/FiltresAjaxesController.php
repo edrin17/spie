@@ -56,6 +56,30 @@ class FiltresAjaxesController extends AppController
 		$this->render('filtres_ajaxes');
 	}
 
+	public function chainedCompetencesIntermediaires()
+	{
+		$compsInter = TableRegistry::get('CompetencesIntermediaires');
+
+		$parentId = $_GET['competences_terminale_id'];
+
+
+		$query = $compsInter->find()
+			->contain(['CompetencesTerminales'])
+			->where(['competences_terminale_id' => $parentId])
+			->order([
+				'CompetencesTerminales.numero' => 'ASC',
+				'CompetencesIntermediaires.numero' => 'ASC',
+			]);
+
+		foreach ($query as $competence)
+		{
+			$chainedCompsInter[$competence->id] = $competence->fullName;
+		}
+		$ajaxContent = $chainedCompsInter;
+		$this->set('ajaxContent',$ajaxContent);
+		$this->render('filtres_ajaxes');
+	}
+
 	public function chainedCompsTerms()
 	{
 		$compsTerms = TableRegistry::get('CompetencesTerminales');

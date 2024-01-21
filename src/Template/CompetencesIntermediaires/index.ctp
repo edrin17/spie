@@ -49,7 +49,7 @@
                     <td class="actions">
                     <!-- Affiche des urls/boutons et de leurs actions -->
                     <!-- Modal edit -->
-                    <?php $this->set('competencesIntermediaire',$competencesIntermediaire); ?>
+                    <?php $this->set('object',$competencesIntermediaire); ?>
                     <?php $this->set('action','edit'); ?>
                     <?php $this->set('button','Editer'); ?>
                     <?php $this->set('buttonColor','primary'); ?>
@@ -57,12 +57,12 @@
                     <?php echo $this->element('/Modals/Edit'); ?>
                     <!-- /Modal edit -->
                     <!-- Button delete -->
-                    <?php $this->set('competencesIntermediaire',$competencesIntermediaire); ?>
+                    <?php $this->set('object',$competencesIntermediaire); ?>
                     <?php $this->set('action','delete'); ?>
                     <?php $this->set('icon','<i class="fa-solid fa-trash" aria-hidden="true">'); ?>
                     <?php $this->set('button','Supprimer'); ?>
                     <?php $this->set('buttonColor','danger'); ?>
-                    <?php echo $this->element('/Modals/Edit'); ?>
+                    <?php echo $this->element('/Modals/Delete'); ?>
                     <!-- /Button delete -->
                     </td>
                 </tr>

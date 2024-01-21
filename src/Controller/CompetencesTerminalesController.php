@@ -20,7 +20,7 @@ class CompetencesTerminalesController extends AppController
      *puis les passes en paramètre à l'instance
      * Pagine les competences terminales
      */
-    public function index($filtrCapa = null)
+    public function index()
     {
 		$this->_loadFilters();
 		
@@ -37,33 +37,40 @@ class CompetencesTerminalesController extends AppController
 				'Capacites.numero' => 'ASC',
 				'CompetencesTerminales.numero' => 'ASC'
 			]);
-	    $this->set(compact('listeCompsTerms'));      
+	    $this->set(compact('listeCompsTerms'));
+        
+        //build a new entity to send go params pattern to the create helper in the view
+        $competenceTerm = $this->CompetencesTerminales->newEntity();
+        $this->set(compact('competenceTerm'));
+        
+        //choose action if POST
+        $requestType = $this->request->is(['patch', 'post', 'put', 'delete']);
+        $action = $this->request->getData('action');
+        if ($requestType) {
+           if ($action === 'add') {
+            $this->_add($this->request);
+           }
+           if ($action === 'edit') {
+            $this->_edit($this->request);
+           }
+           if ($action === 'delete') {
+            $this->_delete($this->request);
+           }
+        }
 		
-    }
-
-    /**
-     * Affiche toutes les données d'un utilisateur
-     */
-    public function view($id = null)
-    {  
-        $compTerm = $this->CompetencesTerminales->get($id, ['contain' => ['Capacites']] );					
-        $this->set(compact('compTerm'));// Passe le paramètre 'competence' à la vue.
     }
 
     /**
      * Ajoute un utilisateur
      */
-    public function add()
-    {
-        $this->_loadFilters(); // load filter list with "Référentiels"						
-        $compsTerms = $this->CompetencesTerminales;
+    public function _add()
+    {				
         $competenceTerminale = $this->CompetencesTerminales->newEntity();
-        
         if ($this->request->is('post')) {  //si on a cliqué sur "Ajouter".
-            $competenceTerminale = $compsTerms->patchEntity($competenceTerminale, $this->request->getData());
+            $competenceTerminale = $this->CompetencesTerminales->patchEntity($competenceTerminale, $this->request->getData());
             $referential_id = $this->request->getData('referential_id');
             $capacite_id = $this->request->getData('capacite_id');
-            if ($compsTerms->save($competenceTerminale)) { // si pas d'erreur remontée.
+            if ($this->CompetencesTerminales->save($competenceTerminale)) { // si pas d'erreur remontée.
                 $this->Flash->success(__(
 					"La compétence terminale a été sauvegardéé."
                 ));
@@ -78,20 +85,20 @@ class CompetencesTerminalesController extends AppController
 				));
             }
         }
-        
-        
-        $this->set(compact('competenceTerminale')); 
     }
 
     /**
      * Édite un utilisateur
      */
-    public function edit($id = null)   //Met le paramètre id à null pour éviter un paramètre restant ou hack
+    public function _edit($id = null)   //Met le paramètre id à null pour éviter un paramètre restant ou hack
     {
         
-        $this->_loadFilters(); // load filter list with "Référentiels"
+        //get entity form 'id' param
+        $id = $this->request->getData('entityId');
         $compsTerms = $this->CompetencesTerminales;
-        $competenceTerminale = $compsTerms->get($id);
+        $competenceTerminale = $compsTerms->get($id,['contain'=>['Capacites']]);
+        $referential_id = $competenceTerminale->capacite->referential_id;
+        $capacite_id = $competenceTerminale->capacite_id;
 
         //récupère le contenu de la table capacites en fonction de l'id = a capaciteId
         //$capacites = $compsTerms->Capacites->get($capacites->id, ['contain' => [] ]);
@@ -99,7 +106,7 @@ class CompetencesTerminalesController extends AppController
             $competenceTerminale = $compsTerms->patchEntity($competenceTerminale, $this->request->getData());
             $referential_id = $this->request->getData('referential_id');
             $capacite_id = $this->request->getData('capacite_id');
-            if ($compsTerms->save($$competenceTerminale)) {                  //Sauvegarde les données dans la BDD
+            if ($compsTerms->save($competenceTerminale)) {                  //Sauvegarde les données dans la BDD
                 $this->Flash->success(__('La compétence a été sauvegardé.'));      //Affiche une infobulle
                 return $this->redirect([
                     'action' => 'index',
@@ -110,25 +117,21 @@ class CompetencesTerminalesController extends AppController
                 $this->Flash->error(__('La compétence n\' pas pu être sauvegarder ! Réessayer.')); //Sinon affiche une erreur
             }
         }
-        
-
-        $this->set(compact('competenceTerminale'));
     }
 
     /**
      * Efface un utilisateur
      */
-    public function delete($id = null)      //Met le paramètre id à null pour éviter un paramètre restant ou hack
+    public function _delete($id = null)      //Met le paramètre id à null pour éviter un paramètre restant ou hack
     {
-        $this->_loadFilters(); // load filter list with "Référentiels"
+        //get entity form 'id' param
+        $id = $this->request->getData('entityId');
         $compsTerms = $this->CompetencesTerminales;
-        $this->request->allowMethod(['post', 'delete']); // Autoriste que certains types de requête
-        $referential_id = $this->viewVars['referential_id'];
-        $capacite_id = $this->viewVars['capacite_id'];
-        $compTerm = $compsTerms->get($id);
-        //debug($capacite_id);
-        //die;
-        if ($compsTerms->delete($compTerm)) {
+        $competenceTerminale = $compsTerms->get($id,['contain'=>['Capacites']]);
+        $referential_id = $competenceTerminale->capacite->referential_id;
+        $capacite_id = $competenceTerminale->capacite_id;
+
+        if ($compsTerms->delete($competenceTerminale)) {
             $this->Flash->success(__('La compétence a été supprimé.'));
         } else {
             $this->Flash->error(__('La compétence n\' pas pu être supprimée ! Réessayer.'));

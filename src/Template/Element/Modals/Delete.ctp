@@ -3,12 +3,12 @@
 
 <!-- Rest of your code ... -->
 
-<!-- Modal for <?php echo($action); ?>ing compétence intermédiaire <?php echo($object->id); ?> -->
-<div class="modal fade" id="<?php echo($action.'--'.$object->id); ?>" tabindex="-1" role="dialog" aria-labelledby="<?php echo($action.'--'.$object->id); ?>" aria-hidden="true">
+<!-- Modal for deleting <?php echo($object->id); ?> -->
+<div class="modal fade" id="<?php echo('delete--'.$object->id); ?>" tabindex="-1" role="dialog" aria-labelledby="<?php echo($action.'--'.$object->id); ?>" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="<?php echo($action.'--'.$object->id); ?>Label"><?php echo($button); ?>:<?php echo($object->FullName); ?></h4>
+                <h3> <span class="label label-danger" id="<?php echo($action.'--'.$object->id); ?>">Etes-vous sûr de vouloir supprimer:</span></h3>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -17,14 +17,7 @@
                 <div class="modal-body">
                     <?php echo $this->Form->input('entityId',['type' => 'hidden' , 'value' => $object->id]); ?>
                     <?php echo $this->Form->input('action',['type' => 'hidden' , 'value' => $action]); ?>
-                    <div class="form-group">
-                        <?php echo $this->Form->input('nom',['label' => 'Nom']); ?>
-                        <?php echo $this->Form->input('numero',[
-                            'label' => 'Numéro de la compétence',
-                            'option' => 'number'
-                        ]); ?>
-                   
-                    </div>
+                    <h3><?php echo($object->fullName); ?>?</h3>
                 </div>
                 <div class="modal-footer"><!-- modal-footer -->
                     <button type="button" class="btn btn-default ml-auto" data-dismiss="modal">Fermer</button>
