@@ -99,13 +99,10 @@ class CompetencesTerminalesController extends AppController
         $competenceTerminale = $compsTerms->get($id,['contain'=>['Capacites']]);
         $referential_id = $competenceTerminale->capacite->referential_id;
         $capacite_id = $competenceTerminale->capacite_id;
-
         //récupère le contenu de la table capacites en fonction de l'id = a capaciteId
         //$capacites = $compsTerms->Capacites->get($capacites->id, ['contain' => [] ]);
         if ($this->request->is(['patch', 'post', 'put'])) {                        // Vérifie le type de requête
             $competenceTerminale = $compsTerms->patchEntity($competenceTerminale, $this->request->getData());
-            $referential_id = $this->request->getData('referential_id');
-            $capacite_id = $this->request->getData('capacite_id');
             if ($compsTerms->save($competenceTerminale)) {                  //Sauvegarde les données dans la BDD
                 $this->Flash->success(__('La compétence a été sauvegardé.'));      //Affiche une infobulle
                 return $this->redirect([
