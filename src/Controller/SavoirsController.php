@@ -11,69 +11,109 @@ use Cake\ORM\TableRegistry;
 class SavoirsController extends AppController
 {
     public function initialize()
-    {
-        parent::initialize();
-        $this->viewBuilder()->setLayout('default');
-    }
-
+	{
+		parent::initialize();
+		$this->viewBuilder()->setLayout('default');
+	}
+    /**
+     * Liste les Savoirs
+     */
     public function index()
     {
         $this->_loadFilters();
         $referential_id = $this->viewVars['referential_id'];
-
         $savoirs = $this->Savoirs->find()
-            ->contain(['Referentials'])
             ->where(['referential_id' => $referential_id])
-            ->order(['num' => 'ASC','Savoirs.nom' => 'ASC']);
-        $this->set(compact('savoirs'));
-    }
-    public function add()
-    {
-        $this->_loadFilters();
+            ->order(['numero' => 'ASC']);
+        $this->set(compact('savoirs','referential_id'));
+        
+        //build a new entity to send go params pattern to the create helper in the view
         $savoir = $this->Savoirs->newEntity();
-        if ($this->request->is('post')) {
+        $this->set(compact('savoir'));
+        
+        //choose action if POST
+        $requestType = $this->request->is(['patch', 'post', 'put', 'delete']);
+        $action = $this->request->getData('action');
+        if ($requestType) {
+           if ($action === 'add') {
+            $this->_add($this->request);
+           }
+           if ($action === 'edit') {
+            $this->_edit($this->request);
+           }
+           if ($action === 'delete') {
+            $this->_delete($this->request);
+           }
+        }
+    }
+
+
+    /**
+     * Ajoute un utilisateur
+     */
+    public function _add()
+    {
+        $savoir = $this->Savoirs->newEntity();
+        $savoir = $this->Savoirs->patchEntity($savoir, $this->request->getData());
+        $referential_id = $this->request->getData('referential_id');                                   // crée une nouvelle entité dans $savoir
+        if ($this->request->is('post')) {                                           //si requête de type post
             $savoir = $this->Savoirs->patchEntity($savoir, $this->request->getData());
-            if ($this->Savoirs->save($savoir)) {
-                $this->Flash->success(__("Le savoir a été sauvegardé."));
-                return $this->redirect(['action' => 'index']);
+            if ($this->Savoirs->save($savoir)) {                                 //Met le champ 'id' de la base avec UUID CHAR(36)
+                $this->Flash->success(__("L'activité a été sauvegardé."));      //Affiche une infobulle
+                return $this->redirect([
+                    'action' => 'index',
+                    'referential_id' => $referential_id,
+                    
+                ]);                      //Déclenche la fonction 'index' du controlleur
             } else {
-                $this->Flash->error(__("Le savoir n'a pas pu être sauvegardé ! Réessayer.")); //Affiche une infobulle
+                $this->Flash->error(__("L'activité n\'a pas pu être sauvegardé ! Réessayer.")); //Affiche une infobulle
             }
         }
-        $this->set(compact('savoir'));
     }
 
-    public function edit($id = null)
+    /**
+     * Édite un utilisateur
+     */
+    public function _edit($id = null)                                        //Met le paramètre id à null pour éviter un paramètre restant ou hack
     {
-        $this->_loadFilters();
-        $savoir = $this->Savoirs->get($id);
-
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $data = $this->request->getData();
-            $savoir = $this->Savoirs->patchEntity($savoir, $data);
-            //debug($savoir);die;
-            if ($this->Savoirs->save($savoir)) {                  //Sauvegarde les données dans la BDD
-                $this->Flash->success(__('Le savoir a été sauvegardé.'));      //Affiche une infobulle
-                return $this->redirect(['action' => 'index']);                      //Déclenche la fonction 'index' du controlleur
+        //get entity form 'id' param
+        $id = $this->request->getData('entityId');
+        $savoir = $this->Savoirs->get($id,[
+            'contain'=>[]
+        ]);
+        $referential_id = $savoir->referential_id;
+        if ($this->request->is(['patch', 'post', 'put'])) {                         // Vérifie le type de requête
+            $savoir = $this->Savoirs->patchEntity($savoir, $this->request->getData());
+            if ($this->Savoirs->save($savoir)) {                                 //Sauvegarde les données dans la BDD
+                $this->Flash->success(__("L'activité a été sauvegardé."));      //Affiche une infobulle
+                return $this->redirect([
+                    'action' => 'index',
+                    'referential_id' => $referential_id,
+                    
+                ]);
             } else {
-                $this->Flash->error(__('Le savoir n\'a pas pu être sauvegardé ! Réessayer.')); //Sinon affiche une erreur
+                $this->Flash->error(__("L'activité n\'a pas pu être sauvegardé ! Réessayer."));
             }
         }
-
-        $this->set(compact('savoir'));
     }
 
-    public function delete($id = null)      //Met le paramètre id à null pour éviter un paramètre restant ou hack
+    /**
+     * Efface un utilisateur
+     */
+    public function _delete($id = null)      //Met le paramètre id à null pour éviter un paramètre restant ou hack
     {
-        $this->request->allowMethod(['post', 'delete']); // Autoriste que certains types de requête
+        //get entity form 'id' param
+        $id = $this->request->getData('entityId');
         $savoir = $this->Savoirs->get($id);
+        $referential_id = $savoir->referential_id;
         if ($this->Savoirs->delete($savoir)) {
-            $this->Flash->success(__("Le savoir a été supprimé."));
+            $this->Flash->success(__('La capacité a été supprimé.'));
         } else {
-            $this->Flash->error(__("Le savoir n'a pas pu être supprimé ! Réessayer."));
+            $this->Flash->error(__('La capacité n\' pas pu être supprimer ! Réessayer.'));
         }
-        return $this->redirect(['action' => 'index']);
+        return $this->redirect(['action' => 'index','referential_id' => $referential_id]);
     }
+ 
 
     private function _loadFilters($resquest = null)
     {

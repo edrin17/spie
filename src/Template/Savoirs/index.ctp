@@ -1,16 +1,19 @@
-<?php $this->assign('title', 'Savoirs'); ?>  <!-- Customise le titre de la page -->
+<?php
+    $this->assign('title', 'Savoir');
+    $this->set('modalTitle','Ajouter un nouveau savoir');
+?> 
+<?php echo $this->Form->create($savoir); ?>
 <div class="row">
-    <div class="col-lg-2">
-        <h1>Savoirs</h1>
+    <div class="col-lg-12">
+        <table class="table">
+    <h1>Savoirs</h1>
+    <div class="col-lg-1 col-lg">
+        <br>
+        <div class="col-lg-1 col-lg">
+            <?php echo $this->element('/Modals/NewEntry'); ?>
+        </div>
     </div>
-    <div class="col-lg-3 col-lg-offset-2">
-        <?php echo $this->Html->link(
-            'Ajouter un savoir',
-            ['action' => 'add', '?' => ['referential_id' => $referential_id]],
-            ['class' => "btn btn-info", 'role' => 'button']
-        ); ?>
-    </div>
-    <div class="col-lg-3 ">
+    <div class="col-lg-3 col-lg-offset-8">
         <?php echo $this->Form->input('referential_id', [
             'label' => 'Filtrer par référentiel:',
             'onchange' => 'filtreSavoirsByReferentials()',
@@ -18,40 +21,39 @@
             'default' => $referential_id
         ]); ?>
     </div>
-</div>
-<div class="row">
-    <div class="col-lg-12">
-    <table id ="tableau" class="table table-hover">
+    <!-- Affiche le paginator -->
         <thead>
             <tr>
-                <th> Nom </th>
-                <th> Référentiel</th>
-                <th class="actions">Actions</th>
+                <th>Nom du savoir</th>
+                <th class="actions"><h3><?php echo __('Actions'); ?></th>
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($savoirs as $savoir): ?> <!--Affiche le contenu de 'savoirs'  -->
-            <tr>
-                <td><?php echo h($savoir->fullName) ?></td>
-                <td><?php echo h($savoir->referential->name) ?></td>
-                <td class="actions">
-                    <div class="btn-group" role="group">
-                        <?php echo $this->Html->link('<i class="fa-solid fa-cog btn btn-default" aria-hidden="true"></i>', [
-                            'controller' => 'Savoirs',
-                            'action' => 'edit',
-                            $savoir->id,
-                        ],['role'=>'button', 'escape' => false]) ?>
-                        <?php echo $this->Form->postButton(
-                            '<i class="fa-solid fa-trash" aria-hidden="true"></i>',
-                            ['controller' => 'savoirs', 'action' => 'delete', $savoir->id, '?' => [
-                                'savoir' => $savoir->savoir_id]],
-                            ['confirm' => 'Etes-vous sûr de voulour supprimer le TP: ' . $savoir->name . '?', 'escape' => false]
-                        ); ?>
-                    </div>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
+            <?php foreach ($savoirs as $savoir): ?> <!--Affiche le contenu de 'activites'  -->
+                <tr> 
+                    <td><?= h($savoir->fullName) ?></td> <!-- Ici on ajoute C. pour avoir une compétence de la forme C.3.2.1 -->
+                    <td class="actions">
+                    <!-- Affiche des urls/boutons et de leurs actions -->
+                    <!-- Modal edit -->
+                    <?php $this->set('object',$savoir); ?>
+                    <?php $this->set('action','edit'); ?>
+                    <?php $this->set('button','Editer'); ?>
+                    <?php $this->set('buttonColor','primary'); ?>
+                    <?php $this->set('icon','<i class="fa-solid fa-cog" aria-hidden="true">'); ?>
+                    <?php echo $this->element('/Modals/Edit'); ?>
+                    <!-- /Modal edit -->
+                    <!-- Button delete -->
+                    <?php $this->set('object',$savoir); ?>
+                    <?php $this->set('action','delete'); ?>
+                    <?php $this->set('icon','<i class="fa-solid fa-trash" aria-hidden="true">'); ?>
+                    <?php $this->set('button','Supprimer'); ?>
+                    <?php $this->set('buttonColor','danger'); ?>
+                    <?php echo $this->element('/Modals/Delete'); ?>
+                    <!-- /Button delete -->
+                    </td>
+                </tr>
+                <?php endforeach ?>
+        </tbody>       
     </table>
 </div>
 <script>
@@ -59,7 +61,9 @@
 function filtreSavoirsByReferentials()
 {
     var id = document.getElementById("referential-id").value;
-    var url = "<?php echo $this->Url->build(['controller'=>'Savoirs','action'=>'index']) ?>" + "/?referential_id=" + id
+    var url = "<?php echo $this->Url->build([
+        'controller'=>'Savoirs','action'=>'index']) ?>" 
+        + "/?referential_id=" + id
 	window.location = url;
 }
 

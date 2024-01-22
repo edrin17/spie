@@ -16,8 +16,8 @@ class Savoir extends Entity
 
 	protected function _getFullName()
 	{ 
-		$fullName = 'S.'. $this->_properties['num']. ' - '.
-			$this->_properties['name'];
+		$fullName = 'S.'. $this->_properties['numero']. ' - '.
+			$this->_properties['nom'];
 		return $fullName;
 	}
 }
