@@ -12,7 +12,7 @@ use Cake\Validation\Validator;
  *
  * @property \Cake\ORM\Association\HasMany $Bookmarks
  */
-class TaxosTable extends Table
+class NiveauxTaxosTable extends Table
 {
 
     /**
@@ -25,7 +25,7 @@ class TaxosTable extends Table
     {
         parent::initialize($config);
 	        	        
-	    $this->hasMany('Chapitres');
+	    $this->hasMany('SousChapitres');
     }
 
 }

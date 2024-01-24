@@ -16,8 +16,10 @@ class SousChapitre extends Entity
 		
 	protected function _getFullName()
 	{ 
-		$fullName = 'S.'. $this->chapitre->numero. '.'. $this->_properties['numero']. ' - '.
-			$this->_properties['nom'];
+		$fullName = 'S.'. $this->savoir->numero.
+			'.'. $this->chapitre->numero.
+			'.'. $this->_properties['numero'].
+			' - '.$this->_properties['nom'];
 		return $fullName;
 	}
 }

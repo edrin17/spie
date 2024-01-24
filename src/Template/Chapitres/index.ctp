@@ -1,6 +1,6 @@
 <?php 
-    $this->assign('title', 'Liste des compétences terminales');
-    $this->set('modalTitle','Ajouter une nouvelle compétence intermédiaire');
+    $this->assign('title', 'Liste des Chapitres');
+    $this->set('modalTitle','Ajouter un nouveau chapitre');
 ?>
 <?php echo $this->Form->create($chapitre); ?>
 <div class="row">

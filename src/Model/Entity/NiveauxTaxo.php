@@ -7,9 +7,9 @@ use Cake\ORM\Entity;
  */
 class NiveauxTaxo extends Entity
 {
-	protected function _getNumeNom()
+	protected function _getFullName()
 	{
-		return $this->_properties['numero'].' - '.
-			$this->_properties['nom'];
+		$fullName = $this->_properties['numero']. ' - '. $this->_properties['nom'];
+		return $fullName;
 	}
 }

@@ -7,7 +7,7 @@ use Cake\ORM\Entity;
  */
 class NiveauxCompetence extends Entity
 {
-	protected function _getfullName()
+	protected function _getFullName()
 	{
 		return $this->_properties['numero'].' - '.
 			$this->_properties['nom'];

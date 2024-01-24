@@ -16,7 +16,9 @@ class Chapitre extends Entity
 	 */
 	protected function _getFullName()
 	{ 
-		$fullName = 'S.'. $this->savoir->numero. '.'. $this->_properties['numero'];
+		$fullName = 'S.'. $this->savoir->numero.
+			'.'. $this->_properties['numero'].
+			' - '.$this->_properties['nom'];
 		return $fullName;
 	}
 }

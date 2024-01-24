@@ -4,22 +4,28 @@
 			<span class="caret"></span></a>
 			<ul class="dropdown-menu">
                 <li>
-                    <?= $this->Html->link(__('Savoirs'),[
+                    <?php echo $this->Html->link(__('Savoirs'),[
                         'controller' => 'Savoirs',
                         'action' => 'index'
                     ]); ?>
                 </li>
                 <li>
-                    <?= $this->Html->link(__('Chapitres'),[
+                    <?php echo $this->Html->link(__('Chapitres'),[
                         'controller' => 'Chapitres',
+                        'action' => 'index'
+                    ]); ?>
+                </li> 
+                <li>
+                    <?php echo $this->Html->link(__('Sous Chapitres'),[
+                        'controller' => 'SousChapitres',
                         'action' => 'index'
                     ]); ?>
                 </li>               
                 <li role="separator" class="divider"></li>
                 
                 <li>
-                    <?= $this->Html->link(__('Niveaux Taxonomiques'), [
-                        'controller' => 'Taxos',
+                    <?php echo $this->Html->link(__('Niveaux Taxonomiques'), [
+                        'controller' => 'NiveauxTaxos',
                         'action' => 'index'
                     ]); ?>
                 </li>	
