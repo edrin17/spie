@@ -55,6 +55,27 @@ class FiltresAjaxesController extends AppController
 		$this->render('filtres_ajaxes');
 	}
 
+	public function chainedSavoirs()
+	{
+		$savoirs = TableRegistry::get('Savoirs');
+
+		$referential_id = $_GET['referential_id'];
+
+
+		$query = $savoirs->find()
+			->contain(['Referentials'])
+			->where(['referential_id' => $referential_id])
+			->order(['Savoirs.numero' => 'ASC']);
+
+		foreach ($query as $savoirs)
+		{
+			$chainedActivites[$savoirs->id] = $savoirs->fullName;
+		}
+		$ajaxContent = $chainedActivites;
+		$this->set('ajaxContent',$ajaxContent);
+		$this->render('filtres_ajaxes');
+	}
+
 	public function chainedCompetencesTerminales()
 	{
 		$compsTerms = TableRegistry::get('CompetencesTerminales');
