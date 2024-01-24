@@ -1,68 +1,106 @@
-<?php $this->assign('title', 'Chapitres'); ?>  <!-- Customise le titre de la page -->
+<?php 
+    $this->assign('title', 'Liste des compétences terminales');
+    $this->set('modalTitle','Ajouter une nouvelle compétence intermédiaire');
+?>
+<?php echo $this->Form->create($chapitre); ?>
 <div class="row">
-    <div class="col-lg-2">
-        <h1>Chapitres</h1>
-    </div>
-    <div class="col-lg-1 col-lg-offset-3">
-        <br>
-        <?php echo $this->Html->link('Ajouter un chapitre', ['action' => 'add',$savoir_id],
-            ['class' => "btn btn-info",'type' => 'button' ]
-        ); ?>
-    </div>
-    <div class="col-lg-5 col-lg-offset-1">
-        <?php echo $this->Form->input('savoir_id', [
-            'label' => 'Filtrer par savoir:',
-            'onchange' => 'filtreChapitresBySavoirs()',
-            'options' => $savoirs,
-            'default' => $savoir_id
-        ]); ?>
+    <div class="col-lg-12">       
+        <h1>Compétences terminales</h1>
+        <div class="col-lg-1 col-lg">
+            <br>
+            <div class="col-lg-1 col-lg">
+            <?php echo $this->element('/Modals/NewEntry'); ?>
+        </div>
+        </div>
+        <div class="col-lg-3 col-lg-offset-8">
+            <?php echo $this->Form->input('referential_id', [
+                'label' => 'Filtrer par référentiel:',
+                'onchange' => 'filtersavoirsByReferential()',
+                'options' => $referentials,
+                'default' => $referential_id
+            ]); ?>
+        </div>
+        <div class="col-lg-10 ">
+            <?php echo $this->Form->input('savoir_id', [
+                'label' => 'Filtrer par savoirs:',
+                'onchange' => 'filtrechapitreBySavoirs()',
+                'options' => $savoirs,
+                'default' => $savoir_id
+            ]); ?>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th> Compétences Terminale </th>
+                    <th class="actions">
+                        <h3><?= __('Actions') ?></h3>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($listeChapitres as $listeChapitre): ?> <!--Affiche le contenu de 'chapitre'  -->
+                <tr> 
+                    <td><?= h($listeChapitre->fullName) ?></td> <!-- Ici on ajoute C. pour avoir une compétence de la forme C.3.2.1 -->
+                    <td class="actions">
+                    <!-- Affiche des urls/boutons et de leurs actions -->
+                    <!-- Modal edit -->
+                    <?php $this->set('object',$listeChapitre); ?>
+                    <?php $this->set('action','edit'); ?>
+                    <?php $this->set('button','Editer'); ?>
+                    <?php $this->set('buttonColor','primary'); ?>
+                    <?php $this->set('icon','<i class="fa-solid fa-cog" aria-hidden="true">'); ?>
+                    <?php echo $this->element('/Modals/Edit'); ?>
+                    <!-- /Modal edit -->
+                    <!-- Button delete -->
+                    <?php $this->set('object',$listeChapitre); ?>
+                    <?php $this->set('action','delete'); ?>
+                    <?php $this->set('icon','<i class="fa-solid fa-trash" aria-hidden="true">'); ?>
+                    <?php $this->set('button','Supprimer'); ?>
+                    <?php $this->set('buttonColor','danger'); ?>
+                    <?php echo $this->element('/Modals/Delete'); ?>
+                    <!-- /Button delete -->
+                    </td>
+                </tr>
+                <?php endforeach ?>
+            </tbody>       
+        </table>
     </div>
 </div>
-<div class="row">
-    <div class="col-lg-12">
-    <table id ="tableau" class="table table-hover">
-        <thead>
-            <tr>
-                <th> Chapitre </th>
-                <th class="actions">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($chapitres as $chapitre): ?> <!--Affiche le contenu de 'chapitres'  -->
-            <tr>
-                <td><?php echo $chapitre->num. '.'. h($chapitre->name) ?></td>
-                <td class="actions">
-                    <div class="btn-group" role="group">
-                        <?php echo $this->Html->link('<i class="fa-solid fa-cog btn btn-default" aria-hidden="true"></i>', [
-                            'controller' => 'Chapitres',
-                            'action' => 'edit',
-                            $chapitre->id,
-                        ],['role'=>'button', 'escape' => false]) ?>
-                        <div class="btn-group" role="group">
-                        <?php echo $this->Html->link('<i class="fa-solid fa-plus btn btn-default" aria-hidden="true"></i>', [
-                            'controller' => 'Chapitres',
-                            'action' => 'addChild',
-                            '?' =>['chapitre_id' => $chapitre->id,'savoir_id' => $savoir_id]
-                        ],['role'=>'button', 'escape' => false]) ?>
-                        <?php echo $this->Form->postButton('<i class="fa-solid fa-trash" aria-hidden="true"></i>',[
-                            'controller' => 'chapitres', 'action' => 'delete', $chapitre->id, '?' => [
-                                'chapitre' => $chapitre->chapitre_id]],
-                            ['confirm' => 'Etes-vous sûr de voulour supprimer le chapitre: ' . $chapitre->name . '?', 'escape' => false]
-                        ); ?>
-                    </div>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-</div>
-<script>
+<script type="text/javascript">
 
-function filtreChapitresBySavoirs()
-{
-    var id = document.getElementById("savoir-id").value;
-    var url = "<?php echo $this->Url->build(['controller'=>'Chapitres','action'=>'index']) ?>" + "/?savoir_id=" + id
-	window.location = url;
-}
+    function filtrechapitreBySavoirs() {
+        var referential_id = document.getElementById("referential-id").value;
+        var savoir_id = document.getElementById("savoir-id").value;
+        var url = "<?php echo $this->Url->build([
+            'controller'=>'Chapitres','action'=>'index']) ?>" 
+            + "?referential_id=" + referential_id + "&savoir_id=" + savoir_id
+        window.location = url; 
+    }
 
+    function filtersavoirsByReferential() {
+    var referential_id = document.getElementById("referential-id").value;
+
+    // Generate the URL using a script block
+    var url = "<?php echo $this->Url->build([
+            'controller' => 'FiltresAjaxes',
+            'action' => 'chainedSavoirs'
+        ]); ?>/?referential_id=" + referential_id;
+    
+    // Perform synchronous AJAX request using $.ajax
+    var response;
+    $.ajax({
+        url: url,
+        async: false, // Make the request synchronous
+        type: "GET",
+        success: function(data) {
+            response = data;
+        }
+    });
+
+    // Update the dropdown with the response
+    $('#savoir-id').html(response);
+
+    // Call the next function in the sequence
+    filtrechapitreBySavoirs();
+    }
 </script>

@@ -24,9 +24,12 @@ class ChapitresTable extends Table
     public function initialize(array $config)
     {
         parent::initialize($config);
+        $this->setDisplayField('fullName');
+        //$this->addBehavior('Timestamp');
+        $this->hasMany('SousChapitres', [
+            'foreignKey' => 'chapitre_id'
+        ]);
 
-        $this->addBehavior('Tree');
-
-        $this->belongsTo('Taxos');
+        $this->belongsTo('Savoirs');
     }
 }
