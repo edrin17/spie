@@ -177,6 +177,7 @@ class ChapitresController extends AppController
         if ($savoir_id =='') {
             $savoir_id = $savoirsTbl->find()
             ->order(['numero' => 'ASC'])
+            ->where(['referential_id' => $referential_id])
             ->first()
             ->id;
         }

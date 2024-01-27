@@ -178,7 +178,7 @@ class FiltresAjaxesController extends AppController
 		$this->render('filtres_ajaxes');
 	}
 
-	public function chainedSousChaps()
+	public function chainedSousChapitres()
 	{
 		$sousChaps = TableRegistry::get('SousChapitres');
 
@@ -194,14 +194,14 @@ class FiltresAjaxesController extends AppController
 
 		if ($optionToutVoir)
 		{
-			$chainedSousChaps['tout'] = "Tout voir";
+			$chainedSousChapitres['tout'] = "Tout voir";
 		}
 
 		foreach ($query as $sousChap)
 		{
-			$chainedSousChaps[$sousChap->id] = $sousChap->fullName;
+			$chainedSousChapitres[$sousChap->id] = $sousChap->fullName;
 		}
-		$ajaxContent = $chainedSousChaps;
+		$ajaxContent = $chainedSousChapitres;
 		$this->set('ajaxContent',$ajaxContent);
 		$this->render('filtres_ajaxes');
 	}

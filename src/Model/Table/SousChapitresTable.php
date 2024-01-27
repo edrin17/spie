@@ -30,18 +30,16 @@ class SousChapitresTable extends Table
             'joinType' => 'INNER'
         ]);
 
-        $this->belongsTo('NiveauTaxos', [
+        $this->belongsTo('NiveauxTaxos', [
             'foreignKey' => 'niveaux_taxo_id',
             'joinType' => 'INNER'
-        ]);
-        
-        $this->hasMany('SousSousChapitres', [
-            'foreignKey' => 'sous_chapitre_id'
         ]);
         
         $this->hasMany('CompetencesSavoirs', [
             'foreignKey' => 'sous_chapitre_id'
         ]);
+        
+        //$this->setDisplayField('fullName');
         
     }
 

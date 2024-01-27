@@ -5,7 +5,7 @@
 <?php echo $this->Form->create($chapitre); ?>
 <div class="row">
     <div class="col-lg-12">       
-        <h1>Compétences terminales</h1>
+        <h1>Chapitres</h1>
         <div class="col-lg-1 col-lg">
             <br>
             <div class="col-lg-1 col-lg">
