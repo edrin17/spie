@@ -122,6 +122,30 @@ class FiltresAjaxesController extends AppController
 		$this->render('filtres_ajaxes');
 	}
 
+	public function chainedChapitres()
+	{
+		$chapitres = TableRegistry::get('Chapitres');
+
+		$parentId = $_GET['savoir_id'];
+
+
+		$query = $chapitres->find()
+			->contain(['Savoirs'])
+			->where(['savoir_id' => $parentId])
+			->order([
+				'Savoirs.numero' => 'ASC',
+				'Chapitres.numero' => 'ASC',
+			]);
+
+		foreach ($query as $competence)
+		{
+			$chainedChapitres[$competence->id] = $competence->fullName;
+		}
+		$ajaxContent = $chainedChapitres;
+		$this->set('ajaxContent',$ajaxContent);
+		$this->render('filtres_ajaxes');
+	}
+
 	public function chainedCompsTerms()
 	{
 		$compsTerms = TableRegistry::get('CompetencesTerminales');

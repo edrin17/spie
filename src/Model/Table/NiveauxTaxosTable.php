@@ -26,6 +26,7 @@ class NiveauxTaxosTable extends Table
         parent::initialize($config);
 	        	        
 	    $this->hasMany('SousChapitres');
+        $this->setDisplayField('fullName');
     }
 
 }

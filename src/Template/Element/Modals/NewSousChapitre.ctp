@@ -15,12 +15,12 @@
             </div>
                 <div class="modal-body">
                     <div class="form-group">
-                    <?php echo $this->Form->input('nom',['label' => 'Nom']); ?>
+                    <?php echo $this->Form->input('nom',['label' => 'Nom du sous-chapitre']); ?>
                     <?php echo $this->Form->input('numero',[
-                        'label' => 'Numéro de la compétence',
+                        'label' => 'Numéro du sous-chapitre',
                         'option' => 'number'
                     ]); ?>
-                    <?php echo $this->Form->input('niveaux_taxos_id', [
+                    <?php echo $this->Form->input('niveaux_taxo_id', [
                         'label' => "Niveau taxonomique",
                         'options' => $niveauxTaxos
                     ]); ?>

@@ -26,14 +26,13 @@ class SousChapitresController extends AppController
 		$referential_id = $this->viewVars['referential_id'];
         $savoir_id = $this->viewVars['savoir_id'];
         $chapitre_id = $this->viewVars['chapitre_id'];
-        //debug($tableau);
         $sousChapitres = $this->SousChapitres->find()
 									->contain(['Chapitres.Savoirs.Referentials','NiveauxTaxos'])
                                     ->where(['chapitre_id' => $chapitre_id])
 									->order(['Savoirs.numero' => 'ASC',
 										'Chapitres.numero' => 'ASC',
 										'SousChapitres.numero' => 'ASC']);
-
+        //debug($sousChapitres->toArray());
         $this->set(compact('sousChapitres'));
         
         //build a new entity to send go params pattern to the create helper in the view
@@ -216,7 +215,7 @@ class SousChapitresController extends AppController
 
         //chargement de la liste des capacités selon le référentiel
         $niveauxTaxosTbl = TableRegistry::get('NiveauxTaxos');
-        $niveauxTaxos = $niveauxTaxosTbl->find()
+        $niveauxTaxos = $niveauxTaxosTbl->find('list')
             ->order(['numero' => 'ASC']);
         
         $this->set(compact( //passage des variables à la vue

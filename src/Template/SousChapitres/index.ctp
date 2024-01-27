@@ -6,7 +6,7 @@
 <?php echo $this->Form->create($sousChapitre); ?>
 <div class="row">
     <div class="col-lg-12">       
-        <h1>Sous chapitres</h1>
+        <h1>Sous-chapitres</h1>
         <div class="col-lg-1 col-lg">
             <?php echo $this->element('/Modals/NewSousChapitre'); ?>
         </div>
@@ -37,7 +37,7 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th> Sous Chapitres </th>
+                    <th> Sous-Chapitres </th>
                     <th class="actions">
                         <h3><?= __('Actions') ?></h3>
                     </th>
@@ -95,7 +95,7 @@
         // Generate the URL using a script block
         var url = "<?php echo $this->Url->build([
                 'controller' => 'FiltresAjaxes',
-                'action' => 'chainedSavoirs'
+                'action' => 'chainedChapitres'
             ]); ?>/?referential_id=" + referential_id + "&savoir_id=" + savoir_id;
 
         // Perform synchronous AJAX request using $.ajax
@@ -110,7 +110,7 @@
         });
 
         // Update the dropdown with the response
-        $('#competences-terminale-id').html(response);
+        $('#chapitre-id').html(response);
 
         // Call the next function in the sequence
         filtreSousChapitreByChapitre();

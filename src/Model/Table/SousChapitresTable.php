@@ -39,7 +39,7 @@ class SousChapitresTable extends Table
             'foreignKey' => 'sous_chapitre_id'
         ]);
         
-        //$this->setDisplayField('fullName');
+        $this->setDisplayField('fullName');
         
     }
 
