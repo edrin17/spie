@@ -142,7 +142,9 @@ class TravauxPratiquesObjectifsPedasController extends AppController
      */
     public function view()
     {
+        $this->_loadFilters();
         $spe = 0;
+        $referential_id = $this->viewVars['referential_id'];
         if ($this->request->getQuery() !== null){
             $spe = $this->request->getQuery('spe');
         }
@@ -169,19 +171,21 @@ class TravauxPratiquesObjectifsPedasController extends AppController
                 'ObjectifsPedas.NiveauxCompetences',
                 'ObjectifsPedas.TravauxPratiques.Rotations.Periodes',
 			])
+            ->where(['Capacites.referential_id' => $referential_id])
 			->order(['Capacites.numero' => 'ASC',
 				'CompetencesTerminales.numero' => 'ASC',
 				'CompetencesIntermediaires.numero' => 'ASC',
             ]);
 
         /*
-         * Création du tableau:
+         * Création du tableau: 
          * Pour chaque compétences Inter ET pour chaque colonne (nbColonnes)
          * on itère les Obj Pedas contenus dans la compétence
          * si le "numero" (son niveau d'acquisition) de la compétence correspond au n° de colonne
          * on stocke la valeur sinon on stocke ""
          * @return: tableau[$ligne][$numColonne]["nom" => $nom, $contenu[]]
          */
+        $progression_id = $this->viewVars['progression_id'];
         foreach ($listCompsInters as $comp) {
             $listMicroComps = $comp->objectifs_pedas;
             $nomComp = $comp->fullName;
@@ -208,9 +212,11 @@ class TravauxPratiquesObjectifsPedasController extends AppController
                     //on ajoute remplace la clé de chaque TP par fullName contaténer avec son ID
                     if (!empty($listTps)) {
                         foreach ($listTps as $tp) {
-                            if ($tp->specifique == $spe) {
-                                $nbTps ++;
-                                $intermediateTable[$tp->fullName.'-'.$tp->id] = $tp;
+                            if (isset($tp->rotation->periode)) {
+                                if ($tp->rotation->periode->progression_id == $progression_id) {
+                                    $nbTps ++;
+                                    $intermediateTable[$tp->fullName.'-'.$tp->id] = $tp;
+                                }
                             }
                         }
                         if ($nbTps > 0){ //on regarde que la liste de Tp ne soir pas vide
@@ -285,5 +291,50 @@ class TravauxPratiquesObjectifsPedasController extends AppController
 
         $this->set(compact('tableau','tableHeader','nbColonnes','spe'));
 
+    }
+
+    private function _loadFilters($resquest = null)
+    {
+        //chargement de la liste des référentiels
+        $referentialsTbl = TableRegistry::get('Referentials');
+        $referentials = $referentialsTbl->find('list')
+            ->order(['name' => 'ASC']);
+        
+        //récup du filtre existant dans la requête
+        $referential_id = $this->request->getQuery('referential_id');
+
+        //si requête vide slection du premier de la liste
+        if ($referential_id =='') {
+            $referential_id = $referentialsTbl->find()
+            ->order(['name' => 'ASC'])
+            ->first()
+            ->id;
+        }
+
+        $this->set(compact( //passage des variables à la vue
+            'referentials', 'referential_id'
+        ));
+
+        //chargement de la liste des capacités selon le référentiel
+        $progressionsTbl = TableRegistry::get('Progressions');
+        $progressions = $progressionsTbl->find('list')
+            ->where(['referential_id' => $referential_id])
+            ->order(['nom' => 'ASC']);
+        
+        //get id from request
+        $progression_id = $this->request->getQuery('progression_id');
+
+        //if request empty get first in the list
+        if ($progression_id =='') {
+            $progression_id = $progressionsTbl->find()
+            ->where(['referential_id' => $referential_id])
+            ->order(['nom' => 'ASC'])
+            ->first()
+            ->id;
+        }
+
+        $this->set(compact( //passage des variables à la vue
+            'progressions', 'progression_id'
+        ));
     }
 }

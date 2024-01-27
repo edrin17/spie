@@ -9,19 +9,26 @@ if ($spe) {
     $html['color'] = 'btn-warning';
 }
 ?>
+
 <div class="row">
-    <div class="col-md-8">
-        <?php echo $this->Html->link($html['label'],
-            ['action' => 'view',1,
-                '?' => [
-                    //'LVL1' => $selectedLVL1,
-                    //'LVL2' => $selectedLVL2->id,
-                    'spe' => $html['spe'],
-                    //'options' => $options,
-                ]
-            ],['class' => "btn ".$html['color'],'role' => 'button' ]); ?>
+    <div class="col-lg-3">
+        <?php echo $this->Form->input('referential_id', [
+            'label' => 'Filtrer par référentiel:',
+            'onchange' => 'filtreByReferential()',
+            'options' => $referentials,
+            'default' => $referential_id
+        ]); ?>
     </div>
+    <div class="col-lg-3 col-lg-offset-6">
+        <?php echo $this->Form->input('progression_id', [
+            'label' => 'Filtrer par progression:',
+            'onchange' => 'filtreByProgression()',
+            'options' => $progressions,
+            'default' => $progression_id
+        ]); ?>
+    </div>  
 </div>
+
 
 <table class = 'table table-bordered table-hover'>
     <thead>
@@ -48,4 +55,42 @@ if ($spe) {
 <script>
 //active l'uilisation de code html dans le tooltip
 $("[rel=popover").popover({html:true});
+
+//filter table on click
+function filtreByProgression() {
+    var referential_id = document.getElementById("referential-id").value;
+    var progression_id = document.getElementById("progression-id").value;
+    var url = "<?php echo $this->Url->build([
+        'controller'=>'TravauxPratiquesObjectifsPedas','action'=>'view']) ?>" 
+        + "?referential_id=" + referential_id + "&progression_id=" + progression_id;
+    window.location = url;
+}
+
+function filtreByReferential() {
+        var referential_id = document.getElementById("referential-id").value;
+
+        // Generate the URL using a script block
+        var url = "<?php echo $this->Url->build([
+                'controller' => 'FiltresAjaxes',
+                'action' => 'chainedProgressionsByReferential'
+            ]); ?>/?referential_id=" + referential_id;
+        
+        // Perform synchronous AJAX request using $.ajax
+        var response;
+        $.ajax({
+            url: url,
+            async: false, // Make the request synchronous
+            type: "GET",
+            success: function(data) {
+                response = data;
+            }
+        });
+
+        // Update the dropdown with the response
+        $('#progression-id').html(response);
+
+        // Call the next function in the sequence
+        filtreByProgression();
+    }
 </script>
+

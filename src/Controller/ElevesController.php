@@ -44,15 +44,14 @@ class ElevesController extends AppController
         //debug($listeEleves);die;
         $this->set(compact('listeClasses','eleves','classe_id'));
     }
-	/***************** Ajoute une tâche principale
-     **********************************************************/
+    
     public function add($classe_id = null)
     {
         $eleve = $this->Eleves->newEntity();                                   // crée une nouvelle entité dans $eleve
         if ($this->request->is('post')) {                                           //si requête de type post
             $eleve = $this->Eleves->patchEntity($eleve, $this->request->getData());  //??
             if ($this->Eleves->save($eleve)) {
-                $this->_updateTpEleves($eleve);                                 //Met le champ 'id' de la base avec UUID CHAR(36)
+                $this->_updateTpEleves($eleve);                            
                 $this->Flash->success(__("L'élève a été sauvegardé."));      //Affiche une infobulle
                 return $this->redirect(['action' => 'index']);                      //Déclenche la fonction 'index' du controlleur
             } else {

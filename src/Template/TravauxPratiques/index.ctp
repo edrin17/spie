@@ -1,11 +1,8 @@
 <?php
 
 use App\Model\Entity\Progression;
-
-$this->start('tableauClasseur');
 echo $this->element('TableauxClasseurs/filtres');
-$this->end();
-echo $this->fetch('tableauClasseur');
+
 
 if ($spe) {
     $html['spe'] = 0;

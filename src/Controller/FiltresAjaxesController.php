@@ -311,7 +311,7 @@ class FiltresAjaxesController extends AppController
         $referential_id = $this->request->getQuery('referential_id');
 		$progression = $progressionsTbl->find('list')
 			->where(['referential_id' => $referential_id])
-			->order(['name' => 'ASC']);
+			->order(['nom' => 'ASC']);
         $this->set('ajaxContent', $progression);
 		$this->render('filtres_ajaxes');
 	}

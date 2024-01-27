@@ -42,15 +42,37 @@ class TravauxPratiquesController extends AppController
 
     private function _loadFilters($resquest = null)
     {
+        //chargement de la liste des référentiels
+        $referentialsTbl = TableRegistry::get('Referentials');
+        $referentials = $referentialsTbl->find('list')
+            ->order(['name' => 'ASC']);
+        
+        //récup du filtre existant dans la requête
+        $referential_id = $this->request->getQuery('referential_id');
+
+        //si requête vide slection du premier de la liste
+        if ($referential_id =='') {
+            $referential_id = $referentialsTbl->find()
+            ->order(['name' => 'ASC'])
+            ->first()
+            ->id;
+        }
+
+        $this->set(compact( //passage des variables à la vue
+            'referentials', 'referential_id'
+        ));
+
         $progressionsTbl = TableRegistry::get('Progressions');
         $progressions = $progressionsTbl->find('list')
-            ->order(['id' => 'ASC']);
+            ->where(['referential_id' => $referential_id])
+            ->order(['nom' => 'ASC']);
         
         $progression_id = $this->request->getQuery('progression_id');
 
         if ($progression_id =='') {
             $progression_id = $progressionsTbl->find()
-            ->order(['id' => 'ASC'])
+            ->where(['referential_id' => $referential_id])
+            ->order(['nom' => 'ASC'])
             ->first()
             ->id;
         }
