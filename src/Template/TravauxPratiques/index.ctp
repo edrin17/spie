@@ -53,20 +53,6 @@ if ($spe) {
                     ); ?></td>
                 <td class="actions">
                     <div class="btn-group" role="group">
-                    <!-- Modal link -->
-                    <?php $this->set('tache',$tp); ?>
-                    <?php $this->set('action','link'); ?>
-                    <?php $this->set('button','Lier'); ?>
-                    <?php $this->set('buttonColor','primary'); ?>
-                    <?php $this->set('icon','<i class="fa-solid fa-link" aria-hidden="true">'); ?>
-                    <?php echo $this->element('Modals/LinkTp'); ?>
-                    <!-- Modal matériels -->
-                    <?php $this->set('tache',$tp); ?>
-                    <?php $this->set('action','link'); ?>
-                    <?php $this->set('button','Lier'); ?>
-                    <?php $this->set('buttonColor','primary'); ?>
-                    <?php $this->set('icon','<i class="fa-solid fa-cog" aria-hidden="true">'); ?>
-                    <?php echo $this->element('Modals/LinkTp'); ?>
                     <?php echo $this->Form->postButton(
                         '<i class="fa-solid fa-trash" aria-hidden="true"></i>',
                         ['controller' => 'TravauxPratiques', 'action' => 'delete', $tp->id, '?' => [
