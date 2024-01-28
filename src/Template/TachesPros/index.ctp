@@ -84,7 +84,7 @@
     // Generate the URL using a script block
     var url = "<?php echo $this->Url->build([
             'controller' => 'FiltresAjaxes',
-            'action' => 'chainedActivites'
+            'action' => 'chainedActivitesByReferential'
         ]); ?>/?referential_id=" + referential_id;
     
     // Perform synchronous AJAX request using $.ajax

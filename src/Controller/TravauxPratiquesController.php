@@ -24,9 +24,9 @@ class TravauxPratiquesController extends AppController
     public function index()
     {
  
-        $this->_loadFilters();
+        $this->_loadFilters($this->request);
         $spe = 0;
-        //debug($this->viewVars->rotation_id);die;
+        $rotation_id = $this->viewVars['rotation_id'];
         //on récupère les bonnes données pour affichage
         $tableTPs = $this->TravauxPratiques;
         $tps = $tableTPs->find()
@@ -35,7 +35,7 @@ class TravauxPratiquesController extends AppController
                 'Rotations.Themes',
                 'MaterielsTravauxPratiques.Materiels.Marques',
             ])
-            ->where(['rotation_id' => $this->viewVars['rotation_id']])
+            ->where(['rotation_id' => $rotation_id])
             ->where(['specifique' => $spe]);
         $this->set(compact('tps','spe'));
     }
@@ -61,7 +61,7 @@ class TravauxPratiquesController extends AppController
         $this->set(compact( //passage des variables à la vue
             'referentials', 'referential_id'
         ));
-
+        //-------------------Progression-------------------------
         $progressionsTbl = TableRegistry::get('Progressions');
         $progressions = $progressionsTbl->find('list')
             ->where(['referential_id' => $referential_id])
@@ -77,6 +77,7 @@ class TravauxPratiquesController extends AppController
             ->id;
         }
 
+        //-------------------Classes-------------------------
         $classesTbl = TableRegistry::get('Classes');
         $classes = $classesTbl->find('list')
             ->where([
@@ -84,7 +85,11 @@ class TravauxPratiquesController extends AppController
                 'progression_id' => $progression_id
             ])
             ->order(['nom' => 'ASC']);
+
+
         $classe_id = $this->request->getQuery('classe_id');
+
+        
         if ($classe_id =='') {
         $classe_id = $classesTbl->find()
             ->where([
@@ -94,43 +99,71 @@ class TravauxPratiquesController extends AppController
             ->first()
             ->id;
         }
- 
+        //-------------------Periodes-------------------------
         $periodesTbl = TableRegistry::get('Periodes');
         $periodes = $periodesTbl->find('list')
             ->where(['progression_id' => $progression_id])
             ->order(['numero' => 'ASC']);
+        
+
         $periode_id = $this->request->getQuery('periode_id');
+
+        
         if ($periode_id =='') {
-        $periode_id = $periodesTbl->find()
+            $periode_id = $periodesTbl->find()
             ->where(['progression_id' => $progression_id])
             ->order(['numero' => 'ASC'])
             ->first()->id;
         }
-
+        //-------------------Rotations-------------------------
         $rotationsTbl = TableRegistry::get('Rotations');
         $rotations = $rotationsTbl->find('list')
             ->contain(['Periodes'])
             ->where(['periode_id' => $periode_id])
             ->order(['Rotations.numero' => 'ASC']);
+        
+
         $rotation_id = $this->request->getQuery('rotation_id');
+        
         if ($rotation_id =='') {
         $rotation_id = $rotationsTbl->find()
             ->where(['periode_id' => $periode_id])
             ->order(['numero' => 'ASC'])
             ->first()->id;
         }
-
+        //-------------------Activités-------------------------
+        $activitesTbl = TableRegistry::get('Activites');
+        $activites = $activitesTbl->find('list')
+            ->where(['referential_id' => $referential_id])
+            ->order([
+                'Activites.Numero' => 'ASC',
+                'Activites.Numero' => 'ASC'
+            ]);
+        $activite_id = $this->request->getQuery('activite_id');
+        
+        if ($activite_id =='') {
+        $activite_id = $activitesTbl->find()
+        ->where(['referential_id' => $referential_id])
+        ->order([
+            'Activites.Numero' => 'ASC',
+            'Activites.Numero' => 'ASC'
+            ])
+            ->first()->id;
+        }
+        //-------------------Tâches-------------------------
         $tachesTbl = TableRegistry::get('TachesPros');
-        $taches = $tachesTbl->find('list')
+        $tachesPros = $tachesTbl->find('list')
             ->contain(['Activites'])
+            ->where(['activite_id' => $activite_id])
             ->order([
                 'Activites.Numero' => 'ASC',
                 'TachesPros.Numero' => 'ASC'
             ]);
-        $tache_id = $this->request->getQuery('tache_id');
-        if ($tache_id =='') {
-        $tache_id = $tachesTbl->find()
+        $tache_pro_id = $this->request->getQuery('tache_pro_id');
+        if ($tache_pro_id =='') {
+        $tache_pro_id = $tachesTbl->find()
         ->contain(['Activites'])
+        ->where(['activite_id' => $activite_id])
         ->order([
             'Activites.Numero' => 'ASC',
             'TachesPros.Numero' => 'ASC'
@@ -142,7 +175,8 @@ class TravauxPratiquesController extends AppController
             'progression_id', 'progressions',
             'rotations', 'rotation_id',
             'periodes', 'periode_id',
-            'taches', 'tache_id'
+            'activites', 'activite_id',
+            'tachesPros', 'tache_pro_id'
         ));
     }
     /***************** Ajoute une tâche principale
@@ -156,21 +190,22 @@ class TravauxPratiquesController extends AppController
             $tp = $this->TravauxPratiques->patchEntity($tp, $this->request->getData());
             if ($this->TravauxPratiques->save($tp)) {
                 $this->_updateTpEleves($tp);
-                $this->Flash->success(__('Le matériel a été sauvegardé.'));
+                $this->Flash->success(__('Le TP a été sauvegardé.'));
                 return $this->redirect(['action' => 'index',
                     '?' => [
-                        'progression_id'=> $this->viewVars['progression_id'],
-                        'periode'=> $this->viewVars['periode_id'],
-                        'rotation_id'=> $this->viewVars['rotation_id'],
-                        'classe_id'=> $this->viewVars['classe_id']
+                    'referential_id'=> $this->request->getData('referential_id'),
+                    'progression_id'=> $this->request->getData('progression_id'),
+                    'periode_id'=> $this->request->getData('periode_id'),
+                    'rotation_id'=> $this->request->getData('rotation_id'),
+                    'classe_id'=> $this->request->getData('classe_id')
                     ]]);
             } else {
-                $this->Flash->error(__('Le matériel n\'a pas pu être sauvegardé ! Réessayer.'));
+                $this->Flash->error(__('Le TP n\'a pas pu être sauvegardé ! Réessayer.'));
             }
         }
 
         $this->set(compact('tp'));
-        //debug($this->viewVars);
+        
     }
 
 
@@ -190,16 +225,17 @@ class TravauxPratiquesController extends AppController
             $tp = $this->TravauxPratiques->patchEntity($tp, $data);
             //debug($tp);die;
             if ($this->TravauxPratiques->save($tp)) {                  //Sauvegarde les données dans la BDD
-                $this->Flash->success(__('Le matériel a été sauvegardé.'));      //Affiche une infobulle
+                $this->Flash->success(__('Le TP a été sauvegardé.'));      //Affiche une infobulle
                 return $this->redirect(['action' => 'index',
                 '?' => [
-                    'progression_id'=> $this->viewVars['progression_id'],
-                    'periode'=> $this->viewVars['periode_id'],
-                    'rotation_id'=> $this->viewVars['rotation_id'],
-                    'classe_id'=> $this->viewVars['classe_id']
+                    'referential_id'=> $this->request->getData('referential_id'),
+                    'progression_id'=> $this->request->getData('progression_id'),
+                    'periode_id'=> $this->request->getData('periode_id'),
+                    'rotation_id'=> $this->request->getData('rotation_id'),
+                    'classe_id'=> $this->request->getData('classe_id')
                 ]]);                      //Déclenche la fonction 'index' du controlleur
             } else {
-                $this->Flash->error(__('Le matériel n\'a pas pu être sauvegardé ! Réessayer.')); //Sinon affiche une erreur
+                $this->Flash->error(__('Le TP n\'a pas pu être sauvegardé ! Réessayer.')); //Sinon affiche une erreur
             }
         }
 
@@ -240,13 +276,21 @@ class TravauxPratiquesController extends AppController
      */
     public function delete($id = null)
     {
+        $this->_loadFilters($this->request);
         $this->request->allowMethod(['post', 'delete']);
         $tp = $this->TravauxPratiques->get($id);
         if ($this->TravauxPratiques->delete($tp)) {
             $this->Flash->success(__("Le TP a été supprimé."));
+            return $this->redirect(['action' => 'index',
+                '?' => [
+                    'referential_id'=> $this->viewVars['referential_id'],
+                    'progression_id'=> $this->viewVars['progression_id'],
+                    'periode_id'=> $this->viewVars['periode_id'],
+                    'rotation_id'=> $this->viewVars['rotation_id'],
+                    'classe_id'=> $this->viewVars['classe_id']
+                ]]);
         } else {
             $this->Flash->error(__("Le TP n'a pas pu être supprimé ! Réessayer."));
         }
-        return $this->redirect(['action' => 'index']);
     }
 }

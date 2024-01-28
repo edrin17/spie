@@ -34,7 +34,7 @@ class FiltresAjaxesController extends AppController
 		$this->render('filtres_ajaxes');
 	}
 
-	public function chainedActivites()
+	public function chainedActivitesByReferential()
 	{
 		$activites = TableRegistry::get('Activites');
 
@@ -51,6 +51,29 @@ class FiltresAjaxesController extends AppController
 			$chainedActivites[$activites->id] = $activites->fullName;
 		}
 		$ajaxContent = $chainedActivites;
+		$this->set('ajaxContent',$ajaxContent);
+		$this->render('filtres_ajaxes');
+	}
+
+	public function chainedTachesProsByActivite()
+	{
+		$tachesPros = TableRegistry::get('TachesPros');
+
+		$activite_id = $_GET['activite_id'];
+
+
+		$query = $tachesPros->find()
+			->contain(['Activites'])
+			->where(['activite_id' => $activite_id])
+			->order(['Activites.numero' => 'ASC',
+				'TachesPros.numero' => 'ASC'
+			]);
+
+		foreach ($query as $tachesPros)
+		{
+			$chainedTachesPros[$tachesPros->id] = $tachesPros->fullName;
+		}
+		$ajaxContent = $chainedTachesPros;
 		$this->set('ajaxContent',$ajaxContent);
 		$this->render('filtres_ajaxes');
 	}

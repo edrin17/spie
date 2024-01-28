@@ -1,4 +1,7 @@
-<?php echo $this->element('TableauxClasseurs/filtres');?>
+<?php 
+    $this->set('controller','Analyses');
+    echo $this->element('TableauxClasseurs/filtres');
+?>
 
 <table class = 'table table-bordered table-hover'>
 	<thead>
