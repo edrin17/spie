@@ -53,6 +53,27 @@ if ($spe) {
                     ); ?></td>
                 <td class="actions">
                     <div class="btn-group" role="group">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa-solid fa-link" aria-hidden="true"></i>
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                                <li>
+                                    <?php echo $this->Html->link('Objectifs pédagogiques', [
+                                        'controller' => 'TravauxPratiquesObjectifsPedas',
+                                        'action' => 'index',
+                                        $tp->id, '?' => ['rotation' => $rotation_id, 'spe' => $spe]
+                                    ]) . PHP_EOL; ?>
+                                </li>
+                                <li>
+                                    <?php echo $this->Html->link(__('Matériels pour ce TP'), [
+                                        'controller' => 'MaterielsTravauxPratiques',
+                                        'action' => 'index',
+                                        $tp->id
+                                    ]) . PHP_EOL; ?>
+                                </li>
+                            </ul>
+                        </div>
                     <?php echo $this->Form->postButton(
                         '<i class="fa-solid fa-trash" aria-hidden="true"></i>',
                         ['controller' => 'TravauxPratiques', 'action' => 'delete', $tp->id, '?' => [
