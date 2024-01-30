@@ -19,6 +19,10 @@
                     <?php echo $this->Form->input('action',['type' => 'hidden' , 'value' => $action]); ?>
                     <div class="form-group">
                         <?php echo $this->Form->input('nom',['label' => 'Nom']); ?>
+                        <?php echo $this->Form->input('numero',[
+                            'label' => 'Numéro du sous-chapitre',
+                            'option' => 'number'
+                        ]); ?> 
                         <?php echo $this->Form->input('niveaux_taxo_id', [
                             'label' => "Niveau taxonomique",
                             'options' => $niveauxTaxos
