@@ -51,11 +51,12 @@
                     <!-- Affiche des urls/boutons et de leurs actions -->
                     <!-- Modal edit -->
                     <?php $this->set('object',$sousChapitre); ?>
+                    <?php $this->set('niveauxTaxos',$niveauxTaxos); ?>
                     <?php $this->set('action','edit'); ?>
                     <?php $this->set('button','Editer'); ?>
                     <?php $this->set('buttonColor','primary'); ?>
                     <?php $this->set('icon','<i class="fa-solid fa-cog" aria-hidden="true">'); ?>
-                    <?php echo $this->element('/Modals/Edit'); ?>
+                    <?php echo $this->element('/Modals/EditSousChapitre'); ?>
                     <!-- /Modal edit -->
                     <!-- Button delete -->
                     <?php $this->set('object',$sousChapitre); ?>
