@@ -74,6 +74,10 @@ class SuivisController extends AppController
                 'CompetencesTerminales.numero' => 'ASC',
                 'CompetencesIntermediaires.numero' => 'ASC',
             ]);
+        //tri par progression
+        $listCompsInters->matching('ObjectifsPedas.TravauxPratiques.Rotations.Periodes', function ($q) {
+            return $q->where(['progression_id' => $this->viewVars['progression_id']]);
+        });
 
         $tableNiveauxCompetences = TableRegistry::get('NiveauxCompetences');
         $listNiveauxCompetences = $tableNiveauxCompetences->find()
