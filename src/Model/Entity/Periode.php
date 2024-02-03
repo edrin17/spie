@@ -12,4 +12,8 @@ class Periode extends Entity
 	{
 		return 'Période n°'.$this->_properties['numero'];
 	}
+	protected function _getFullName()
+	{
+		return 'P'.$this->_properties['numero'];
+	}
 }

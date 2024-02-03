@@ -1,16 +1,13 @@
 <?php $this->assign('title', 'Progressions'); ?>  <!-- Customise le titre de la page -->
 <h1>Liste des Progressions</h1>
 <div class="row">
-    <div class="col-lg-2">
-        <h1>Progressions</h1>
-    </div>
-    <div class="col-lg-1 col-lg-offset-5">
+    <div class="col-lg-1">
         <br>
         <?php echo $this->Html->link('Ajouter une progression', ['action' => 'add'],
             ['class' => "btn btn-info",'type' => 'button' ]
         ); ?>
     </div>
-    <div class="col-lg-2 col-lg-offset-1">
+    <div class="col-lg-2 col-lg-offset-8">
         <?php echo $this->Form->input('referential_id', [
             'label' => 'Filtrer par référentiel:',
             'onchange' => 'filtreProgressionsByReferentials()',
@@ -54,6 +51,14 @@
         </tbody>
     </table>
 </div>
+<div class="row">
+    <div class="col-lg-1">
+        <?php echo $this->Html->link('Dupliquer une progression', ['action' => 'add'],
+            ['class' => "btn btn-warning",'type' => 'button' ]
+        ); ?>
+    </div>
+</div>
+
 <script>
 
 function filtreProgressionsByReferentials()
