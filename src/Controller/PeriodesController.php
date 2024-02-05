@@ -79,14 +79,14 @@ class PeriodesController extends AppController
     {
         //get entity form 'id' param
         $id = $this->request->getData('entityId');
-        $periodes = $this->Periodes->get($id,[
+        $periode = $this->Periodes->get($id,[
             'contain'=>[]
         ]);
-        $referential_id = $periodes->referential_id;
-        $progression_id = $periodes->progression_id;
+        $referential_id = $periode->referential_id;
+        $progression_id = $periode->progression_id;
         if ($this->request->is(['patch', 'post', 'put'])) {                         // Vérifie le type de requête
-            $periodes = $this->Periodes->patchEntity($periodes, $this->request->getData());
-            if ($this->Periodes->save($periodes)) {                                 //Sauvegarde les données dans la BDD
+            $periode = $this->Periodes->patchEntity($periode, $this->request->getData());
+            if ($this->Periodes->save($periode)) {                                 //Sauvegarde les données dans la BDD
                 $this->Flash->success(__("La période a été sauvegardée."));      //Affiche une infobulle
                 return $this->redirect([
                     'action' => 'index',
@@ -105,15 +105,25 @@ class PeriodesController extends AppController
     /**
      * Efface un utilisateur
      */
-    public function _delete($id = null)      //Met le paramètre id à null pour éviter un paramètre restant ou hack
+    public function _delete()      //Met le paramètre id à null pour éviter un paramètre restant ou hack
     {
-        $periode = $this->Periodes->get($id);
+        $id = $this->request->getData('entityId');
+        $periode = $this->Periodes->get($id,[
+            'contain'=>[]
+        ]);
+        $referential_id = $periode->referential_id;
+        $progression_id = $periode->progression_id;
         if ($this->Periodes->delete($periode)) {
             $this->Flash->success(__("La période a été supprimée."));
+            return $this->redirect([
+                'action' => 'index',
+                'referential_id' => $referential_id,
+                'progression_id' => $progression_id,
+                
+            ]);
         } else {
             $this->Flash->error(__("La période n' pas pu être supprimée ! Réessayer."));
         }
-        return $this->redirect(['action' => 'index']);
     }
 
      // Load list and selected filters for each dropdown menus from $_GET
