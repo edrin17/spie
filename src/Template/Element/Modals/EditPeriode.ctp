@@ -26,7 +26,7 @@
                         'label' => "Progression",
                         'option' => $progressions
                     ]); ?>
-                    <?php echo $this->Form->input('action',['type' => 'hidden' , 'value' => 'add']); ?>
+                    <?php echo $this->Form->input('action',['type' => 'hidden' , 'value' => 'edit']); ?>
                     </div>
                 </div>
                 <div class="modal-footer"><!-- modal-footer -->
