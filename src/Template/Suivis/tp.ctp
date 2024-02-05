@@ -164,10 +164,8 @@ if ($spe) {
 $tableau = tabProcess($tableau, $vue, $rotation_id,  $classe_id, $periode_id, $progression_id, $spe);
 //debug($tableau);die;
 
-$this->start('tableauClasseur');
 echo $this->element('TableauxClasseurs/suivi_tp2');
-$this->end();
-echo $this->fetch('tableauClasseur');
+
 ?>
 <div class="row">
     <div class="col-md-8">
