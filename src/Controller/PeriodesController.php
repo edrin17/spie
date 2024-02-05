@@ -107,7 +107,6 @@ class PeriodesController extends AppController
      */
     public function _delete($id = null)      //Met le paramètre id à null pour éviter un paramètre restant ou hack
     {
-        $this->request->allowMethod(['post', 'delete']); // Autoriste que certains types de requête
         $periode = $this->Periodes->get($id);
         if ($this->Periodes->delete($periode)) {
             $this->Flash->success(__("La période a été supprimée."));
