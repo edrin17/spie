@@ -339,14 +339,4 @@ class FiltresAjaxesController extends AppController
 		$this->render('filtres_ajaxes');
 	}
 
-	public function chainedClassesByProgression()
-	{
-		$classesTbl = TableRegistry::get('Classes');
-        $progression_id = $this->request->getQuery('progression_id');
-		$classes = $classesTbl->find('list')
-			->where(['progression_id' => $progression_id])
-			->order(['nom' => 'ASC']);
-        $this->set('ajaxContent', $classes);
-		$this->render('filtres_ajaxes');
-	}
 }
