@@ -13,7 +13,6 @@
 /vendor/*
 /tests/*
 /logs/*
-/webroot/*
 
 
 # Composer files #
