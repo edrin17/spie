@@ -18,6 +18,8 @@
 
         <?php echo $this->Form->input('objectifs_peda_id', [
             'label' => 'Liste des objectifs pédagogiques',
+            'class' => 'selectpicker',
+            'data-live-search' => "true",
             'options' => $listObjsPedas
 		]); ?>
 
