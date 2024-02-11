@@ -29,10 +29,14 @@ class TravauxPratiquesObjectifsPedasController extends AppController
 			return $this->redirect(['controller' => 'TravauxPratiques', 'action' => 'index']);
 		}
 
+        $referential_id = $this->request->getQuery('referential_id');
+        $progression_id = $this->request->getQuery('progression_id');
+        $periode_id = $this->request->getQuery('periode_id');
+        $rotation_id = $this->request->getQuery('rotation_id');
+        $classe_id = $this->request->getQuery('classe_id');
+        
         $travauxPratiques = TableRegistry::get('TravauxPratiques');
         $objectifsPedas = TableRegistry::get('ObjectifsPedas');
-        $selectedLVL1_id = $this->request->getQuery('selectedLVL1_id');
-		$selectedLVL2_id =$this->request->getQuery('selectedLVL2_id');
 		$spe = $this->request->getQuery('spe');
         debug($this->request->getQuery());
         debug($tp_id);
@@ -51,7 +55,7 @@ class TravauxPratiquesObjectifsPedasController extends AppController
 				'NiveauxCompetences'
 			]);
 		//debug($listObjsPedas->toArray());//die;
-        $this->set(compact('tp','listObjsPedas','tp_id','selectedLVL1_id','selectedLVL2_id', 'spe'));
+        $this->set(compact('tp','listObjsPedas','tp_id','referential_id','progression_id','rotation_id','periode_id','classe_id','spe'));
 
     }
 	/**
@@ -65,16 +69,21 @@ class TravauxPratiquesObjectifsPedasController extends AppController
 		if ($tp_id == null) {
 			return $this->redirect(['action' => 'index']);
 		}
-        $selectedLVL1_id = $this->request->getQuery('selectedLVL1_id');
-		$selectedLVL2_id =$this->request->getQuery('selectedLVL2_id');
+        $referential_id = $this->request->getQuery('referential_id');
+        $progression_id = $this->request->getQuery('progression_id');
+        $periode_id = $this->request->getQuery('periode_id');
+        $rotation_id = $this->request->getQuery('rotation_id');
+        $classe_id = $this->request->getQuery('classe_id');
+        
 		$spe =$this->request->getQuery('spe');
 
 		$objsPedas = TableRegistry::get('ObjectifsPedas');
 		$listObjsPedas = $objsPedas->find('list')
 			->contain([
-				'CompetencesIntermediaires.CompetencesTerminales.Capacites',
-				'NiveauxCompetences'
+				'CompetencesIntermediaires.CompetencesTerminales.Capacites.Referentials',
+				'NiveauxCompetences',
 			])
+            ->where(['referential_id'=> $referential_id])
 			->order([
 				'Capacites.numero' => 'ASC',
 				'CompetencesTerminales.numero' => 'ASC',
@@ -89,8 +98,11 @@ class TravauxPratiquesObjectifsPedasController extends AppController
 
         $tpObjPeda = $this->TravauxPratiquesObjectifsPedas->newEntity();
         if ($this->request->is('post')) {
-            $selectedLVL1_id = $this->request->getData('selectedLVL1_id');
-    		$selectedLVL2_id =$this->request->getData('selectedLVL2_id');
+            $referential_id = $this->request->getData('referential_id');
+            $progression_id = $this->request->getData('progression_id');
+            $periode_id = $this->request->getData('periode_id');
+            $rotation_id = $this->request->getData('rotation_id');
+            $classe_id = $this->request->getData('classe_id');
 			$spe = $this->request->getData('spe');
             $tp_id =$this->request->getData('tp_id');
 			//debug($this->request->getData());die;
@@ -101,7 +113,14 @@ class TravauxPratiquesObjectifsPedasController extends AppController
 					"L'association TP - Objectif Péda a été sauvegardée."
 				));
                 return $this->redirect(['action' => 'index',
-                    $tp->id,'?' => ['selectedLVL2_id' => $selectedLVL2_id, 'selectedLVL1_id' => $selectedLVL1_id, 'spe' => $spe]
+                    $tp->id,'?' => [
+                        'referential_id' => $referential_id,
+                        'rotation_id' => $rotation_id,
+                        'periode_id' => $periode_id,
+                        'progression_id' => $progression_id,
+                        'classe_id'=> $classe_id,
+                        'spe' => $spe
+                    ]
                 ]);
             } else {
                 $this->Flash->error(__(
@@ -110,7 +129,7 @@ class TravauxPratiquesObjectifsPedasController extends AppController
             }
         }
 
-        $this->set(compact('tpObjPeda','listObjsPedas','tp_id','tp','selectedLVL1_id','selectedLVL2_id', 'spe'));
+        $this->set(compact('tpObjPeda','listObjsPedas','tp_id','tp','referential_id','progression_id','rotation_id','periode_id','classe_id','spe'));
 
     }
 
@@ -119,12 +138,20 @@ class TravauxPratiquesObjectifsPedasController extends AppController
      */
     public function delete($id = null)      //Met le paramètre id à null pour éviter un paramètre restant ou hack
     {
-        $selectedLVL1_id = $this->request->getQuery('selectedLVL1_id');
-        $selectedLVL2_id =$this->request->getQuery('selectedLVL2_id');
+        $referential_id = $this->request->getQuery('referential_id');
+        $progression_id = $this->request->getQuery('progression_id');
+        $periode_id = $this->request->getQuery('periode_id');
+        $rotation_id = $this->request->getQuery('rotation_id');
+        $classe_id = $this->request->getQuery('classe_id');
         $spe = $this->request->getQuery('spe');
         $tp_id =$this->request->getQuery('tp_id');
         //debug($this->request->getQuery());die;
         $this->request->allowMethod(['post', 'delete']); // Autoriste que certains types de requête
+        $referential_id = $this->request->getData('referential_id');
+        $progression_id = $this->request->getData('progression_id');
+        $periode_id = $this->request->getData('periode_id');
+        $rotation_id = $this->request->getData('rotation_id');
+        $classe_id = $this->request->getData('classe_id');
         $tpObjPeda = $this->TravauxPratiquesObjectifsPedas->get($id);
         if ($this->TravauxPratiquesObjectifsPedas->delete($tpObjPeda)) {
             $this->Flash->success(__("L'association a été supprimée."));
@@ -132,7 +159,12 @@ class TravauxPratiquesObjectifsPedasController extends AppController
             $this->Flash->error(__("L'association n'a pas pu être supprimé ! Réessayer."));
         }
         return $this->redirect(['action' => 'index',
-            $tp_id,'?' => ['selectedLVL2_id' => $selectedLVL2_id, 'selectedLVL1_id' => $selectedLVL1_id, 'spe' => $spe]
+            $tp_id,'?' => ['referential_id' => $referential_id,
+            'rotation_id' => $rotation_id,
+            'periode_id' => $periode_id,
+            'progression_id' => $progression_id,
+            'classe_id'=> $classe_id,
+            'spe' => $spe]
         ]);
     }
 

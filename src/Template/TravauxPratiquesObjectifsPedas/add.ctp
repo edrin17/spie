@@ -1,8 +1,11 @@
 <div class="travauxPratiquesObjectifsPeda form large-9 medium-8 columns content">
     <?php echo $this->Form->create($tpObjPeda) ?>
     <?php echo $this->Form->hidden('tp_id',['value' =>$tp_id]) ?>
-    <?php echo $this->Form->hidden('selectedLVL2_id',['value' =>$selectedLVL2_id]) ?>
-    <?php echo $this->Form->hidden('selectedLVL1_id',['value' =>$selectedLVL1_id]) ?>
+    <?php echo $this->Form->hidden('referential_id',['value' =>$referential_id]) ?>
+    <?php echo $this->Form->hidden('progression_id',['value' =>$progression_id]) ?>
+    <?php echo $this->Form->hidden('periode_id',['value' =>$periode_id]) ?>
+    <?php echo $this->Form->hidden('rotation_id',['value' =>$rotation_id]) ?>
+    <?php echo $this->Form->hidden('classe_id',['value' =>$classe_id]) ?>
     <?php echo $this->Form->hidden('spe',['value' => $spe]) ?>
     <fieldset>
         <legend>

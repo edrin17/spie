@@ -2,7 +2,15 @@
 <!-- Affiche le bouton ajouter un utilisateur -->
 <?php echo $this->Html->link('Ajouter un objectif pédagogique pour ce TP',[
     'action' => 'add',
-    $tp->id,'?' => ['selectedLVL2_id' => $selectedLVL2_id, 'selectedLVL1_id' => $selectedLVL1_id, 'spe' => $spe]
+    $tp->id,'?' => [
+		'referential_id' => $referential_id,
+		'rotation_id' => $rotation_id,
+		'periode_id' => $periode_id,
+		'progression_id' => $progression_id,
+		'classe_id'=> $classe_id,
+		'spe' => $spe,
+		'tp_id' => $tp->id
+	]
     ],['class' => "btn btn-default",'role' => 'button']).PHP_EOL; ?>
 <br>
 <br>
@@ -29,7 +37,15 @@
 				<?php echo $this->Form->postLink(__('Supprimer'),[
                         'action' => 'delete',
                         $tpObjPeda->id,
-                        '?'=> ['selectedLVL1_id' => $selectedLVL1_id, 'selectedLVL2_id' => $selectedLVL2_id, 'spe' => $spe, 'tp_id' => $tp->id],
+                        '?'=> [
+							'referential_id' => $referential_id,
+							'rotation_id' => $rotation_id,
+							'periode_id' => $periode_id,
+							'progression_id' => $progression_id,
+							'classe_id'=> $classe_id,
+							'spe' => $spe,
+							'tp_id' => $tp->id
+						],
                     ],
 					['confirm' => __('Etes vous sur de vouloirs supprimer {0}?',
 						$objPeda->fullName)
@@ -44,7 +60,14 @@
 <?php echo $this->Html->link('Retour au TP',[
     'controller' => 'TravauxPratiques',
     'action' => 'index',
-    $tp->id,'?' => ['LVL1' => $selectedLVL1_id, 'LVL2' => $selectedLVL2_id, 'spe' => $spe]
+    $tp->id,'?' => [
+		'referential_id' => $referential_id,
+		'rotation_id' => $rotation_id,
+		'periode_id' => $periode_id,
+		'progression_id' => $progression_id,
+		'classe_id'=> $classe_id,
+		'spe' => $spe
+	]
     ],['class' => "btn btn-default",'role' => 'button']).PHP_EOL; ?>
 <script>
 $(document).ready( function () {

@@ -62,14 +62,28 @@ if ($spe) {
                                     <?php echo $this->Html->link('Objectifs pédagogiques', [
                                         'controller' => 'TravauxPratiquesObjectifsPedas',
                                         'action' => 'index',
-                                        $tp->id, '?' => ['rotation' => $rotation_id, 'spe' => $spe]
+                                        $tp->id, '?' => [
+                                            'referential_id' => $referential_id,
+                                            'rotation_id' => $rotation_id,
+                                            'periode_id' => $periode_id,
+                                            'progression_id' => $progression_id,
+                                            'classe_id'=> $classe_id,
+                                            'spe' => $spe
+                                            ]
                                     ]) . PHP_EOL; ?>
                                 </li>
                                 <li>
                                     <?php echo $this->Html->link(__('Matériels pour ce TP'), [
                                         'controller' => 'MaterielsTravauxPratiques',
                                         'action' => 'index',
-                                        $tp->id
+                                        $tp->id, '?' => [
+                                            'referential_id' => $referential_id,
+                                            'rotation_id' => $rotation_id,
+                                            'periode_id' => $periode_id,
+                                            'progression_id' => $progression_id,
+                                            'classe_id'=> $classe_id,
+                                            'spe' => $spe
+                                        ]
                                     ]) . PHP_EOL; ?>
                                 </li>
                             </ul>
