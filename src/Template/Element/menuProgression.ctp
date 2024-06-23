@@ -10,6 +10,12 @@
             ]); ?>
         </li>
         <li>
+            <?= $this->Html->link(__('Chronologie des compétences'), [
+                'controller' => 'Chronos',
+                'action' => 'index'
+            ]); ?>
+        </li>
+        <li>
             <?= $this->Html->link(__('Analyse par rotation'), [
                 'controller' => 'Analyses',
                 'action' => 'index'
